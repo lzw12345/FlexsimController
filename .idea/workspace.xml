@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5b200f71-356e-40a8-80b4-84883df6c88c" name="Default Changelist" comment="" />
+    <list default="true" id="5b200f71-356e-40a8-80b4-84883df6c88c" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/view/MainGui.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/view/MainGui.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/core/Core.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/core/Core.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/ui/MainGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ui/MainGui.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/view/MainGui.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/MainGui.fxml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,7 +63,11 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1VpcV2X1YH9QOHYrb2VG40M3MKZ" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
@@ -123,8 +134,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.FlexsimController [runShadow]" />
         <item itemvalue="Gradle.FlexsimController [run]" />
+        <item itemvalue="Gradle.FlexsimController [runShadow]" />
       </list>
     </recent_temporary>
   </component>
@@ -138,11 +149,38 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1577953497137</updated>
-      <workItem from="1577953500520" duration="15219000" />
+      <workItem from="1577953500520" duration="21095000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/core/Core.java</url>
+          <line>21</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/core/Core.java</url>
+          <line>26</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

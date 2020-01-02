@@ -10,9 +10,10 @@ import ui.MainGui;
 import java.io.IOException;
 
 public class Main extends Application {
-    private Core core = new Core();
+    private Core core;
 
     public Main() throws IOException {
+        core = new Core();
     }
 
     @Override
@@ -22,7 +23,7 @@ public class Main extends Application {
             BorderPane borderPane = fxmlLoader.load();
             Scene scene = new Scene(borderPane);
             stage.setScene(scene);
-            //fxmlLoader.<MainGui>getController();
+            fxmlLoader.<MainGui>getController().setGui(core);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

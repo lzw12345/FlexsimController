@@ -9,15 +9,23 @@ public class Core {
     String inputLocation;
     double runTime;
     double warmUpPeriod;
-    double 
+    double stopTime;
 
     public Core() throws IOException {
     }
 
+    public void execute(String flexsimLocation, String modelLocation, String inputLocation,
+                        double runTime, double warmUpPeriod, double stopTime) throws IOException {
+        this.flexsimLocation = '"' + flexsimLocation + '"';
+        this.modelLocation = '"' + modelLocation + '"';
+        this.inputLocation = '"' + inputLocation + '"';
+        System.out.print(flexsimLocation);
+        commandLineGenerator();
+    }
 
-    public void execute() throws IOException {
-        Process a = Runtime.getRuntime().exec("\"C:\\Program Files (x86)\\FlexSim7.3\\program\\flexsim.exe\" " +
-                "\"C:\\Users\\lingz\\Documents\\y4 sem1\\SDP\\onelevel IBIS\\IBIS Model V1.013 PreCreated.fsm\" /maintenance runscript " +
+    public void commandLineGenerator () throws IOException {
+        Process a = Runtime.getRuntime().exec(flexsimLocation +
+                modelLocation + " /maintenance runscript " +
                 "/scriptpath \"C:\\Users\\lingz\\Documents\\y4 sem1\\SDP\\2107-runflexsimmodelsilently\\script.txt\"");
     }
 }

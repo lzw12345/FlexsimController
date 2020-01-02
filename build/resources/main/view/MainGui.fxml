@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -91,11 +92,27 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Label text="Run Time" />
-                  <Label text="Warm up" GridPane.rowIndex="1" />
-                  <Label text="Stop time" GridPane.rowIndex="2" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="334.0" text="Run Time">
+                     <tooltip>
+                        <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="(hours/real second) default value is 4 but will be limited by system performance" />
+                     </tooltip>
+                  </Label>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="369.0" text="Warm up period" GridPane.rowIndex="1">
+                     <tooltip>
+                        <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="(hours) default value is 0" />
+                     </tooltip>
+                  </Label>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="306.0" text="Stop time" GridPane.rowIndex="2">
+                     <tooltip>
+                        <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="(hours) total time model will run for" />
+                     </tooltip>
+                  </Label>
+                  <TextField fx:id="runTime" GridPane.columnIndex="1" />
+                  <TextField fx:id="warmUpTime" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="stopTime" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                </children>
             </GridPane>
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleModelExecution" text="Run Model" />
          </children>
       </VBox>
    </center>
