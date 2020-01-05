@@ -1,0 +1,6 @@
+runspeed(1);
+stoptime(1);
+MAIN2LoadData ("C:\\Users\\lingz\\Documents\\y4 sem1\\SDP\\onelevel IBIS\\","Input Data Modeling-V7z23InfineonV16 One Level (with highlights).xlsx");
+MAINBuldAndRun ();
+resetmodel();
+go();

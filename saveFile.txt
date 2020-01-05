@@ -1,0 +1,11 @@
+{
+  "flexsimLocation" : "C:\\Program Files (x86)\\FlexSim7.3\\program\\flexsim.exe",
+  "modelLocation" : "C:\\Users\\lingz\\Documents\\y4 sem1\\SDP\\onelevel IBIS\\IBIS Model V1.013 PreCreated.fsm",
+  "inputLocation" : "C:\\Users\\lingz\\Documents\\y4 sem1\\SDP\\onelevel IBIS\\Input Data Modeling-V7z23InfineonV16 One Level (with highlights).xlsx",
+  "inputFile" : "\"Input Data Modeling-V7z23InfineonV16 One Level (with highlights).xlsx\");",
+  "runSpeed" : "1",
+  "warmUpPeriod" : "",
+  "stopTime" : "1",
+  "scriptFilepath" : "./script.txt",
+  "file" : "C:\\Users\\lingz\\Documents\\FlexsimController\\.\\script.txt"
+}
