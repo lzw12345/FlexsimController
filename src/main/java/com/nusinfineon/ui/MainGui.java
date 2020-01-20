@@ -4,6 +4,7 @@ import com.nusinfineon.core.Core;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
@@ -49,6 +50,9 @@ public class MainGui extends UiPart<Stage> {
     private TextField warmUpPeriod;
     @FXML
     private TextField stopTime;
+    @FXML
+    private CheckBox showModel;
+
 
     private Core core;
 
@@ -221,7 +225,8 @@ public class MainGui extends UiPart<Stage> {
             errorAlert.showAndWait();
         } else {
             core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                    outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText());
+                    outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
+                    showModel.isSelected());
         }
     }
 

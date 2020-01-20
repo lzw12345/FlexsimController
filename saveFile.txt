@@ -9,5 +9,6 @@
   "warmUpPeriod" : null,
   "stopTime" : "2",
   "scriptFilepath" : "./script.txt",
-  "file" : null
+  "file" : null,
+  "isModelShown" : false
 }
