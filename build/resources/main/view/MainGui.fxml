@@ -66,6 +66,20 @@
                            </TextField>
                         </children>
                      </HBox>
+                     <HBox fx:id="outputFileDragTarget" onDragDropped="#outputDragDropped" onDragOver="#inputDragOver" prefHeight="41.0" prefWidth="600.0" style="-fx-border-color: black;">
+                        <children>
+                           <Label text="Output File Location: ">
+                              <tooltip>
+                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="paste the output excel file" />
+                              </tooltip>
+                           </Label>
+                           <TextField fx:id="outputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. c:/documents/onelevel.fsm" HBox.hgrow="ALWAYS">
+                              <cursor>
+                                 <Cursor fx:constant="DEFAULT" />
+                              </cursor>
+                           </TextField>
+                        </children>
+                     </HBox>
                      <GridPane>
                         <columnConstraints>
                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />

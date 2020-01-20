@@ -6,12 +6,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import static com.nusinfineon.util.FlexScriptDefaultCodes.ONRUNSTOPCODE;
+
 public class Core {
 
     private String flexsimLocation;
     private String modelLocation;
     private String inputLocation;
     private String inputFile;
+    private String outputLocation;
+    private String outputFile;
     private String runSpeed;
     private String warmUpPeriod;
     private String stopTime;
@@ -20,7 +24,7 @@ public class Core {
 
 
     public void execute(String flexsimLocation, String modelLocation, String inputLocation,
-                        String runSpeed, String warmUpPeriod, String stopTime) throws IOException {
+                        String outputLocation, String runSpeed, String warmUpPeriod, String stopTime) throws IOException {
         file = new File(scriptFilepath);
         if (file.createNewFile()){}
         this.flexsimLocation = '"' + flexsimLocation + '"';
@@ -29,17 +33,23 @@ public class Core {
                 + "." + FilenameUtils.getExtension(inputLocation) + "\");";
         this.inputLocation =  "MAIN2LoadData (\"" +
                 FilenameUtils.getFullPath(inputLocation).replace("\\", "\\\\") + "\",";
+        outputFile = "\\\"" + FilenameUtils.getBaseName(outputLocation)
+                + "." + FilenameUtils.getExtension(outputLocation) + "\\\" , \\\"Output\\\");\\n}\");\n";
+        this.outputLocation =  ",\"MAIN15WriteReports(true, \\\"" +
+                FilenameUtils.getFullPath(inputLocation).replace("\\", "\\\\\\\\\\") + "\", ";
         this.runSpeed = "runspeed(" + runSpeed + ");" ;
+        this.warmUpPeriod = warmUpPeriod;
         this.stopTime = "stoptime(" + stopTime + ");";
-        scripCreator();
+        scriptCreator();
         commandLineGenerator();
     }
 
     public void inputData(String flexsimLocation, String modelLocation, String inputLocation,
-                          String runSpeed, String warmUpPeriod, String stopTime){
+                          String outputLocation, String runSpeed, String warmUpPeriod, String stopTime){
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
         this.inputLocation = inputLocation;
+        this.outputLocation = outputLocation;
         this.runSpeed = runSpeed;
         this.warmUpPeriod = warmUpPeriod;
         this.stopTime = stopTime;
@@ -51,13 +61,22 @@ public class Core {
                 "/scriptpath" + file.getAbsolutePath() );
     }
 
-    public void scripCreator() throws IOException {
+    public void scriptCreator() throws IOException {
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
-        + stopTime + "\n" + inputLocation + inputFile + "\n"
-        + "MAINBuldAndRun ();\nresetmodel();\ngo();");
+        + stopTime + "\n" + /*inputLocation + inputFile +*/ "\n"
+        + "treenode triggernode = node(\"MODEL://Tools//OnRunStop\");\n"
+        + "string triggercode = concat(" + ONRUNSTOPCODE + outputLocation + outputFile
+        + "\nsetnodestr(triggernode,triggercode);\n"
+        + "enablecode(triggernode);\n"
+        + "buildnodeflexscript(triggernode);\n"
+        + "MAINBuldAndRun ();\nresetmodel();\ngo();\n"
+       );
         fileWriter.close();
+
     }
+
+
 
     public String getFlexsimLocation() {
         return flexsimLocation;
@@ -71,8 +90,8 @@ public class Core {
         return inputLocation;
     }
 
-    public String getInputFile() {
-        return inputFile;
+    public String getOutputLocation() {
+        return outputLocation;
     }
 
     public String getRunSpeed() {

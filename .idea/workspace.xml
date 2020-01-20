@@ -2,36 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5b200f71-356e-40a8-80b4-84883df6c88c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/config/checkstyle/checkstyle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/saveFile.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/script.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/storage/JsonParser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/Ui.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/UiManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/UiPart.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/images/infineon-technologies-squarelogo.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/util/FlexScriptDefaultCodes.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/scripts/OnRunStop" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/Launcher.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/Main.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/core/Core.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/ui/MainGui.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/install/FlexsimController-shadow/bin/FlexsimController" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/install/FlexsimController-shadow/bin/FlexsimController.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/install/FlexsimController-shadow/lib/TaskBook-0.2.1.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/libs/TaskBook-0.2.1.jar" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/build/resources/main/view/MainGui.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/view/MainGui.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/scriptsShadow/FlexsimController" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/scriptsShadow/FlexsimController.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/shadowJar/MANIFEST.MF" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Launcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/Launcher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/core/Core.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ui/MainGui.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saveFile.txt" beforeDir="false" afterPath="$PROJECT_DIR$/saveFile.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/script.txt" beforeDir="false" afterPath="$PROJECT_DIR$/script.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/view/MainGui.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/MainGui.fxml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -140,6 +118,9 @@
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\lingz\Documents\FlexsimController\src\main\resources\scripts" />
+    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="" />
     </key>
@@ -277,7 +258,11 @@
       <option name="presentableId" value="Default" />
       <updated>1577953497137</updated>
       <workItem from="1577953500520" duration="29156000" />
-      <workItem from="1578032589133" duration="19632000" />
+      <workItem from="1578032589133" duration="22489000" />
+      <workItem from="1579081261524" duration="9784000" />
+      <workItem from="1579157328590" duration="4191000" />
+      <workItem from="1579225234936" duration="8841000" />
+      <workItem from="1579504697360" duration="781000" />
     </task>
     <servers />
   </component>
@@ -325,17 +310,17 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java</url>
-          <line>55</line>
+          <line>59</line>
           <option name="timeStamp" value="27" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java</url>
-          <line>56</line>
+          <line>60</line>
           <option name="timeStamp" value="28" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java</url>
-          <line>52</line>
+          <line>56</line>
           <option name="timeStamp" value="29" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">

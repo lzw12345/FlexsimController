@@ -40,6 +40,10 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private TextField inputFileLocation;
     @FXML
+    private HBox outputFileDragTarget;
+    @FXML
+    private TextField outputFileLocation;
+    @FXML
     private TextField runSpeed;
     @FXML
     private TextField warmUpPeriod;
@@ -60,6 +64,7 @@ public class MainGui extends UiPart<Stage> {
         exeLocation.setText(core.getFlexsimLocation());
         modelFileLocation.setText(core.getModelLocation());
         inputFileLocation.setText(core.getInputLocation());
+        outputFileLocation.setText(core.getOutputLocation());
         runSpeed.setText(core.getRunSpeed());
         warmUpPeriod.setText(core.getWarmUpPeriod());
         stopTime.setText(core.getStopTime());
@@ -135,8 +140,40 @@ public class MainGui extends UiPart<Stage> {
     }
 
     @FXML
+    public void  outputDragOver(DragEvent event) {
+        if (event.getGestureSource() != outputFileDragTarget
+                && event.getDragboard().hasFiles()) {
+            /* allow for both copying and moving, whatever user chooses */
+            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+        }
+        event.consume();
+    }
+
+    @FXML
+    public void outputDragDropped(DragEvent event) {
+        Dragboard db = event.getDragboard();
+        boolean success = false;
+        final boolean isAccepted = db.getFiles().get(0).getName().toLowerCase().endsWith(".xlsx");
+
+        if (db.hasFiles() && isAccepted ) {
+            outputFileLocation.setText(db.getFiles().toString().replaceAll("\\[", "").replaceAll("\\]",""));
+            success = true;
+        }else {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setHeaderText("Input not valid");
+            errorAlert.setContentText("file must be a excel file with extension .xlsx");
+            errorAlert.showAndWait();
+        }
+        /* let the source know whether the string was successfully
+         * transferred and used */
+        event.setDropCompleted(success);
+
+        event.consume();
+    }
+
+    @FXML
     public void  exeDragOver(DragEvent event) {
-        if (event.getGestureSource() != inputFileDragTarget
+        if (event.getGestureSource() != exeDragTarget
                 && event.getDragboard().hasFiles()) {
             /* allow for both copying and moving, whatever user chooses */
             event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
@@ -166,10 +203,12 @@ public class MainGui extends UiPart<Stage> {
         event.consume();
     }
 
+
+
     @FXML
     public void handleModelExecution() throws IOException {
         if (exeLocation.getText().isBlank() && inputFileLocation.getText().isBlank()
-                && modelFileLocation.getText().isBlank()){
+                && outputFileLocation.getText().isBlank() && modelFileLocation.getText().isBlank()){
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Invalid Input");
             errorAlert.setContentText("file locations cannot be blank");
@@ -182,7 +221,7 @@ public class MainGui extends UiPart<Stage> {
             errorAlert.showAndWait();
         } else {
             core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                    runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText());
+                    outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText());
         }
     }
 
@@ -277,7 +316,7 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private void handleExit() {
         core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText());
+                outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText());
         primaryStage.hide();
     }
 
