@@ -2,15 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5b200f71-356e-40a8-80b4-84883df6c88c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/util/FlexScriptDefaultCodes.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/scripts/OnRunStop" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/view/MainGui.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/view/MainGui.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/saveFile.txt" beforeDir="false" afterPath="$PROJECT_DIR$/saveFile.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script.txt" beforeDir="false" afterPath="$PROJECT_DIR$/script.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/MainGui.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/MainGui.fxml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -67,6 +62,12 @@
                 <item name="FlexsimController" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="FlexsimController" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="shadow" type="c8890929:TasksNode$1" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
@@ -141,26 +142,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.FlexsimController [run]">
-    <configuration name="FlexsimController [buildDependents]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="buildDependents" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
-      <method v="2" />
-    </configuration>
+  <component name="RunManager">
     <configuration name="FlexsimController [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -173,6 +155,25 @@
         <option name="taskNames">
           <list>
             <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="FlexsimController [classes]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="classes" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -199,7 +200,7 @@
       <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="FlexsimController [runShadow]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="FlexsimController [jar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -210,7 +211,7 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="runShadow" />
+            <option value="jar" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -218,7 +219,7 @@
       <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="FlexsimController [run]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="FlexsimController [shadowJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -229,7 +230,7 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="run" />
+            <option value="shadowJar" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -239,11 +240,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.FlexsimController [run]" />
         <item itemvalue="Gradle.FlexsimController [build]" />
         <item itemvalue="Gradle.FlexsimController [clean]" />
-        <item itemvalue="Gradle.FlexsimController [buildDependents]" />
-        <item itemvalue="Gradle.FlexsimController [runShadow]" />
+        <item itemvalue="Gradle.FlexsimController [classes]" />
+        <item itemvalue="Gradle.FlexsimController [shadowJar]" />
+        <item itemvalue="Gradle.FlexsimController [jar]" />
       </list>
     </recent_temporary>
   </component>
@@ -262,7 +263,7 @@
       <workItem from="1579081261524" duration="9784000" />
       <workItem from="1579157328590" duration="4191000" />
       <workItem from="1579225234936" duration="8841000" />
-      <workItem from="1579504697360" duration="781000" />
+      <workItem from="1579504697360" duration="4387000" />
     </task>
     <servers />
   </component>

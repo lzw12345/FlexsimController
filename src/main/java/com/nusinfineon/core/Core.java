@@ -1,12 +1,13 @@
 package com.nusinfineon.core;
 
-import org.apache.commons.io.FilenameUtils;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 import static com.nusinfineon.util.FlexScriptDefaultCodes.ONRUNSTOPCODE;
+import static org.apache.commons.io.FilenameUtils.getBaseName;
+import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.apache.commons.io.FilenameUtils.getFullPath;
 
 public class Core {
 
@@ -29,14 +30,15 @@ public class Core {
         if (file.createNewFile()){}
         this.flexsimLocation = '"' + flexsimLocation + '"';
         this.modelLocation = '"' + modelLocation + '"';
-        inputFile = '"' + FilenameUtils.getBaseName(inputLocation)
-                + "." + FilenameUtils.getExtension(inputLocation) + "\");";
+        inputFile = '"' + getBaseName(inputLocation)
+                + "." + getExtension(inputLocation) + "\");";
         this.inputLocation =  "MAIN2LoadData (\"" +
-                FilenameUtils.getFullPath(inputLocation).replace("\\", "\\\\") + "\",";
-        outputFile = "\\\"" + FilenameUtils.getBaseName(outputLocation)
-                + "." + FilenameUtils.getExtension(outputLocation) + "\\\" , \\\"Output\\\");\\n}\");\n";
+                getFullPath(inputLocation).replace("\\", "\\\\") + "\",";
+        deleteExistingFile( getFullPath(outputLocation) + "OutputNew.xlsx");
+        outputFile = "\\\"" + getBaseName(outputLocation)
+                + "." + getExtension(outputLocation) + "\\\" , \\\"OutputNew\\\");\\n}\");\n";
         this.outputLocation =  ",\"MAIN15WriteReports(true, \\\"" +
-                FilenameUtils.getFullPath(inputLocation).replace("\\", "\\\\\\\\\\") + "\", ";
+                getFullPath(outputLocation).replace("\\", "\\\\\\\\\\") + "\", ";
         this.runSpeed = "runspeed(" + runSpeed + ");" ;
         this.warmUpPeriod = warmUpPeriod;
         this.stopTime = "stoptime(" + stopTime + ");";
@@ -104,5 +106,24 @@ public class Core {
 
     public String getStopTime() {
         return stopTime;
+    }
+
+    public void deleteExistingFile (String pathname){
+        try
+        {
+            File f= new File(pathname);           //file to be delete
+            if(f.delete())                      //returns Boolean value
+            {
+                System.out.println(f.getName() + " deleted");   //getting and printing the file name
+            }
+            else
+            {
+                System.out.println(pathname + "doesn't exist");
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }
