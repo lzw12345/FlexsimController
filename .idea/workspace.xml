@@ -3,12 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="5b200f71-356e-40a8-80b4-84883df6c88c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/resources/main/view/MainGui.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/build/resources/main/view/MainGui.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/saveFile.txt" beforeDir="false" afterPath="$PROJECT_DIR$/saveFile.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script.txt" beforeDir="false" afterPath="$PROJECT_DIR$/script.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/view/MainGui.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/view/MainGui.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/util/FlexScriptDefaultCodes.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/util/FlexScriptDefaultCodes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/scripts/OnRunStop" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/scripts/OnRunStop" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -266,7 +265,7 @@
       <workItem from="1579081261524" duration="9784000" />
       <workItem from="1579157328590" duration="4191000" />
       <workItem from="1579225234936" duration="8841000" />
-      <workItem from="1579504697360" duration="9083000" />
+      <workItem from="1579504697360" duration="19103000" />
     </task>
     <servers />
   </component>
