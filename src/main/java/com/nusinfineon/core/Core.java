@@ -1,12 +1,15 @@
 package com.nusinfineon.core;
 
-import org.apache.commons.io.FilenameUtils;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import static com.nusinfineon.util.FlexScriptDefaultCodes.GETPROCESSTIMECODE;
+import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN15CODE;
 import static com.nusinfineon.util.FlexScriptDefaultCodes.ONRUNSTOPCODE;
+import static org.apache.commons.io.FilenameUtils.getBaseName;
+import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.apache.commons.io.FilenameUtils.getFullPath;
 
 public class Core {
 
@@ -21,29 +24,51 @@ public class Core {
     private String stopTime;
     private String scriptFilepath = "./script.txt";
     private File file;
+    private boolean isModelShown;
 
 
+    /**
+     * main execute function, generates script and runs model
+     * @param flexsimLocation
+     * @param modelLocation
+     * @param inputLocation
+     * @param outputLocation
+     * @param runSpeed
+     * @param warmUpPeriod
+     * @param stopTime
+     * @param isModelShown
+     * @throws IOException
+     */
     public void execute(String flexsimLocation, String modelLocation, String inputLocation,
-                        String outputLocation, String runSpeed, String warmUpPeriod, String stopTime) throws IOException {
+                        String outputLocation, String runSpeed, String warmUpPeriod,
+                        String stopTime, boolean isModelShown) throws IOException {
         file = new File(scriptFilepath);
-        if (file.createNewFile()){}
-        this.flexsimLocation = '"' + flexsimLocation + '"';
-        this.modelLocation = '"' + modelLocation + '"';
-        inputFile = '"' + FilenameUtils.getBaseName(inputLocation)
-                + "." + FilenameUtils.getExtension(inputLocation) + "\");";
-        this.inputLocation =  "MAIN2LoadData (\"" +
-                FilenameUtils.getFullPath(inputLocation).replace("\\", "\\\\") + "\",";
-        outputFile = "\\\"" + FilenameUtils.getBaseName(outputLocation)
-                + "." + FilenameUtils.getExtension(outputLocation) + "\\\" , \\\"Output\\\");\\n}\");\n";
-        this.outputLocation =  ",\"MAIN15WriteReports(true, \\\"" +
-                FilenameUtils.getFullPath(inputLocation).replace("\\", "\\\\\\\\\\") + "\", ";
+        if (!file.createNewFile()){}
+        this.flexsimLocation = flexsimLocation;
+        this.modelLocation =  modelLocation ;
+        inputFile = '"' + getBaseName(inputLocation) + "." + getExtension(inputLocation);
+        this.inputLocation = getFullPath(inputLocation).replace("\\", "\\\\") ;
+        deleteExistingFile( getFullPath(outputLocation) + "OutputNew.xlsx");
+        outputFile =  getBaseName(outputLocation) + "." + getExtension(outputLocation) ;
+        this.outputLocation = getFullPath(outputLocation).replace("\\", "\\\\\\\\\\");
         this.runSpeed = "runspeed(" + runSpeed + ");" ;
         this.warmUpPeriod = warmUpPeriod;
         this.stopTime = "stoptime(" + stopTime + ");";
+        this.isModelShown = isModelShown;
         scriptCreator();
-        commandLineGenerator();
+        commandLineGenerator(isModelShown);
     }
 
+    /**
+     * Used to store data into core before the json parser serializes it
+     * @param flexsimLocation
+     * @param modelLocation
+     * @param inputLocation
+     * @param outputLocation
+     * @param runSpeed
+     * @param warmUpPeriod
+     * @param stopTime
+     */
     public void inputData(String flexsimLocation, String modelLocation, String inputLocation,
                           String outputLocation, String runSpeed, String warmUpPeriod, String stopTime){
         this.flexsimLocation = flexsimLocation;
@@ -55,23 +80,33 @@ public class Core {
         this.stopTime = stopTime;
     }
 
-    public void commandLineGenerator () throws IOException {
-        Process a = Runtime.getRuntime().exec(flexsimLocation +
-                modelLocation + " /maintenance runscript " +
+    /**
+     * creates the commandline to execute model
+     * @throws IOException
+     */
+    public void commandLineGenerator (boolean isModelShown) throws IOException {
+        Process a = Runtime.getRuntime().exec('"' + flexsimLocation + '"' +
+                '"' + modelLocation + '"' + " /maintenance " + (isModelShown?"":"nogui_") + "runscript " +
                 "/scriptpath" + file.getAbsolutePath() );
     }
 
+    /**
+     * Creates the flexscript for the model
+     * @throws IOException
+     */
     public void scriptCreator() throws IOException {
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
-        + stopTime + "\n" + /*inputLocation + inputFile +*/ "\n"
-        + "treenode triggernode = node(\"MODEL://Tools//OnRunStop\");\n"
-        + "string triggercode = concat(" + ONRUNSTOPCODE + outputLocation + outputFile
-        + "\nsetnodestr(triggernode,triggercode);\n"
-        + "enablecode(triggernode);\n"
-        + "buildnodeflexscript(triggernode);\n"
-        + "MAINBuldAndRun ();\nresetmodel();\ngo();\n"
-       );
+            + stopTime + "\nmsg(\"Model Execution\", \"Begin loading input?\");\nshowprogressbar(\"\");\n"
+            + "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
+            + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
+                +  ",\"MAIN15WriteReports(true, \\\""
+                +outputLocation  + "\", " + "\\\"" + outputFile
+                + "\\\" , \\\"OutputNew\\\");\\n\\thideprogressbar();\\n}\")" )
+            + editNodeCode("ProcessTime", "MODEL:/Tools/UserCommands/ProcessTimeGetTotal/code", GETPROCESSTIMECODE)
+            + editNodeCode("MAIN15", "MODEL://Tools/UserCommands//MAIN15WriteReports//code", MAIN15CODE)
+            + "msg(\"Model Execution\",\"loading complete, begin run?\");\n"
+            + "MAINBuldAndRun ();\nresetmodel();\ngo();");
         fileWriter.close();
 
     }
@@ -104,5 +139,47 @@ public class Core {
 
     public String getStopTime() {
         return stopTime;
+    }
+
+    /**
+     * Deletes existing output files to prevent excel overwrite popup
+     * @param pathname
+     */
+    public void deleteExistingFile (String pathname){
+        try
+        {
+            File f= new File(pathname);           //file to be delete
+            if(f.delete())                      //returns Boolean value
+            {
+                System.out.println(f.getName() + " deleted");   //getting and printing the file name
+            }
+            else
+            {
+                System.out.println(pathname + "doesn't exist");
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Function to generate a default template for replace code in a flexsim node
+     * @param name
+     * @param nodePath
+     * @param code
+     * @return
+     */
+    public String editNodeCode (String name ,String nodePath , String code){
+        String nodename = name + "Node";
+        String codeName = name + "Code";
+        String script = "treenode " + nodename + " = node(\"" + nodePath + "\");\n"
+                + "string " + codeName + " = " + code + ";\n"
+                + "setnodestr(" + nodename + "," + codeName + ");\n"
+                + "enablecode(" + nodename + ");\n"
+                + "buildnodeflexscript(" + nodename +");\n";
+
+        return script;
     }
 }
