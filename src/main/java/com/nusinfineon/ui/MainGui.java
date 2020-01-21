@@ -75,10 +75,10 @@ public class MainGui extends UiPart<Stage> {
     }
 
 
-
-
-
-
+    /**
+     * for drag and drop functionality
+     * @param event
+     */
     @FXML
     public void  modelDragOver(DragEvent event) {
         if (event.getGestureSource() != modelDragTarget
@@ -89,6 +89,10 @@ public class MainGui extends UiPart<Stage> {
         event.consume();
     }
 
+    /**
+     * for drag and drop functionality
+     * @param event
+     */
     @FXML
     public void modelDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
