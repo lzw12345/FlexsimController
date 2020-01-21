@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import static com.nusinfineon.util.FlexScriptDefaultCodes.GETPROCESSTIMECODE;
 import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN15CODE;
 import static com.nusinfineon.util.FlexScriptDefaultCodes.ONRUNSTOPCODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.TIMEBLOCKCODE;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
@@ -43,7 +43,7 @@ public class Core {
                         String outputLocation, String runSpeed, String warmUpPeriod,
                         String stopTime, boolean isModelShown) throws IOException {
         file = new File(scriptFilepath);
-        if (file.createNewFile()){}
+        if (!file.createNewFile()){}
         this.flexsimLocation = flexsimLocation;
         this.modelLocation =  modelLocation ;
         inputFile = '"' + getBaseName(inputLocation) + "." + getExtension(inputLocation);
@@ -97,14 +97,16 @@ public class Core {
     public void scriptCreator() throws IOException {
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
-            + stopTime + "\n" /*+ "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"*/
+            + stopTime + "\nmsg(\"Model Execution\", \"Begin loading input?\");\nshowprogressbar(\"\");\n"
+            + "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
             + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
                 +  ",\"MAIN15WriteReports(true, \\\""
                 +outputLocation  + "\", " + "\\\"" + outputFile
                 + "\\\" , \\\"OutputNew\\\");\\n\\thideprogressbar();\\n}\")" )
-            + editNodeCode("timeBlock", "VIEW://active//MainPanel//RunPanel//Time Block>hotlinkx", TIMEBLOCKCODE)
+            + editNodeCode("ProcessTime", "MODEL:/Tools/UserCommands/ProcessTimeGetTotal/code", GETPROCESSTIMECODE)
             + editNodeCode("MAIN15", "MODEL://Tools/UserCommands//MAIN15WriteReports//code", MAIN15CODE)
-            + "MAINBuldAndRun ();\nresetmodel();\nshowprogressbar(\"\");go();");
+            + "msg(\"Model Execution\",\"loading complete, begin run?\");\n"
+            + "MAINBuldAndRun ();\nresetmodel();\ngo();");
         fileWriter.close();
 
     }
