@@ -1,15 +1,22 @@
 package com.nusinfineon.core;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import static com.nusinfineon.util.FlexScriptDefaultCodes.GETPROCESSTIMECODE;
 import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN15CODE;
 import static com.nusinfineon.util.FlexScriptDefaultCodes.ONRUNSTOPCODE;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+
+import com.nusinfineon.exceptions.CustomException;
+
 
 public class Core {
 
@@ -24,8 +31,12 @@ public class Core {
     private String stopTime;
     private String scriptFilepath = "./script.txt";
     private File file;
+    private String batchSizeMinString;
+    private String batchSizeMaxString;
+    private String batchSizeStepString;
     private boolean isModelShown;
 
+    private final static Logger LOGGER = Logger.getLogger(Core.class.getName());
 
     /**
      * main execute function, generates script and runs model
@@ -41,7 +52,9 @@ public class Core {
      */
     public void execute(String flexsimLocation, String modelLocation, String inputLocation,
                         String outputLocation, String runSpeed, String warmUpPeriod,
-                        String stopTime, boolean isModelShown) throws IOException {
+                        String stopTime, boolean isModelShown, String batchSizeMinString,
+                        String batchSizeMaxString, String batchSizeStepString) throws IOException, CustomException {
+
         file = new File(scriptFilepath);
         if (!file.createNewFile()){}
         this.flexsimLocation = flexsimLocation;
@@ -56,7 +69,30 @@ public class Core {
         this.stopTime = "stoptime(" + stopTime + ");";
         this.isModelShown = isModelShown;
         scriptCreator();
-        commandLineGenerator(isModelShown);
+
+        // Code block handling creation of excel file for batch iterating
+        BatchSizeCore batchSizeCore = new BatchSizeCore(inputLocation, batchSizeMinString,
+                batchSizeMaxString, batchSizeStepString);
+        try {
+            batchSizeCore.execute();
+        } catch (IOException e) {
+            LOGGER.severe("Unable to create files");
+            throw new CustomException("Error in creating temp files");
+        } catch (CustomException e) {
+            LOGGER.severe(e.getMessage());
+            throw e;
+        }
+
+        // Extract the array of files and sizes from batchSizeCore
+        ArrayList<File> excelFiles = batchSizeCore.getExcelFiles();
+        ArrayList<Integer> batchSizes = batchSizeCore.getListOfBatchSizes();
+
+        for (int i = 0; i < excelFiles.size(); i++) {
+            System.out.println("Batch size: " + batchSizes.get(i) + ". File path: " + excelFiles.get(i).toString());
+        }
+
+        //TODO: Hook back the command line generator
+        //commandLineGenerator(isModelShown);
     }
 
     /**
@@ -68,9 +104,13 @@ public class Core {
      * @param runSpeed
      * @param warmUpPeriod
      * @param stopTime
+     * @param batchSizeMinString
+     * @param batchSizeMaxString
+     * @param batchSizeStepString
      */
     public void inputData(String flexsimLocation, String modelLocation, String inputLocation,
-                          String outputLocation, String runSpeed, String warmUpPeriod, String stopTime){
+                          String outputLocation, String runSpeed, String warmUpPeriod, String stopTime,
+                          String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString){
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
         this.inputLocation = inputLocation;
@@ -78,6 +118,10 @@ public class Core {
         this.runSpeed = runSpeed;
         this.warmUpPeriod = warmUpPeriod;
         this.stopTime = stopTime;
+
+        this.batchSizeMinString = batchSizeMinString;
+        this.batchSizeMaxString = batchSizeMaxString;
+        this.batchSizeStepString = batchSizeStepString;
     }
 
     /**
