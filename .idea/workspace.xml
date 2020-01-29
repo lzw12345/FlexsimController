@@ -3,8 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="5b200f71-356e-40a8-80b4-84883df6c88c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/BatchSizeCore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/BatchSizeCore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saveFile.txt" beforeDir="false" afterPath="$PROJECT_DIR$/saveFile.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -38,7 +39,26 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="FlexsimController" type="f1a62948:ProjectNode" />
+                <item name="Source Sets" type="e897c970:GradleViewContributor$SourceSetsNode" />
+                <item name="main" type="396b929e:GradleViewContributor$SourceSetNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="FlexsimController" type="f1a62948:ProjectNode" />
+                <item name="Source Sets" type="e897c970:GradleViewContributor$SourceSetsNode" />
+                <item name="main" type="396b929e:GradleViewContributor$SourceSetNode" />
+                <item name="Dependencies" type="6de06a37:ExternalSystemViewDefaultContributor$MyDependenciesNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="FlexsimController" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="FlexsimController" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
@@ -93,7 +113,7 @@
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.import" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">

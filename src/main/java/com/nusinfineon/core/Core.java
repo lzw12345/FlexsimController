@@ -185,6 +185,18 @@ public class Core {
         return stopTime;
     }
 
+    public String getBatchSizeMinString() {
+        return batchSizeMinString;
+    }
+
+    public String getBatchSizeMaxString() {
+        return batchSizeMaxString;
+    }
+
+    public String getBatchSizeStepString() {
+        return batchSizeStepString;
+    }
+
     /**
      * Deletes existing output files to prevent excel overwrite popup
      * @param pathname
