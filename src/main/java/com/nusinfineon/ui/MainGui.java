@@ -1,6 +1,10 @@
 package com.nusinfineon.ui;
 
+import java.io.IOException;
+
 import com.nusinfineon.core.Core;
+import com.nusinfineon.exceptions.CustomException;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -16,17 +20,19 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
 
 /**
  * Represent the whole window of the user interface, it should contain all units in the user interface.
  */
 public class MainGui extends UiPart<Stage> {
 
+    private static final int MAX_ALLOWABLE_BATCH_SIZE = 24;
+    private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - 1;
+    private static final int MIN_ALLOWABLE_BATCH_SIZE = 0;
     private static final String FXML = "MainGui.fxml";
 
     private Stage primaryStage;
+    private Core core;
 
     @FXML
     private HBox exeDragTarget;
@@ -52,10 +58,12 @@ public class MainGui extends UiPart<Stage> {
     private TextField stopTime;
     @FXML
     private CheckBox showModel;
-
-
-    private Core core;
-
+    @FXML
+    private TextField batchSizeMin;
+    @FXML
+    private TextField batchSizeMax;
+    @FXML
+    private TextField batchSizeStep;
 
     public MainGui(Stage primaryStage, Core core) {
         super(FXML, primaryStage);
@@ -215,31 +223,137 @@ public class MainGui extends UiPart<Stage> {
 
     @FXML
     public void handleModelExecution() throws IOException {
+
         if (exeLocation.getText().isBlank() && inputFileLocation.getText().isBlank()
                 && outputFileLocation.getText().isBlank() && modelFileLocation.getText().isBlank()){
+            /*
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Invalid Input");
             errorAlert.setContentText("file locations cannot be blank");
             errorAlert.showAndWait();
+             */
+            showErrorBox("file locations cannot be blank");
         }
+
         if (isNotDouble(runSpeed.getText()) && isNotDouble(stopTime.getText())) {
+            /*
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Invalid Input");
-            errorAlert.setContentText("Runspeed and Stop time must be an integer or double");
+            errorAlert.setContentText("Run speed and Stop time must be an integer or double");
             errorAlert.showAndWait();
+             */
+            showErrorBox("Run speed and Stop time must be an integer or double");
+        } else if (!isValidMinBatchSize(batchSizeMin.getText())) {
+            showErrorBox("Min batch size must be > 0 and < 24");
+        } else if (!isValidMaxBatchSize(batchSizeMax.getText())) {
+            showErrorBox("Max batch size must be > 0 and < 24");
+        } else if (!isValidStepSize(batchSizeStep.getText())) {
+            showErrorBox("Step size must be an integer and < " + MAX_ALLOWABLE_STEP_SIZE);
+        } else if (!isValidMinMax(batchSizeMin.getText(), batchSizeMax.getText())) {
+            showErrorBox("Min batch (" + batchSizeMin.getText() + ") must be smaller than max ("
+                                + batchSizeMax.getText() + ")");
         } else {
-            core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                    outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                    showModel.isSelected());
+            try {
+                core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
+                        outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
+                        showModel.isSelected(), batchSizeMin.getText(), batchSizeMax.getText(), batchSizeStep.getText());
+            } catch (IOException e) {
+                showErrorBox("Oops, an IO Exception has occurred");
+            } catch (CustomException e) {
+                showErrorBox(e.getMessage());
+            }
         }
     }
 
+    /**
+     * Helper function to raise alert box with a supplied alert text.
+     * @param alertText Alert text string to be displayed to the user.
+     */
+    private void showErrorBox(String alertText) {
+        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+        errorAlert.setHeaderText("Invalid Input");
+        errorAlert.setContentText(alertText);
+        errorAlert.showAndWait();
+    }
+
+    /**
+     * Checks if min is lesser than max. Assumes min and max can be converted to valid integers.
+     *
+     * @param minBatchString String representing minimum batch size.
+     * @param maxBatchString String representing maximum batch size.
+     * @return Boolean.
+     */
+    private boolean isValidMinMax(String minBatchString, String maxBatchString) {
+        int min = Integer.parseInt(minBatchString);
+        int max = Integer.parseInt(maxBatchString);
+
+        if (min < max) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns true if the batch step size is acceptable ie between 0 and MAX_ALLOWABLE_sTEP_SIZE.
+     * @param batchStepSizeString String representing batch step size.
+     * @return Boolean
+     */
+    private boolean isValidStepSize(String batchStepSizeString) {
+        try {
+            int batchStepSize = Integer.parseInt(batchStepSizeString);
+
+            if ( (batchStepSize > 0) && (batchStepSize<MAX_ALLOWABLE_STEP_SIZE) ) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Follows the same logic as "isValidMinBatchSize".
+     * @param maxBatchSizeString String representing Batch Max Size.
+     * @return Boolean
+     */
+    private boolean isValidMaxBatchSize(String maxBatchSizeString){
+        return isValidMinBatchSize(maxBatchSizeString);
+    }
+
+    /**
+     * Returns true if the argument string can be converted to a Double primitive data type.
+     * @param str String argument.
+     * @return Boolean.
+     */
     private boolean isNotDouble(String str) {
         try {
             Double.parseDouble(str);
             return false;
         } catch (NumberFormatException e) {
             return true;
+        }
+    }
+
+    /**
+     * Returns true if a batchMinString is (i) a valid int and (ii) falls within the range of
+     * MIN_ALLOWABLE_BATCH_SIZE and MAX_ALLOWABLE_BATCH_SIZE.
+     * @param minBatchSizeString String representing batchMin
+     * @return Boolean.
+     */
+    private boolean isValidMinBatchSize(String minBatchSizeString) {
+        try {
+            int batchMinSize = Integer.parseInt(minBatchSizeString);
+            if ( (batchMinSize > MIN_ALLOWABLE_BATCH_SIZE) && (batchMinSize < MAX_ALLOWABLE_BATCH_SIZE)) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 
@@ -325,7 +439,8 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private void handleExit() {
         core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText());
+                outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
+                batchSizeMin.getText(), batchSizeMax.getText(), batchSizeStep.getText());
         primaryStage.hide();
     }
 

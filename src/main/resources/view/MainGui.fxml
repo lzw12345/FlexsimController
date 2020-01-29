@@ -112,6 +112,16 @@
                            <TextField fx:id="stopTime" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         </children>
                      </GridPane>
+                     <HBox prefHeight="100.0" prefWidth="200.0">
+                        <children>
+                           <Label text="Min" />
+                           <TextField fx:id="batchSizeMin" />
+                           <Label text="Max" />
+                           <TextField fx:id="batchSizeMax" />
+                           <Label text="Step" />
+                           <TextField fx:id="batchSizeStep" />
+                        </children>
+                     </HBox>
                      <Button mnemonicParsing="false" onAction="#handleModelExecution" text="Run Model" />
                      <CheckBox fx:id="showModel" mnemonicParsing="false" text="Show Model" />
                   </children>

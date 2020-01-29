@@ -47,7 +47,7 @@ public class JsonParser {
 
     /**
      * Method to load data from the Json formatted file.
-     * @return returns the tasklist class with all the saveddata loaded
+     * @return returns the core class with all the saveddata loaded
      * @throws IOException in the case of missing file
      */
     public Core loadData() throws IOException {
