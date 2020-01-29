@@ -10,6 +10,12 @@ import static org.apache.commons.io.FilenameUtils.getFullPath;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.logging.Logger;
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+
+import com.nusinfineon.exceptions.CustomException;
+
 
 public class Core {
 
@@ -23,12 +29,13 @@ public class Core {
     private String warmUpPeriod;
     private String stopTime;
     private String scriptFilepath = "./script.txt";
-    private int batchSizeMinString;
-    private int batchSizeMaxString;
-    private int batchSizeStepString;
     private File file;
+    private String batchSizeMinString;
+    private String batchSizeMaxString;
+    private String batchSizeStepString;
     private boolean isModelShown;
 
+    private final static Logger LOGGER = Logger.getLogger(Core.class.getName());
 
     /**
      * main execute function, generates script and runs model
@@ -45,11 +52,7 @@ public class Core {
     public void execute(String flexsimLocation, String modelLocation, String inputLocation,
                         String outputLocation, String runSpeed, String warmUpPeriod,
                         String stopTime, boolean isModelShown, String batchSizeMinString,
-                        String batchSizeMaxString, String batchSizeStepString) throws IOException {
-        System.out.println("In Core");
-        System.out.println("Min batch size: " + batchSizeMinString);
-        System.out.println("Max batch size: " + batchSizeMaxString);
-        System.out.println("Batch Step size: " + batchSizeStepString);
+                        String batchSizeMaxString, String batchSizeStepString) throws IOException, CustomException {
 
         file = new File(scriptFilepath);
         if (!file.createNewFile()){}
@@ -65,7 +68,23 @@ public class Core {
         this.stopTime = "stoptime(" + stopTime + ");";
         this.isModelShown = isModelShown;
         scriptCreator();
-        //TODO: Hook back command line generator
+
+        // Code block handling manipulation of excel file for batch iterating
+        // Maybe put a for loop?
+        try {
+            BatchSizeCore batchSizeCore = new BatchSizeCore(inputLocation, batchSizeMinString,
+                    batchSizeMaxString, batchSizeStepString);
+            batchSizeCore.execute();
+        } catch (IOException e) {
+            LOGGER.severe("Unable to create files");
+            throw new CustomException("Error in creating temp files");
+        } catch (InvalidFormatException e) {
+            throw new CustomException("Error in writing of excel file using Apache POI");
+        }
+
+
+
+        //TODO: Hook back the command line generator
         //commandLineGenerator(isModelShown);
     }
 
@@ -78,9 +97,13 @@ public class Core {
      * @param runSpeed
      * @param warmUpPeriod
      * @param stopTime
+     * @param batchSizeMinString
+     * @param batchSizeMaxString
+     * @param batchSizeStepString
      */
     public void inputData(String flexsimLocation, String modelLocation, String inputLocation,
-                          String outputLocation, String runSpeed, String warmUpPeriod, String stopTime){
+                          String outputLocation, String runSpeed, String warmUpPeriod, String stopTime,
+                          String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString){
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
         this.inputLocation = inputLocation;
@@ -88,6 +111,10 @@ public class Core {
         this.runSpeed = runSpeed;
         this.warmUpPeriod = warmUpPeriod;
         this.stopTime = stopTime;
+
+        this.batchSizeMinString = batchSizeMinString;
+        this.batchSizeMaxString = batchSizeMaxString;
+        this.batchSizeStepString = batchSizeStepString;
     }
 
     /**

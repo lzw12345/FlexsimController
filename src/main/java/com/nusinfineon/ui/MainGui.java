@@ -3,6 +3,7 @@ package com.nusinfineon.ui;
 import java.io.IOException;
 
 import com.nusinfineon.core.Core;
+import com.nusinfineon.exceptions.CustomException;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,9 +26,9 @@ import javafx.stage.Stage;
  */
 public class MainGui extends UiPart<Stage> {
 
-    private static final int MAX_ALLOWABLE_STEP_SIZE = 30;
-    private static final int MAX_ALLOWABLE_BATCH_SIZE = 30;
-    private static final int MIN_ALLOWABLE_BATCH_SIZE = 1;
+    private static final int MAX_ALLOWABLE_BATCH_SIZE = 24;
+    private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - 1;
+    private static final int MIN_ALLOWABLE_BATCH_SIZE = 0;
     private static final String FXML = "MainGui.fxml";
 
     private Stage primaryStage;
@@ -252,9 +253,15 @@ public class MainGui extends UiPart<Stage> {
             showErrorBox("Min batch (" + batchSizeMin.getText() + ") must be smaller than max ("
                                 + batchSizeMax.getText() + ")");
         } else {
-            core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                    outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                    showModel.isSelected(), batchSizeMin.getText(), batchSizeMax.getText(), batchSizeStep.getText());
+            try {
+                core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
+                        outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
+                        showModel.isSelected(), batchSizeMin.getText(), batchSizeMax.getText(), batchSizeStep.getText());
+            } catch (IOException e) {
+                showErrorBox("Oops, an IO Exception has occurred");
+            } catch (CustomException e) {
+                showErrorBox(e.getMessage());
+            }
         }
     }
 
@@ -432,7 +439,8 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private void handleExit() {
         core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText());
+                outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
+                batchSizeMin.getText(), batchSizeMax.getText(), batchSizeStep.getText());
         primaryStage.hide();
     }
 
