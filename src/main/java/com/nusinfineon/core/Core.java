@@ -1,15 +1,15 @@
 package com.nusinfineon.core;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import static com.nusinfineon.util.FlexScriptDefaultCodes.GETPROCESSTIMECODE;
 import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN15CODE;
 import static com.nusinfineon.util.FlexScriptDefaultCodes.ONRUNSTOPCODE;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Core {
 
@@ -23,6 +23,9 @@ public class Core {
     private String warmUpPeriod;
     private String stopTime;
     private String scriptFilepath = "./script.txt";
+    private int batchSizeMinString;
+    private int batchSizeMaxString;
+    private int batchSizeStepString;
     private File file;
     private boolean isModelShown;
 
@@ -41,7 +44,13 @@ public class Core {
      */
     public void execute(String flexsimLocation, String modelLocation, String inputLocation,
                         String outputLocation, String runSpeed, String warmUpPeriod,
-                        String stopTime, boolean isModelShown) throws IOException {
+                        String stopTime, boolean isModelShown, String batchSizeMinString,
+                        String batchSizeMaxString, String batchSizeStepString) throws IOException {
+        System.out.println("In Core");
+        System.out.println("Min batch size: " + batchSizeMinString);
+        System.out.println("Max batch size: " + batchSizeMaxString);
+        System.out.println("Batch Step size: " + batchSizeStepString);
+
         file = new File(scriptFilepath);
         if (!file.createNewFile()){}
         this.flexsimLocation = flexsimLocation;
@@ -56,7 +65,8 @@ public class Core {
         this.stopTime = "stoptime(" + stopTime + ");";
         this.isModelShown = isModelShown;
         scriptCreator();
-        commandLineGenerator(isModelShown);
+        //TODO: Hook back command line generator
+        //commandLineGenerator(isModelShown);
     }
 
     /**
