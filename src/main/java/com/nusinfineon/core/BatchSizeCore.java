@@ -3,12 +3,10 @@ package com.nusinfineon.core;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,7 +29,6 @@ public class BatchSizeCore {
     private static final String MASTER_XLSX_FILE_NAME = "temp_master_input";
     private static final String SHEET_NAME = "Product Info and Eqpt Matrix";
     private static final String MIN_BIB_COLUMN_NAME = "BIB Slot Utilization Min";
-    private static final int MIN_BIB_SLOT_COLUMN_INDEX = 5;
     private final static Logger LOGGER = Logger.getLogger(BatchSizeCore.class.getName());
 
     private File originalInputExcelFile;
@@ -39,8 +36,11 @@ public class BatchSizeCore {
     private ArrayList<Integer> listOfBatchSizes;
     private ArrayList<File> excelFiles;
 
+    /**
+     * Creates an object from the user defined Strings.
+     */
     public BatchSizeCore(String excelFilePath, String batchSizeMinString,
-                         String batchSizeMaxString, String batchSizeStepString) throws IOException {
+                         String batchSizeMaxString, String batchSizeStepString){
 
         this.originalInputExcelFile = new File(excelFilePath);
         int minBatchSize = Integer.parseInt(batchSizeMinString);
@@ -53,21 +53,19 @@ public class BatchSizeCore {
             listOfBatchSizes.add(i);
         }
 
+        this.excelFiles = new ArrayList<File>();
+
     } // End of Constructor
 
-    public void execute() throws IOException, InvalidFormatException, CustomException {
+    public void execute() throws IOException, CustomException {
 
-        createCopyOfInputFile();
+        createCopyOfInputFile(); // Uses the copy of the input file as a reference
         LOGGER.info("Successfully created a copy of main Input excel file");
 
         for (int batchNumber : listOfBatchSizes) {
-            // Create the temporary excel file
-            String fileName = "input_data_batch_size_" + batchNumber + "__";
-            File singleBatchExcelFile = Files.createTempFile(fileName, ".xlsx").toFile();
-            copyFileUsingStream(this.tempCopyOriginalInputExcelFile, singleBatchExcelFile);
 
-            // Create the workbook from excel file
-            Workbook workbook = WorkbookFactory.create(singleBatchExcelFile);
+            // Create the workbook from a copy of the original excel file
+            Workbook workbook = WorkbookFactory.create(this.tempCopyOriginalInputExcelFile);
 
             // Access the necessary sheet
             Sheet sheet = workbook.getSheet(SHEET_NAME);
@@ -86,7 +84,7 @@ public class BatchSizeCore {
                 throw new CustomException("Column " + MIN_BIB_COLUMN_NAME + " not found in excel");
             }
 
-            // Set the cell values for all the rows
+            // Set the cell values to the batch number for all the rows
             for (int rowIndex = 1; rowIndex < sheet.getPhysicalNumberOfRows(); rowIndex++ ) {
                 Row row = sheet.getRow(rowIndex);
                 Cell cell = row.getCell(columnIndex);
@@ -94,8 +92,16 @@ public class BatchSizeCore {
                 cell.setCellValue(batchNumber);
             }
 
-            // Remember to close workbook. Else file will be corrupted
+            // Saves the workbook and close the stream
+            String fileName = "input_data_batch_size_" + batchNumber + "__";
+            File singleBatchExcelFileDestination = Files.createTempFile(fileName, ".xlsx").toFile();
+            FileOutputStream outputStream = new FileOutputStream(singleBatchExcelFileDestination.toString());
+            workbook.write(outputStream);
             workbook.close();
+
+            // Adds the file into the array
+            this.excelFiles.add(singleBatchExcelFileDestination);
+
         } // End of for-loop for batch sizes
     } // End of execute method
 
@@ -126,7 +132,18 @@ public class BatchSizeCore {
         }
     }
 
+    /**
+     * Returns an arrayList of excel files
+     * @return Array List of excel files
+     */
+    public ArrayList<File> getExcelFiles() {
+        return excelFiles;
+    }
 
+    /**
+     * Prints the Batch numbers as calculated from user input.
+     * @return String.
+     */
     public String printBatchesToRun() {
         return this.listOfBatchSizes.toString();
     }

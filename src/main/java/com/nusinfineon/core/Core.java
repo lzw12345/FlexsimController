@@ -10,6 +10,7 @@ import static org.apache.commons.io.FilenameUtils.getFullPath;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -69,20 +70,26 @@ public class Core {
         this.isModelShown = isModelShown;
         scriptCreator();
 
-        // Code block handling manipulation of excel file for batch iterating
-        // Maybe put a for loop?
+        // Code block handling creation of excel file for batch iterating
+        BatchSizeCore batchSizeCore = new BatchSizeCore(inputLocation, batchSizeMinString,
+                batchSizeMaxString, batchSizeStepString);
         try {
-            BatchSizeCore batchSizeCore = new BatchSizeCore(inputLocation, batchSizeMinString,
-                    batchSizeMaxString, batchSizeStepString);
             batchSizeCore.execute();
         } catch (IOException e) {
             LOGGER.severe("Unable to create files");
             throw new CustomException("Error in creating temp files");
-        } catch (InvalidFormatException e) {
-            throw new CustomException("Error in writing of excel file using Apache POI");
+        } catch (CustomException e) {
+            LOGGER.severe(e.getMessage());
+            throw e;
         }
 
+        // Extract the array of files and sizes from batchSizeCore
+        ArrayList<File> excelFiles = batchSizeCore.getExcelFiles();
+        ArrayList<Integer> batchSizes = batchSizeCore.getListOfBatchSizes();
 
+        for (int i = 0; i < excelFiles.size(); i++) {
+            System.out.println("Batch size: " + batchSizes.get(i) + ". File path: " + excelFiles.get(i).toString());
+        }
 
         //TODO: Hook back the command line generator
         //commandLineGenerator(isModelShown);

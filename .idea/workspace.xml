@@ -2,16 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5b200f71-356e-40a8-80b4-84883df6c88c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/BatchSizeCore.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/exceptions/CustomException.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/saveFile.txt" beforeDir="false" afterPath="$PROJECT_DIR$/saveFile.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script.txt" beforeDir="false" afterPath="$PROJECT_DIR$/script.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/BatchSizeCore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/BatchSizeCore.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/storage/JsonParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/storage/JsonParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/ui/MainGui.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

@@ -10,8 +10,8 @@
   "stopTime" : "2",
   "scriptFilepath" : "./script.txt",
   "file" : "C:\\Users\\hatzi\\Documents\\Sourcetree\\flexsim_controller\\.\\script.txt",
-  "batchSizeMinString" : "21",
-  "batchSizeMaxString" : "22",
-  "batchSizeStepString" : "1",
+  "batchSizeMinString" : "15",
+  "batchSizeMaxString" : "20",
+  "batchSizeStepString" : "2",
   "isModelShown" : false
 }
