@@ -80,6 +80,9 @@ public class MainGui extends UiPart<Stage> {
         runSpeed.setText(core.getRunSpeed());
         warmUpPeriod.setText(core.getWarmUpPeriod());
         stopTime.setText(core.getStopTime());
+        batchSizeMin.setText(core.getBatchSizeMinString());
+        batchSizeMax.setText(core.getBatchSizeMaxString());
+        batchSizeStep.setText(core.getBatchSizeStepString());
     }
 
 
