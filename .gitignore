@@ -1,9 +1,10 @@
 # IDEA files
-/.idea/
-/out/
-/*.iml
+.idea/
+out/
+*.iml
+*.xml
 
 # Gradle build files
-/.gradle/
-/build/
+.gradle/
+build/
 src/main/resources/docs/
