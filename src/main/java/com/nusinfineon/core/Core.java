@@ -17,7 +17,6 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import com.nusinfineon.exceptions.CustomException;
 
-
 public class Core {
 
     private String flexsimLocation;
@@ -91,8 +90,8 @@ public class Core {
             System.out.println("Batch size: " + batchSizes.get(i) + ". File path: " + excelFiles.get(i).toString());
         }
 
-        //TODO: Hook back the command line generator
-        //commandLineGenerator(isModelShown);
+        // Executes the command line to run model
+        commandLineGenerator(isModelShown);
     }
 
     /**
@@ -128,7 +127,7 @@ public class Core {
      * creates the commandline to execute model
      * @throws IOException
      */
-    public void commandLineGenerator (boolean isModelShown) throws IOException {
+    public void commandLineGenerator(boolean isModelShown) throws IOException {
         Process a = Runtime.getRuntime().exec('"' + flexsimLocation + '"' +
                 '"' + modelLocation + '"' + " /maintenance " + (isModelShown?"":"nogui_") + "runscript " +
                 "/scriptpath" + file.getAbsolutePath() );
@@ -154,8 +153,6 @@ public class Core {
         fileWriter.close();
 
     }
-
-
 
     public String getFlexsimLocation() {
         return flexsimLocation;
@@ -201,21 +198,16 @@ public class Core {
      * Deletes existing output files to prevent excel overwrite popup
      * @param pathname
      */
-    public void deleteExistingFile (String pathname){
-        try
-        {
-            File f= new File(pathname);           //file to be delete
-            if(f.delete())                      //returns Boolean value
-            {
+    public void deleteExistingFile(String pathname){
+        try {
+            File f= new File(pathname);                         //file to be delete
+            if(f.delete()) {                                    //returns Boolean value
                 System.out.println(f.getName() + " deleted");   //getting and printing the file name
-            }
-            else
-            {
+            } else {
                 System.out.println(pathname + "doesn't exist");
             }
         }
-        catch(Exception e)
-        {
+        catch(Exception e) {
             e.printStackTrace();
         }
     }
@@ -227,7 +219,7 @@ public class Core {
      * @param code
      * @return
      */
-    public String editNodeCode (String name ,String nodePath , String code){
+    public String editNodeCode(String name ,String nodePath , String code){
         String nodename = name + "Node";
         String codeName = name + "Code";
         String script = "treenode " + nodename + " = node(\"" + nodePath + "\");\n"

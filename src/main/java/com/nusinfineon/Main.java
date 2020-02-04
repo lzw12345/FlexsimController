@@ -7,7 +7,6 @@ import javafx.stage.Stage;
 import com.nusinfineon.storage.JsonParser;
 import com.nusinfineon.ui.Ui;
 
-
 import java.io.IOException;
 
 public class Main extends Application {
@@ -22,7 +21,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start (Stage stage) throws IOException {
+    public void start(Stage stage) throws IOException {
         ui.start(stage);
     }
 

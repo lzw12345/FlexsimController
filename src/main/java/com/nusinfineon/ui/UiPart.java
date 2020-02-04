@@ -1,6 +1,5 @@
 package com.nusinfineon.ui;
 
-
 import com.nusinfineon.Main;
 import javafx.fxml.FXMLLoader;
 

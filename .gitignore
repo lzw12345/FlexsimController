@@ -8,3 +8,6 @@ out/
 .gradle/
 build/
 src/main/resources/docs/
+
+# Text files
+*.txt
