@@ -4,7 +4,6 @@
     <list default="true" id="5b200f71-356e-40a8-80b4-84883df6c88c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/BatchSizeCore.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/BatchSizeCore.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nusinfineon/core/Core.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -90,7 +89,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.import" />
