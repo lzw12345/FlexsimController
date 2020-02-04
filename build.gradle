@@ -48,8 +48,6 @@ checkstyle {
     toolVersion = '8.23'
 }
 
-
-
 shadowJar {
     archiveBaseName = "Flexsim Controller"
     archiveVersion = "0.1.0"
@@ -61,7 +59,7 @@ test {
     useJUnitPlatform()
 }
 
-group 'seedu.duke'
+group 'nusibis'
 
 application {
     // Change this to your main class.

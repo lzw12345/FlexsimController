@@ -29,7 +29,6 @@ public class JsonParser {
             fileWriter.write("{}");
             fileWriter.close();
         }
-
     }
 
     /**
@@ -57,5 +56,4 @@ public class JsonParser {
         Core core = mapper.readValue(new FileInputStream(filepath), Core.class);
         return core;
     }
-
 }

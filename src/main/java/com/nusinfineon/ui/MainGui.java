@@ -20,12 +20,10 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
-
 /**
  * Represent the whole window of the user interface, it should contain all units in the user interface.
  */
 public class MainGui extends UiPart<Stage> {
-
     private static final int MAX_ALLOWABLE_BATCH_SIZE = 24;
     private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - 1;
     private static final int MIN_ALLOWABLE_BATCH_SIZE = 0;
@@ -84,7 +82,6 @@ public class MainGui extends UiPart<Stage> {
         batchSizeMax.setText(core.getBatchSizeMaxString());
         batchSizeStep.setText(core.getBatchSizeStepString());
     }
-
 
     /**
      * for drag and drop functionality
@@ -145,7 +142,7 @@ public class MainGui extends UiPart<Stage> {
         if (db.hasFiles() && isAccepted ) {
             inputFileLocation.setText(db.getFiles().toString().replaceAll("\\[", "").replaceAll("\\]",""));
             success = true;
-        }else {
+        } else {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Input not valid");
             errorAlert.setContentText("file must be a excel file with extension .xlsx");
@@ -177,7 +174,7 @@ public class MainGui extends UiPart<Stage> {
         if (db.hasFiles() && isAccepted ) {
             outputFileLocation.setText(db.getFiles().toString().replaceAll("\\[", "").replaceAll("\\]",""));
             success = true;
-        }else {
+        } else {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Input not valid");
             errorAlert.setContentText("file must be a excel file with extension .xlsx");
@@ -235,7 +232,7 @@ public class MainGui extends UiPart<Stage> {
             errorAlert.setContentText("file locations cannot be blank");
             errorAlert.showAndWait();
              */
-            showErrorBox("file locations cannot be blank");
+            showErrorBox("File locations cannot be blank");
         }
 
         if (isNotDouble(runSpeed.getText()) && isNotDouble(stopTime.getText())) {
@@ -446,6 +443,4 @@ public class MainGui extends UiPart<Stage> {
                 batchSizeMin.getText(), batchSizeMax.getText(), batchSizeStep.getText());
         primaryStage.hide();
     }
-
-
 }
