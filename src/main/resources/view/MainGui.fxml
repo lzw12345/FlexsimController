@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.Scene?>
 <?import javafx.scene.control.Button?>
@@ -18,112 +19,215 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.stage.Stage?>
 
-<fx:root fx:id="MainWIndow" onCloseRequest="#handleExit" type="Stage" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="MainWindow" minHeight="360.0" minWidth="480.0" onCloseRequest="#handleExit" type="Stage" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <scene>
       <Scene>
-          <BorderPane prefHeight="342.0" prefWidth="546.0">
+          <BorderPane>
             <center>
-               <VBox prefHeight="305.0" prefWidth="309.0" BorderPane.alignment="CENTER">
+               <VBox BorderPane.alignment="CENTER">
                   <children>
-                     <HBox fx:id="exeDragTarget" onDragDropped="#exeDragDropped" onDragOver="#exeDragOver" prefHeight="41.0" prefWidth="600.0" style="-fx-border-color: black;">
+                     <GridPane>
+                       <columnConstraints>
+                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
+                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1020.0" minWidth="10.0" prefWidth="1020.0" />
+                       </columnConstraints>
+                       <rowConstraints>
+                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                       </rowConstraints>
                         <children>
                            <Label text="Flexsim .exe Location: ">
                               <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="This file can normally be found in the instal directory" />
+                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Fill in flexsim.exe address (Found in Flexsim installation directory)" />
                               </tooltip>
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
                            </Label>
-                           <TextField fx:id="exeLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. C:\Program Files (x86)\FlexSim7.3\program\flexsim.exe" HBox.hgrow="ALWAYS">
-                              <cursor>
-                                 <Cursor fx:constant="DEFAULT" />
-                              </cursor>
-                           </TextField>
-                        </children>
-                     </HBox>
-                     <HBox fx:id="modelDragTarget" onDragDropped="#modelDragDropped" onDragOver="#modelDragOver" prefHeight="41.0" prefWidth="600.0" style="-fx-border-color: black;">
-                        <children>
-                           <Label text="Model File Location: ">
+                           <HBox fx:id="exeDragTarget" onDragDropped="#exeDragDropped" onDragOver="#exeDragOver" GridPane.columnIndex="1">
+                              <children>
+                                 <TextField fx:id="exeLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. C:\Program Files (x86)\FlexSim7.3\program\flexsim.exe" HBox.hgrow="ALWAYS">
+                                    <cursor>
+                                       <Cursor fx:constant="DEFAULT" />
+                                    </cursor>
+                                 </TextField>
+                              </children>
+                           </HBox>
+                           <Label text="Model File Location: " GridPane.rowIndex="1">
                               <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="paste the flexsim model to be created" />
+                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Fill in base Flexsim model file address" />
                               </tooltip>
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
                            </Label>
-                           <TextField fx:id="modelFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. c:/documents/onelevel.fsm" HBox.hgrow="ALWAYS">
-                              <cursor>
-                                 <Cursor fx:constant="DEFAULT" />
-                              </cursor>
-                           </TextField>
-                        </children>
-                     </HBox>
-                     <HBox fx:id="inputFileDragTarget" onDragDropped="#inputDragDropped" onDragOver="#inputDragOver" prefHeight="41.0" prefWidth="600.0" style="-fx-border-color: black;">
-                        <children>
-                           <Label text="Input File Location: ">
+                           <HBox fx:id="modelDragTarget" onDragDropped="#modelDragDropped" onDragOver="#modelDragOver" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              <children>
+                                 <TextField fx:id="modelFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. C:\Documents\IBIS Model.fsm" HBox.hgrow="ALWAYS">
+                                    <cursor>
+                                       <Cursor fx:constant="DEFAULT" />
+                                    </cursor>
+                                 </TextField>
+                              </children>
+                           </HBox>
+                           <Label text="Input File Location: " GridPane.rowIndex="2">
                               <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="paste the input excel file" />
+                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Fill in input Excel file address" />
                               </tooltip>
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
                            </Label>
-                           <TextField fx:id="inputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. c:/documents/onelevel.fsm" HBox.hgrow="ALWAYS">
-                              <cursor>
-                                 <Cursor fx:constant="DEFAULT" />
-                              </cursor>
-                           </TextField>
-                        </children>
-                     </HBox>
-                     <HBox fx:id="outputFileDragTarget" onDragDropped="#outputDragDropped" onDragOver="#inputDragOver" prefHeight="41.0" prefWidth="600.0" style="-fx-border-color: black;">
-                        <children>
-                           <Label text="Output File Location: ">
+                           <HBox fx:id="inputFileDragTarget" onDragDropped="#inputDragDropped" onDragOver="#inputDragOver" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              <children>
+                                 <TextField fx:id="inputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. C:\Documents\Input.xlsx" HBox.hgrow="ALWAYS">
+                                    <cursor>
+                                       <Cursor fx:constant="DEFAULT" />
+                                    </cursor>
+                                 </TextField>
+                              </children>
+                           </HBox>
+                           <Label text="Output File Location: " GridPane.rowIndex="3">
                               <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="paste the output excel file" />
+                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Fill in full output Excel file address" />
                               </tooltip>
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
                            </Label>
-                           <TextField fx:id="outputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. c:/documents/onelevel.fsm" HBox.hgrow="ALWAYS">
-                              <cursor>
-                                 <Cursor fx:constant="DEFAULT" />
-                              </cursor>
-                           </TextField>
+                           <HBox fx:id="outputFileDragTarget" onDragDropped="#outputDragDropped" onDragOver="#outputDragOver" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                              <children>
+                                 <TextField fx:id="outputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. C:\Documents\Output.xlsx" HBox.hgrow="ALWAYS">
+                                    <cursor>
+                                       <Cursor fx:constant="DEFAULT" />
+                                    </cursor>
+                                 </TextField>
+                              </children>
+                           </HBox>
                         </children>
-                     </HBox>
+                        <VBox.margin>
+                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        </VBox.margin>
+                     </GridPane>
                      <GridPane>
                         <columnConstraints>
-                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
+                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="1020.0" minWidth="10.0" prefWidth="1020.0" />
                         </columnConstraints>
                         <rowConstraints>
-                           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                           <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                           <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
                         </rowConstraints>
                         <children>
-                           <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="334.0" text="Run Speed">
+                           <Label alignment="CENTER" contentDisplay="CENTER" text="Run Speed:">
                               <tooltip>
                                  <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="(hours/real second) default value is 4 but will be limited by system performance" />
                               </tooltip>
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
                            </Label>
-                           <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="369.0" text="Warm up period" GridPane.rowIndex="1">
+                           <TextField fx:id="runSpeed" GridPane.columnIndex="1">
+                              <GridPane.margin>
+                                 <Insets />
+                              </GridPane.margin></TextField>
+                           <Label alignment="CENTER" contentDisplay="CENTER" text="Warm-up Period:" GridPane.rowIndex="1">
                               <tooltip>
                                  <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="(hours) default value is 0" />
                               </tooltip>
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
                            </Label>
-                           <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="306.0" text="Stop time" GridPane.rowIndex="2">
+                           <TextField fx:id="warmUpPeriod" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              <GridPane.margin>
+                                 <Insets />
+                              </GridPane.margin></TextField>
+                           <Label alignment="CENTER" contentDisplay="CENTER" text="Stop Time:" GridPane.rowIndex="2">
                               <tooltip>
                                  <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="(hours) total time model will run for" />
                               </tooltip>
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
                            </Label>
-                           <TextField fx:id="runSpeed" GridPane.columnIndex="1" />
-                           <TextField fx:id="warmUpPeriod" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                           <TextField fx:id="stopTime" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                           <TextField fx:id="stopTime" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              <GridPane.margin>
+                                 <Insets />
+                              </GridPane.margin></TextField>
                         </children>
+                        <VBox.margin>
+                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        </VBox.margin>
                      </GridPane>
-                     <HBox prefHeight="100.0" prefWidth="200.0">
+                     <GridPane>
+                       <columnConstraints>
+                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="180.0" />
+                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="100.0" />
+                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="180.0" />
+                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="100.0" />
+                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="180.0" />
+                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="100.0" />
+                       </columnConstraints>
+                       <rowConstraints>
+                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                       </rowConstraints>
                         <children>
-                           <Label text="Min" />
-                           <TextField fx:id="batchSizeMin" />
-                           <Label text="Max" />
-                           <TextField fx:id="batchSizeMax" />
-                           <Label text="Step" />
-                           <TextField fx:id="batchSizeStep" />
+                           <Label alignment="CENTER" contentDisplay="CENTER" text="Minimum Batch Size Allowed:">
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
+                           </Label>
+                           <Label alignment="CENTER" contentDisplay="CENTER" text="Maximum Batch Size Allowed:" GridPane.columnIndex="2">
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
+                           </Label>
+                           <Label alignment="CENTER" contentDisplay="CENTER" text="Step Size:" GridPane.columnIndex="4">
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
+                           </Label>
+                           <TextField fx:id="batchSizeMin" GridPane.columnIndex="1">
+                              <GridPane.margin>
+                                 <Insets right="20.0" />
+                              </GridPane.margin>
+                           </TextField>
+                           <TextField fx:id="batchSizeMax" GridPane.columnIndex="3">
+                              <GridPane.margin>
+                                 <Insets right="20.0" />
+                              </GridPane.margin>
+                           </TextField>
+                           <TextField fx:id="batchSizeStep" GridPane.columnIndex="5">
+                              <GridPane.margin>
+                                 <Insets right="20.0" />
+                              </GridPane.margin>
+                           </TextField>
                         </children>
-                     </HBox>
-                     <Button mnemonicParsing="false" onAction="#handleModelExecution" text="Run Model" />
-                     <CheckBox fx:id="showModel" mnemonicParsing="false" text="Show Model" />
+                        <VBox.margin>
+                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        </VBox.margin>
+                     </GridPane>
+                     <VBox>
+                        <children>
+                           <CheckBox fx:id="showModel" mnemonicParsing="false" text="Show model in Flexsim?">
+                              <VBox.margin>
+                                 <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                              </VBox.margin>
+                           </CheckBox>
+                           <Button mnemonicParsing="false" onAction="#handleModelExecution" text="Run Model">
+                              <VBox.margin>
+                                 <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                              </VBox.margin>
+                              <padding>
+                                 <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                              </padding>
+                           </Button>
+                        </children>
+                     </VBox>
                   </children>
                </VBox>
             </center>

@@ -124,7 +124,7 @@ public class Core {
     }
 
     /**
-     * creates the commandline to execute model
+     * Creates the commandline to execute model
      * @throws IOException
      */
     public void commandLineGenerator(boolean isModelShown) throws IOException {
@@ -134,7 +134,7 @@ public class Core {
     }
 
     /**
-     * Creates the flexscript for the model
+     * Creates the Flexscript for the model
      * @throws IOException
      */
     public void scriptCreator() throws IOException {
@@ -144,7 +144,7 @@ public class Core {
             + "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
             + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
                 +  ",\"MAIN15WriteReports(true, \\\""
-                +outputLocation  + "\", " + "\\\"" + outputFile
+                + outputLocation  + "\", " + "\\\"" + outputFile
                 + "\\\" , \\\"OutputNew\\\");\\n\\thideprogressbar();\\n}\")" )
             + editNodeCode("ProcessTime", "MODEL:/Tools/UserCommands/ProcessTimeGetTotal/code", GETPROCESSTIMECODE)
             + editNodeCode("MAIN15", "MODEL://Tools/UserCommands//MAIN15WriteReports//code", MAIN15CODE)
@@ -200,7 +200,7 @@ public class Core {
      */
     public void deleteExistingFile(String pathname){
         try {
-            File f= new File(pathname);                         //file to be delete
+            File f = new File(pathname);                         //file to be delete
             if(f.delete()) {                                    //returns Boolean value
                 System.out.println(f.getName() + " deleted");   //getting and printing the file name
             } else {
@@ -213,7 +213,7 @@ public class Core {
     }
 
     /**
-     * Function to generate a default template for replace code in a flexsim node
+     * Function to generate a default template for replace code in a Flexsim node
      * @param name
      * @param nodePath
      * @param code

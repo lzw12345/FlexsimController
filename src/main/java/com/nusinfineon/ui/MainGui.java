@@ -88,7 +88,7 @@ public class MainGui extends UiPart<Stage> {
      * @param event
      */
     @FXML
-    public void  modelDragOver(DragEvent event) {
+    public void modelDragOver(DragEvent event) {
         if (event.getGestureSource() != modelDragTarget
                 && event.getDragboard().hasFiles()) {
             /* allow for both copying and moving, whatever user chooses */
@@ -124,7 +124,7 @@ public class MainGui extends UiPart<Stage> {
     }
 
     @FXML
-    public void  inputDragOver(DragEvent event) {
+    public void inputDragOver(DragEvent event) {
         if (event.getGestureSource() != inputFileDragTarget
                 && event.getDragboard().hasFiles()) {
             /* allow for both copying and moving, whatever user chooses */
@@ -156,7 +156,7 @@ public class MainGui extends UiPart<Stage> {
     }
 
     @FXML
-    public void  outputDragOver(DragEvent event) {
+    public void outputDragOver(DragEvent event) {
         if (event.getGestureSource() != outputFileDragTarget
                 && event.getDragboard().hasFiles()) {
             /* allow for both copying and moving, whatever user chooses */
@@ -188,7 +188,7 @@ public class MainGui extends UiPart<Stage> {
     }
 
     @FXML
-    public void  exeDragOver(DragEvent event) {
+    public void exeDragOver(DragEvent event) {
         if (event.getGestureSource() != exeDragTarget
                 && event.getDragboard().hasFiles()) {
             /* allow for both copying and moving, whatever user chooses */
@@ -218,8 +218,6 @@ public class MainGui extends UiPart<Stage> {
 
         event.consume();
     }
-
-
 
     @FXML
     public void handleModelExecution() throws IOException {
@@ -308,7 +306,6 @@ public class MainGui extends UiPart<Stage> {
             } else {
                 return false;
             }
-
         } catch (NumberFormatException e) {
             return false;
         }
@@ -351,7 +348,6 @@ public class MainGui extends UiPart<Stage> {
             } else {
                 return false;
             }
-
         } catch (NumberFormatException e) {
             return false;
         }
@@ -361,10 +357,11 @@ public class MainGui extends UiPart<Stage> {
         return primaryStage;
     }
 
-    //to be added
-/*    private void setAccelerators() {
+    /* TODO: to be added
+    private void setAccelerators() {
         setAccelerator(helpMenuItem, KeyCombination.valueOf("F1"));
-    }*/
+    }
+    */
 
     /**
      * Sets the accelerator of a MenuItem.
@@ -427,7 +424,6 @@ public class MainGui extends UiPart<Stage> {
             primaryStage.setY(guiSettings.getWindowCoordinates().getY());
         }
     }*/
-
 
     void show() {
         primaryStage.show();
