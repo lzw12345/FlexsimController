@@ -10,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.DragEvent;
@@ -57,11 +59,11 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private CheckBox showModel;
     @FXML
-    private TextField batchSizeMin;
+    private Spinner<Integer> batchSizeMin;
     @FXML
-    private TextField batchSizeMax;
+    private Spinner<Integer> batchSizeMax;
     @FXML
-    private TextField batchSizeStep;
+    private Spinner<Integer> batchSizeStep;
 
     public MainGui(Stage primaryStage, Core core) {
         super(FXML, primaryStage);
@@ -78,9 +80,10 @@ public class MainGui extends UiPart<Stage> {
         runSpeed.setText(core.getRunSpeed());
         warmUpPeriod.setText(core.getWarmUpPeriod());
         stopTime.setText(core.getStopTime());
-        batchSizeMin.setText(core.getBatchSizeMinString());
-        batchSizeMax.setText(core.getBatchSizeMaxString());
-        batchSizeStep.setText(core.getBatchSizeStepString());
+
+        batchSizeMin.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 23, Integer.parseInt(core.getBatchSizeMinString())));
+        batchSizeMax.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 23, Integer.parseInt(core.getBatchSizeMaxString())));
+        batchSizeStep.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 23, Integer.parseInt(core.getBatchSizeStepString())));
     }
 
     /**
@@ -110,7 +113,7 @@ public class MainGui extends UiPart<Stage> {
         if (db.hasFiles() && isAccepted ) {
             modelFileLocation.setText(db.getFiles().toString().replaceAll("\\[", "").replaceAll("\\]",""));
             success = true;
-        }else {
+        } else {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Input not valid");
             errorAlert.setContentText("file must be a flexsim nus.infineon.model with extension .fsm");
@@ -241,20 +244,23 @@ public class MainGui extends UiPart<Stage> {
             errorAlert.showAndWait();
              */
             showErrorBox("Run speed and Stop time must be an integer or double");
-        } else if (!isValidMinBatchSize(batchSizeMin.getText())) {
+        } else if (!isValidMinBatchSize(Integer.toString(batchSizeMin.getValueFactory().getValue()))) {
             showErrorBox("Min batch size must be > 0 and < 24");
-        } else if (!isValidMaxBatchSize(batchSizeMax.getText())) {
+        } else if (!isValidMaxBatchSize(Integer.toString(batchSizeMax.getValueFactory().getValue()))) {
             showErrorBox("Max batch size must be > 0 and < 24");
-        } else if (!isValidStepSize(batchSizeStep.getText())) {
+        } else if (!isValidStepSize(Integer.toString(batchSizeStep.getValueFactory().getValue()))) {
             showErrorBox("Step size must be an integer and < " + MAX_ALLOWABLE_STEP_SIZE);
-        } else if (!isValidMinMax(batchSizeMin.getText(), batchSizeMax.getText())) {
-            showErrorBox("Min batch (" + batchSizeMin.getText() + ") must be smaller than max ("
-                                + batchSizeMax.getText() + ")");
+        } else if (!isValidMinMax(Integer.toString(batchSizeMin.getValueFactory().getValue()),
+                Integer.toString(batchSizeMax.getValueFactory().getValue()))) {
+            showErrorBox("Min batch (" + batchSizeMin.getValueFactory().getValue() +
+                    ") must be smaller than max (" + batchSizeMax.getValueFactory().getValue() + ")");
         } else {
             try {
                 core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
                         outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                        showModel.isSelected(), batchSizeMin.getText(), batchSizeMax.getText(), batchSizeStep.getText());
+                        showModel.isSelected(), Integer.toString(batchSizeMin.getValueFactory().getValue()),
+                        Integer.toString(batchSizeMax.getValueFactory().getValue()),
+                        Integer.toString(batchSizeStep.getValueFactory().getValue()));
             } catch (IOException e) {
                 showErrorBox("Oops, an IO Exception has occurred");
             } catch (CustomException e) {
@@ -436,7 +442,9 @@ public class MainGui extends UiPart<Stage> {
     private void handleExit() {
         core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
                 outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                batchSizeMin.getText(), batchSizeMax.getText(), batchSizeStep.getText());
+                Integer.toString(batchSizeMin.getValueFactory().getValue()),
+                Integer.toString(batchSizeMax.getValueFactory().getValue()),
+                Integer.toString(batchSizeStep.getValueFactory().getValue()));
         primaryStage.hide();
     }
 }
