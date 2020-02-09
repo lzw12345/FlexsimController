@@ -36,6 +36,9 @@ public class Core {
     private boolean isModelShown;
 
     private final static Logger LOGGER = Logger.getLogger(Core.class.getName());
+    private final static String INIT_MAX_BATCH_SIZE = "24";
+    private final static String INIT_MIN_BATCH_SIZE = "1";
+    private final static String INIT_STEP_SIZE = "1";
 
     /**
      * main execute function, generates script and runs model
@@ -183,15 +186,27 @@ public class Core {
     }
 
     public String getBatchSizeMinString() {
-        return batchSizeMinString;
+        if (batchSizeMinString == null) {
+            return INIT_MIN_BATCH_SIZE;
+        } else {
+            return batchSizeMinString;
+        }
     }
 
     public String getBatchSizeMaxString() {
-        return batchSizeMaxString;
+        if (batchSizeMaxString == null) {
+            return INIT_MAX_BATCH_SIZE;
+        } else {
+            return batchSizeMaxString;
+        }
     }
 
     public String getBatchSizeStepString() {
-        return batchSizeStepString;
+        if (batchSizeMinString == null) {
+            return INIT_STEP_SIZE;
+        } else {
+            return batchSizeStepString;
+        }
     }
 
     /**

@@ -10,10 +10,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCombination;
@@ -27,8 +29,9 @@ import javafx.stage.Stage;
  */
 public class MainGui extends UiPart<Stage> {
     private static final int MAX_ALLOWABLE_BATCH_SIZE = 24;
-    private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - 1;
-    private static final int MIN_ALLOWABLE_BATCH_SIZE = 0;
+    private static final int MIN_ALLOWABLE_BATCH_SIZE = 1;
+    private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - MIN_ALLOWABLE_BATCH_SIZE;
+    private static final int MIN_ALLOWABLE_STEP_SIZE = 1;
     private static final String FXML = "MainGui.fxml";
 
     private Stage primaryStage;
@@ -57,13 +60,27 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private TextField stopTime;
     @FXML
-    private CheckBox showModel;
-    @FXML
     private Spinner<Integer> batchSizeMin;
     @FXML
     private Spinner<Integer> batchSizeMax;
     @FXML
     private Spinner<Integer> batchSizeStep;
+    @FXML
+    private RadioButton resourceSelectCriteria1;
+    @FXML
+    private RadioButton resourceSelectCriteria2;
+    @FXML
+    private RadioButton resourceSelectCriteria3;
+    @FXML
+    private RadioButton resourceSelectCriteria4;
+    @FXML
+    private RadioButton lotSelectionCriteria1;
+    @FXML
+    private RadioButton lotSelectionCriteria2;
+    @FXML
+    private RadioButton lotSelectionCriteria3;
+    @FXML
+    private CheckBox showModel;
 
     public MainGui(Stage primaryStage, Core core) {
         super(FXML, primaryStage);
@@ -81,9 +98,23 @@ public class MainGui extends UiPart<Stage> {
         warmUpPeriod.setText(core.getWarmUpPeriod());
         stopTime.setText(core.getStopTime());
 
-        batchSizeMin.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 23, Integer.parseInt(core.getBatchSizeMinString())));
-        batchSizeMax.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 23, Integer.parseInt(core.getBatchSizeMaxString())));
-        batchSizeStep.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 23, Integer.parseInt(core.getBatchSizeStepString())));
+        batchSizeMin.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                MIN_ALLOWABLE_BATCH_SIZE, MAX_ALLOWABLE_BATCH_SIZE, Integer.parseInt(core.getBatchSizeMinString())));
+        batchSizeMax.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                MIN_ALLOWABLE_BATCH_SIZE, MAX_ALLOWABLE_BATCH_SIZE, Integer.parseInt(core.getBatchSizeMaxString())));
+        batchSizeStep.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                MIN_ALLOWABLE_STEP_SIZE, MAX_ALLOWABLE_STEP_SIZE, Integer.parseInt(core.getBatchSizeStepString())));
+
+        ToggleGroup resourceSelectCriteria = new ToggleGroup();
+        resourceSelectCriteria1.setToggleGroup(resourceSelectCriteria);
+        resourceSelectCriteria2.setToggleGroup(resourceSelectCriteria);
+        resourceSelectCriteria3.setToggleGroup(resourceSelectCriteria);
+        resourceSelectCriteria4.setToggleGroup(resourceSelectCriteria);
+
+        ToggleGroup lotSelectionCriteria = new ToggleGroup();
+        lotSelectionCriteria1.setToggleGroup(lotSelectionCriteria);
+        lotSelectionCriteria2.setToggleGroup(lotSelectionCriteria);
+        lotSelectionCriteria3.setToggleGroup(lotSelectionCriteria);
     }
 
     /**
@@ -226,34 +257,38 @@ public class MainGui extends UiPart<Stage> {
     public void handleModelExecution() throws IOException {
 
         if (exeLocation.getText().isBlank() && inputFileLocation.getText().isBlank()
-                && outputFileLocation.getText().isBlank() && modelFileLocation.getText().isBlank()){
+                && outputFileLocation.getText().isBlank() && modelFileLocation.getText().isBlank()) {
             /*
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Invalid Input");
             errorAlert.setContentText("file locations cannot be blank");
             errorAlert.showAndWait();
              */
-            showErrorBox("File locations cannot be blank");
+            showErrorBox("File locations cannot be blank!");
         }
-
-        if (isNotDouble(runSpeed.getText()) && isNotDouble(stopTime.getText())) {
+        if (runSpeed.getText().isBlank() || stopTime.getText().isBlank()) {
+            showErrorBox("Run Speed and/or Stop Time cannot be blank!");
+        } else if (isNotDouble(runSpeed.getText()) || isNotDouble(stopTime.getText())) {
             /*
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Invalid Input");
             errorAlert.setContentText("Run speed and Stop time must be an integer or double");
             errorAlert.showAndWait();
              */
-            showErrorBox("Run speed and Stop time must be an integer or double");
-        } else if (!isValidMinBatchSize(Integer.toString(batchSizeMin.getValueFactory().getValue()))) {
-            showErrorBox("Min batch size must be > 0 and < 24");
-        } else if (!isValidMaxBatchSize(Integer.toString(batchSizeMax.getValueFactory().getValue()))) {
-            showErrorBox("Max batch size must be > 0 and < 24");
-        } else if (!isValidStepSize(Integer.toString(batchSizeStep.getValueFactory().getValue()))) {
-            showErrorBox("Step size must be an integer and < " + MAX_ALLOWABLE_STEP_SIZE);
-        } else if (!isValidMinMax(Integer.toString(batchSizeMin.getValueFactory().getValue()),
-                Integer.toString(batchSizeMax.getValueFactory().getValue()))) {
-            showErrorBox("Min batch (" + batchSizeMin.getValueFactory().getValue() +
-                    ") must be smaller than max (" + batchSizeMax.getValueFactory().getValue() + ")");
+            showErrorBox("Run Speed and/or Stop Time must be a number (integer/double)!");
+        } else if (!isValidMinBatchSize(batchSizeMin.getValueFactory().getValue())) {
+            showErrorBox("Min batch size must be at least 1 and at most 24!");
+        } else if (!isValidMaxBatchSize(batchSizeMax.getValueFactory().getValue())) {
+            showErrorBox("Max batch size must be at least 1 and at most 24!");
+        } else if (!isValidMinMax(batchSizeMin.getValueFactory().getValue(),
+                batchSizeMax.getValueFactory().getValue())) {
+            showErrorBox("Min batch size (" + batchSizeMin.getValueFactory().getValue() +
+                    ") cannot be larger than max batch size (" + batchSizeMax.getValueFactory().getValue() + ")!");
+        } else if (!isValidStepSize(batchSizeStep.getValueFactory().getValue(),
+                batchSizeMin.getValueFactory().getValue(),
+                batchSizeMax.getValueFactory().getValue())) {
+            showErrorBox("Step size can at most be " +
+                    (batchSizeMax.getValueFactory().getValue() - batchSizeMin.getValueFactory().getValue()) + "!");
         } else {
             try {
                 core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
@@ -262,7 +297,7 @@ public class MainGui extends UiPart<Stage> {
                         Integer.toString(batchSizeMax.getValueFactory().getValue()),
                         Integer.toString(batchSizeStep.getValueFactory().getValue()));
             } catch (IOException e) {
-                showErrorBox("Oops, an IO Exception has occurred");
+                showErrorBox("An IO Exception has occurred.");
             } catch (CustomException e) {
                 showErrorBox(e.getMessage());
             }
@@ -281,17 +316,13 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Checks if min is lesser than max. Assumes min and max can be converted to valid integers.
-     *
-     * @param minBatchString String representing minimum batch size.
-     * @param maxBatchString String representing maximum batch size.
+     * Checks if min is lesser than max.
+     * @param minBatchSize representing minimum batch size.
+     * @param maxBatchSize representing maximum batch size.
      * @return Boolean.
      */
-    private boolean isValidMinMax(String minBatchString, String maxBatchString) {
-        int min = Integer.parseInt(minBatchString);
-        int max = Integer.parseInt(maxBatchString);
-
-        if (min < max) {
+    private boolean isValidMinMax(int minBatchSize, int maxBatchSize) {
+        if (minBatchSize <= maxBatchSize) {
             return true;
         } else {
             return false;
@@ -299,15 +330,35 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Returns true if the batch step size is acceptable ie between 0 and MAX_ALLOWABLE_sTEP_SIZE.
-     * @param batchStepSizeString String representing batch step size.
+     * Returns true if the batch step size is acceptable i.e. smaller than difference between min and max batch sizes.
+     * @param stepSize representing batch step size.
+     * @param minBatchSize representing minimum batch size.
+     * @param maxBatchSize representing maximum batch size.
      * @return Boolean
      */
-    private boolean isValidStepSize(String batchStepSizeString) {
+    private boolean isValidStepSize(int stepSize, int minBatchSize, int maxBatchSize) {
         try {
-            int batchStepSize = Integer.parseInt(batchStepSizeString);
+            if ((maxBatchSize == minBatchSize) && (stepSize == 1)){
+                return true;
+            } else if (stepSize <= (maxBatchSize - minBatchSize)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
-            if ( (batchStepSize > 0) && (batchStepSize<MAX_ALLOWABLE_STEP_SIZE) ) {
+    /**
+     * Returns true if a batchMinString falls within the range of
+     * MIN_ALLOWABLE_BATCH_SIZE and MAX_ALLOWABLE_BATCH_SIZE.
+     * @param minBatchSize representing Batch Min Size.
+     * @return Boolean.
+     */
+    private boolean isValidMinBatchSize(int minBatchSize) {
+        try {
+            if ( (minBatchSize >= MIN_ALLOWABLE_BATCH_SIZE) && (minBatchSize <= MAX_ALLOWABLE_BATCH_SIZE)) {
                 return true;
             } else {
                 return false;
@@ -319,11 +370,11 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Follows the same logic as "isValidMinBatchSize".
-     * @param maxBatchSizeString String representing Batch Max Size.
+     * @param maxBatchSize representing Batch Max Size.
      * @return Boolean
      */
-    private boolean isValidMaxBatchSize(String maxBatchSizeString){
-        return isValidMinBatchSize(maxBatchSizeString);
+    private boolean isValidMaxBatchSize(int maxBatchSize){
+        return isValidMinBatchSize(maxBatchSize);
     }
 
     /**
@@ -337,25 +388,6 @@ public class MainGui extends UiPart<Stage> {
             return false;
         } catch (NumberFormatException e) {
             return true;
-        }
-    }
-
-    /**
-     * Returns true if a batchMinString is (i) a valid int and (ii) falls within the range of
-     * MIN_ALLOWABLE_BATCH_SIZE and MAX_ALLOWABLE_BATCH_SIZE.
-     * @param minBatchSizeString String representing batchMin
-     * @return Boolean.
-     */
-    private boolean isValidMinBatchSize(String minBatchSizeString) {
-        try {
-            int batchMinSize = Integer.parseInt(minBatchSizeString);
-            if ( (batchMinSize > MIN_ALLOWABLE_BATCH_SIZE) && (batchMinSize < MAX_ALLOWABLE_BATCH_SIZE)) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (NumberFormatException e) {
-            return false;
         }
     }
 

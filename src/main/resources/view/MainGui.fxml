@@ -42,7 +42,7 @@
                         <children>
                            <Label text="Flexsim .exe Location: ">
                               <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Fill in flexsim.exe address (Found in Flexsim installation directory)" />
+                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="flexsim.exe address (Found in Flexsim installation directory)" />
                               </tooltip>
                               <padding>
                                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -59,7 +59,7 @@
                            </HBox>
                            <Label text="Model File Location: " GridPane.rowIndex="1">
                               <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Fill in base Flexsim model file address" />
+                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Base Flexsim model file address" />
                               </tooltip>
                               <padding>
                                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -76,7 +76,7 @@
                            </HBox>
                            <Label text="Input File Location: " GridPane.rowIndex="2">
                               <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Fill in input Excel file address" />
+                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Input Excel file address" />
                               </tooltip>
                               <padding>
                                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -93,7 +93,7 @@
                            </HBox>
                            <Label text="Output File Location: " GridPane.rowIndex="3">
                               <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Fill in full output Excel file address" />
+                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Output Excel file address" />
                               </tooltip>
                               <padding>
                                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -178,30 +178,39 @@
                          <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
                        </rowConstraints>
                         <children>
-                           <Label alignment="CENTER" contentDisplay="CENTER" text="Minimum Batch Size Allowed:">
+                           <Label alignment="CENTER" contentDisplay="CENTER" text="Minimum Batch Size of Runs:">
                               <padding>
                                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                               </padding>
+                              <tooltip>
+                                 <Tooltip text="Smallest batch size to run" />
+                              </tooltip>
                            </Label>
-                           <Spinner fx:id="batchSizeMin" editable="true" GridPane.columnIndex="1">
+                           <Spinner fx:id="batchSizeMin" GridPane.columnIndex="1">
                               <GridPane.margin>
                                  <Insets right="20.0" />
                               </GridPane.margin>
                            </Spinner>
-                           <Label alignment="CENTER" contentDisplay="CENTER" text="Maximum Batch Size Allowed:" GridPane.columnIndex="2">
+                           <Label alignment="CENTER" contentDisplay="CENTER" text="Maximum Batch Size of Runs:" GridPane.columnIndex="2">
                               <padding>
                                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                               </padding>
+                              <tooltip>
+                                 <Tooltip text="Largest batch size to run" />
+                              </tooltip>
                            </Label>
                            <Spinner fx:id="batchSizeMax" GridPane.columnIndex="3">
                               <GridPane.margin>
                                  <Insets right="20.0" />
                               </GridPane.margin>
                            </Spinner>
-                           <Label alignment="CENTER" contentDisplay="CENTER" text="Step Size:" GridPane.columnIndex="4">
+                           <Label alignment="CENTER" contentDisplay="CENTER" text="Step Size between Runs:" GridPane.columnIndex="4">
                               <padding>
                                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                               </padding>
+                              <tooltip>
+                                 <Tooltip text="Batch size after each step will be run until stated max" />
+                              </tooltip>
                            </Label>
                            <Spinner fx:id="batchSizeStep" GridPane.columnIndex="5">
                               <GridPane.margin>
@@ -226,51 +235,57 @@
                            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                         </VBox.margin>
                         <children>
-                           <Label text="Lot Selection Criteria for Loading:" GridPane.rowIndex="1" />
-                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                              <children>
-                                 <RadioButton mnemonicParsing="false" text="First-In-First-Out (FIFO)">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                                 <RadioButton mnemonicParsing="false" text="2">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                                 <RadioButton mnemonicParsing="false" text="3">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                              </children>
-                           </HBox>
+                           <Label text="Resource Select Criteria:">
+                              <tooltip>
+                                 <Tooltip text="Criteria to select resource" />
+                              </tooltip></Label>
                            <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
                               <children>
-                                 <RadioButton mnemonicParsing="false" text="First Available">
+                                 <RadioButton fx:id="resourceSelectCriteria1" mnemonicParsing="false" text="First Available">
                                     <HBox.margin>
                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                  </RadioButton>
-                                 <RadioButton mnemonicParsing="false" text="Shortest Queue">
+                                 <RadioButton fx:id="resourceSelectCriteria2" mnemonicParsing="false" text="Shortest Queue">
                                     <HBox.margin>
                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                  </RadioButton>
-                                 <RadioButton mnemonicParsing="false" text="Shortest Distance">
+                                 <RadioButton fx:id="resourceSelectCriteria3" mnemonicParsing="false" text="Shortest Distance">
                                     <HBox.margin>
                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                  </RadioButton>
-                                 <RadioButton mnemonicParsing="false" text="Shortest Queue + Shortest Distance">
+                                 <RadioButton fx:id="resourceSelectCriteria4" mnemonicParsing="false" text="Shortest Queue + Shortest Distance">
                                     <HBox.margin>
                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                  </RadioButton>
                               </children>
                            </HBox>
-                           <Label text="Resource Select Criteria" />
+                           <Label text="Lot Selection Criteria for Loading:" GridPane.rowIndex="1">
+                              <tooltip>
+                                 <Tooltip text="Lot selection criteria by loaders" />
+                              </tooltip></Label>
+                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              <children>
+                                 <RadioButton fx:id="lotSelectionCriteria1" mnemonicParsing="false" text="First-In-First-Out (FIFO)">
+                                    <HBox.margin>
+                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </HBox.margin>
+                                 </RadioButton>
+                                 <RadioButton fx:id="lotSelectionCriteria2" mnemonicParsing="false" text="Lot with same loader kit &amp; BIB type as previous lot processed">
+                                    <HBox.margin>
+                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </HBox.margin>
+                                 </RadioButton>
+                                 <RadioButton fx:id="lotSelectionCriteria3" mnemonicParsing="false" text="Lot with same loader kit &amp; BIB type as previous lot processed + Least changeover time">
+                                    <HBox.margin>
+                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </HBox.margin>
+                                 </RadioButton>
+                              </children>
+                           </HBox>
                         </children>
                      </GridPane>
                      <VBox>
