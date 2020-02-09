@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,24 +22,35 @@ import com.nusinfineon.exceptions.CustomException;
 
 /**
  * Class represents the core functionalities involved in interfacing with a Microsoft Excel document for the
- * purposes of varying the batch size.
+ * purposes of varying the batch size and inputing settings.
  */
 public class BatchSizeCore {
     private static final String MASTER_XLSX_FILE_NAME = "temp_master_input";
-    private static final String SHEET_NAME = "Product Info and Eqpt Matrix";
+    private static final String PRODUCT_INFO_SHEET_NAME = "Product Info and Eqpt Matrix";
     private static final String MIN_BIB_COLUMN_NAME = "BIB Slot Utilization Min";
+
+    private static final String SETTINGS_SHEET_NAME = "Settings";
+    private static final int SETTINGS_PARAMETER_COLUMN = 0;
+    private static final int SETTINGS_VALUE_COLUMN = 1;
+    private static final String RESOURCE_SELECT_CRITERIA_PARAMETER = "Resource Select Criteria";
+    private static final String LOT_SELECTION_CRITERIA_PARAMETER = "Lot Selection Criteria for Loading";
+    private static final String BATCH_SIZE_PARAMETER = "Burn In BIB Batch Size";
+
     private final static Logger LOGGER = Logger.getLogger(BatchSizeCore.class.getName());
 
     private File originalInputExcelFile;
     private File tempCopyOriginalInputExcelFile;
     private ArrayList<Integer> listOfBatchSizes;
     private ArrayList<File> excelFiles;
+    private String resourceSelectCriteria;
+    private String lotSelectionCriteria;
 
     /**
      * Creates an object from the user defined Strings.
      */
     public BatchSizeCore(String excelFilePath, String batchSizeMinString,
-                         String batchSizeMaxString, String batchSizeStepString){
+                         String batchSizeMaxString, String batchSizeStepString,
+                         String resourceSelectCriteria, String lotSelectionCriteria){
 
         this.originalInputExcelFile = new File(excelFilePath);
         int minBatchSize = Integer.parseInt(batchSizeMinString);
@@ -52,6 +62,9 @@ public class BatchSizeCore {
         for (int i = minBatchSize; i <= maxBatchSize; i = batchStep + i) {
             listOfBatchSizes.add(i);
         }
+
+        this.resourceSelectCriteria = resourceSelectCriteria;
+        this.lotSelectionCriteria = lotSelectionCriteria;
 
         this.excelFiles = new ArrayList<File>();
 
@@ -67,15 +80,15 @@ public class BatchSizeCore {
             // Create the workbook from a copy of the original excel file
             Workbook workbook = WorkbookFactory.create(this.tempCopyOriginalInputExcelFile);
 
-            // Access the necessary sheet
-            Sheet sheet = workbook.getSheet(SHEET_NAME);
+            // Access the necessary sheet i.e. Product Info & Eqpt Matrix
+            Sheet productInfoSheet = workbook.getSheet(PRODUCT_INFO_SHEET_NAME);
 
             // Obtain the column index matching the column name
             int columnIndex = -1;
-            Row firstRow = sheet.getRow(0);
+            Row firstRow = productInfoSheet.getRow(0);
             for (int cellIndex = 0; cellIndex < firstRow.getPhysicalNumberOfCells(); cellIndex++) {
                 Cell cell = firstRow.getCell(cellIndex);
-                if ( (cell.getStringCellValue().trim().equals(MIN_BIB_COLUMN_NAME))) {
+                if (cell.getStringCellValue().trim().equals(MIN_BIB_COLUMN_NAME)) {
                     columnIndex = cellIndex;
                 }
             }
@@ -85,11 +98,34 @@ public class BatchSizeCore {
             }
 
             // Set the cell values to the batch number for all the rows
-            for (int rowIndex = 1; rowIndex < sheet.getPhysicalNumberOfRows(); rowIndex++ ) {
-                Row row = sheet.getRow(rowIndex);
+            for (int rowIndex = 1; rowIndex < productInfoSheet.getPhysicalNumberOfRows(); rowIndex++ ) {
+                Row row = productInfoSheet.getRow(rowIndex);
                 Cell cell = row.getCell(columnIndex);
                 cell.setCellType(CellType.NUMERIC);
                 cell.setCellValue(batchNumber);
+            }
+
+            // Access Settings sheet
+            Sheet settingsSheet = workbook.getSheet(SETTINGS_SHEET_NAME);
+
+            // Edit settings
+            for (Row row : settingsSheet) {
+                Cell cell = row.getCell(SETTINGS_PARAMETER_COLUMN);
+                String parameter = cell.getStringCellValue().trim();
+                switch (parameter) {
+                case BATCH_SIZE_PARAMETER:
+                    row.getCell(SETTINGS_VALUE_COLUMN).setCellValue(batchNumber);
+                    break;
+                case RESOURCE_SELECT_CRITERIA_PARAMETER:
+                    row.getCell(SETTINGS_VALUE_COLUMN).setCellValue(
+                            getResourceSelectCriteria(this.resourceSelectCriteria));
+                    break;
+                case LOT_SELECTION_CRITERIA_PARAMETER:
+                    row.getCell(SETTINGS_VALUE_COLUMN).setCellValue(Integer.parseInt(this.lotSelectionCriteria));
+                    break;
+                default:
+                    break;
+                }
             }
 
             // Saves the workbook and close the stream
@@ -154,5 +190,20 @@ public class BatchSizeCore {
 
     public ArrayList<Integer> getListOfBatchSizes() {
         return listOfBatchSizes;
+    }
+
+    public String getResourceSelectCriteria(String resourceSelectCriteria) {
+        switch (resourceSelectCriteria) {
+        case "1":
+            return "First Available";
+        case "2":
+            return "ShortestQueue";
+        case "3":
+            return "ShortestDistance";
+        case "4":
+            return "ShortestQueue,ShortestDistance";
+        default:
+            return "";
+        }
     }
 }

@@ -33,12 +33,16 @@ public class Core {
     private String batchSizeMinString;
     private String batchSizeMaxString;
     private String batchSizeStepString;
+    private String resourceSelectCriteria;
+    private String lotSelectionCriteria;
     private boolean isModelShown;
 
     private final static Logger LOGGER = Logger.getLogger(Core.class.getName());
     private final static String INIT_MAX_BATCH_SIZE = "24";
     private final static String INIT_MIN_BATCH_SIZE = "1";
     private final static String INIT_STEP_SIZE = "1";
+    private final static String INIT_RESOURCE_SELECT_CRITERIA = "4";
+    private final static String INIT_LOT_SELECTION_CRITERIA = "2";
 
     /**
      * main execute function, generates script and runs model
@@ -55,7 +59,8 @@ public class Core {
     public void execute(String flexsimLocation, String modelLocation, String inputLocation,
                         String outputLocation, String runSpeed, String warmUpPeriod,
                         String stopTime, boolean isModelShown, String batchSizeMinString,
-                        String batchSizeMaxString, String batchSizeStepString) throws IOException, CustomException {
+                        String batchSizeMaxString, String batchSizeStepString, String resourceSelectCriteria,
+                        String lotSelectionCriteria) throws IOException, CustomException {
 
         file = new File(scriptFilepath);
         if (!file.createNewFile()){}
@@ -74,7 +79,7 @@ public class Core {
 
         // Code block handling creation of excel file for batch iterating
         BatchSizeCore batchSizeCore = new BatchSizeCore(inputLocation, batchSizeMinString,
-                batchSizeMaxString, batchSizeStepString);
+                batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria);
         try {
             batchSizeCore.execute();
         } catch (IOException e) {
@@ -112,7 +117,8 @@ public class Core {
      */
     public void inputData(String flexsimLocation, String modelLocation, String inputLocation,
                           String outputLocation, String runSpeed, String warmUpPeriod, String stopTime,
-                          String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString){
+                          String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString,
+                          String resourceSelectCriteria, String lotSelectionCriteria){
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
         this.inputLocation = inputLocation;
@@ -124,6 +130,9 @@ public class Core {
         this.batchSizeMinString = batchSizeMinString;
         this.batchSizeMaxString = batchSizeMaxString;
         this.batchSizeStepString = batchSizeStepString;
+
+        this.resourceSelectCriteria = resourceSelectCriteria;
+        this.lotSelectionCriteria = lotSelectionCriteria;
     }
 
     /**
@@ -209,6 +218,22 @@ public class Core {
         }
     }
 
+    public String getResourceSelectCriteria() {
+        if (resourceSelectCriteria == null) {
+            return INIT_RESOURCE_SELECT_CRITERIA;
+        } else {
+            return resourceSelectCriteria;
+        }
+    }
+
+    public String getLotSelectionCriteria() {
+        if (lotSelectionCriteria == null) {
+            return INIT_LOT_SELECTION_CRITERIA;
+        } else {
+            return lotSelectionCriteria;
+        }
+    }
+
     /**
      * Deletes existing output files to prevent excel overwrite popup
      * @param pathname
@@ -219,7 +244,7 @@ public class Core {
             if(f.delete()) {                                    //returns Boolean value
                 System.out.println(f.getName() + " deleted");   //getting and printing the file name
             } else {
-                System.out.println(pathname + "doesn't exist");
+                System.out.println(pathname + " doesn't exist");
             }
         }
         catch(Exception e) {

@@ -15,6 +15,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -82,6 +83,9 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private CheckBox showModel;
 
+    private ToggleGroup resourceSelectCriteria;
+    private ToggleGroup lotSelectionCriteria;
+
     public MainGui(Stage primaryStage, Core core) {
         super(FXML, primaryStage);
 
@@ -105,16 +109,48 @@ public class MainGui extends UiPart<Stage> {
         batchSizeStep.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
                 MIN_ALLOWABLE_STEP_SIZE, MAX_ALLOWABLE_STEP_SIZE, Integer.parseInt(core.getBatchSizeStepString())));
 
-        ToggleGroup resourceSelectCriteria = new ToggleGroup();
+        resourceSelectCriteria = new ToggleGroup();
         resourceSelectCriteria1.setToggleGroup(resourceSelectCriteria);
         resourceSelectCriteria2.setToggleGroup(resourceSelectCriteria);
         resourceSelectCriteria3.setToggleGroup(resourceSelectCriteria);
         resourceSelectCriteria4.setToggleGroup(resourceSelectCriteria);
+        resourceSelectCriteria.selectToggle(getResourceSelectCriteria());
 
-        ToggleGroup lotSelectionCriteria = new ToggleGroup();
+        lotSelectionCriteria = new ToggleGroup();
         lotSelectionCriteria1.setToggleGroup(lotSelectionCriteria);
         lotSelectionCriteria2.setToggleGroup(lotSelectionCriteria);
         lotSelectionCriteria3.setToggleGroup(lotSelectionCriteria);
+        lotSelectionCriteria.selectToggle(getLotSelectionCriteria());
+    }
+
+    /** Gets the saved radio button for Resource Select Criteria
+     */
+    private RadioButton getResourceSelectCriteria() {
+        String selection = core.getResourceSelectCriteria();
+        switch (selection) {
+        case "1":
+            return resourceSelectCriteria1;
+        case "2":
+            return resourceSelectCriteria2;
+        case "3":
+            return resourceSelectCriteria3;
+        default:
+            return resourceSelectCriteria4;
+        }
+    }
+
+    /** Gets the saved radio button for Lot Selection Criteria
+     */
+    private RadioButton getLotSelectionCriteria() {
+        String selection = core.getLotSelectionCriteria();
+        switch (selection) {
+            case "1":
+                return lotSelectionCriteria1;
+            case "2":
+                return lotSelectionCriteria2;
+            default:
+                return lotSelectionCriteria3;
+        }
     }
 
     /**
@@ -288,19 +324,52 @@ public class MainGui extends UiPart<Stage> {
                 batchSizeMin.getValueFactory().getValue(),
                 batchSizeMax.getValueFactory().getValue())) {
             showErrorBox("Step size can at most be " +
-                    (batchSizeMax.getValueFactory().getValue() - batchSizeMin.getValueFactory().getValue()) + "!");
+                    Math.max(1, (batchSizeMax.getValueFactory().getValue() - batchSizeMin.getValueFactory().getValue()))
+                    + "!");
         } else {
             try {
                 core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
                         outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
                         showModel.isSelected(), Integer.toString(batchSizeMin.getValueFactory().getValue()),
                         Integer.toString(batchSizeMax.getValueFactory().getValue()),
-                        Integer.toString(batchSizeStep.getValueFactory().getValue()));
+                        Integer.toString(batchSizeStep.getValueFactory().getValue()),
+                        getSelectedResourceSelectCriteria(resourceSelectCriteria),
+                        getSelectedLotSelectionCriteria(lotSelectionCriteria));
             } catch (IOException e) {
                 showErrorBox("An IO Exception has occurred.");
             } catch (CustomException e) {
                 showErrorBox(e.getMessage());
             }
+        }
+    }
+
+    /** Get the selected radio button for Resource Select Criteria from user input
+     * @param resourceSelectCriteria Toggle group for Resource Select Criteria
+     */
+    private String getSelectedResourceSelectCriteria(ToggleGroup resourceSelectCriteria) {
+        Toggle selection = resourceSelectCriteria.getSelectedToggle();
+        if (selection == resourceSelectCriteria1) {
+            return "1";
+        } else if (selection == resourceSelectCriteria2) {
+            return "2";
+        } else if (selection == resourceSelectCriteria3) {
+            return "3";
+        } else {
+            return "4";
+        }
+    }
+
+    /** Get the selected radio button for Lot Selection Criteria from user input
+     * @param lotSelectionCriteria Toggle group for Lot Selection Criteria
+     */
+    private String getSelectedLotSelectionCriteria(ToggleGroup lotSelectionCriteria) {
+        Toggle selection = lotSelectionCriteria.getSelectedToggle();
+        if (selection == lotSelectionCriteria1) {
+            return "1";
+        } else if (selection == lotSelectionCriteria2) {
+            return "2";
+        } else {
+            return "3";
         }
     }
 
@@ -476,7 +545,9 @@ public class MainGui extends UiPart<Stage> {
                 outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
                 Integer.toString(batchSizeMin.getValueFactory().getValue()),
                 Integer.toString(batchSizeMax.getValueFactory().getValue()),
-                Integer.toString(batchSizeStep.getValueFactory().getValue()));
+                Integer.toString(batchSizeStep.getValueFactory().getValue()),
+                getSelectedResourceSelectCriteria(resourceSelectCriteria),
+                getSelectedLotSelectionCriteria(lotSelectionCriteria));
         primaryStage.hide();
     }
 }
