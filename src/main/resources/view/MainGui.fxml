@@ -19,15 +19,28 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import javafx.stage.Stage?>
 
-<fx:root fx:id="MainWindow" minHeight="360.0" minWidth="480.0" onCloseRequest="#handleExit" type="Stage" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root fx:id="MainWindow" minHeight="360.0" minWidth="480.0" onCloseRequest="#handleExit" title="IBIS Simulation" type="Stage" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <scene>
       <Scene>
           <BorderPane>
             <center>
                <VBox BorderPane.alignment="CENTER">
                   <children>
+                     <VBox>
+                        <children>
+                           <Label text="File Locations">
+                              <VBox.margin>
+                                 <Insets left="20.0" top="10.0" />
+                              </VBox.margin>
+                              <font>
+                                 <Font name="System Bold" size="16.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </VBox>
                      <GridPane>
                        <columnConstraints>
                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
@@ -40,7 +53,7 @@
                          <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
                        </rowConstraints>
                         <children>
-                           <Label text="Flexsim .exe Location: ">
+                           <Label text="Flexsim (.exe) Location: ">
                               <tooltip>
                                  <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="flexsim.exe address (Found in Flexsim installation directory)" />
                               </tooltip>
@@ -50,14 +63,14 @@
                            </Label>
                            <HBox fx:id="exeDragTarget" onDragDropped="#exeDragDropped" onDragOver="#exeDragOver" GridPane.columnIndex="1">
                               <children>
-                                 <TextField fx:id="exeLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. C:\Program Files (x86)\FlexSim7.3\program\flexsim.exe" HBox.hgrow="ALWAYS">
+                                 <TextField fx:id="exeLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location, e.g. C:\Program Files (x86)\FlexSim7.3\program\flexsim.exe" HBox.hgrow="ALWAYS">
                                     <cursor>
                                        <Cursor fx:constant="DEFAULT" />
                                     </cursor>
                                  </TextField>
                               </children>
                            </HBox>
-                           <Label text="Model File Location: " GridPane.rowIndex="1">
+                           <Label text="Model (.fsm) Location: " GridPane.rowIndex="1">
                               <tooltip>
                                  <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Base Flexsim model file address" />
                               </tooltip>
@@ -67,14 +80,14 @@
                            </Label>
                            <HBox fx:id="modelDragTarget" onDragDropped="#modelDragDropped" onDragOver="#modelDragOver" GridPane.columnIndex="1" GridPane.rowIndex="1">
                               <children>
-                                 <TextField fx:id="modelFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. C:\Documents\IBIS Model.fsm" HBox.hgrow="ALWAYS">
+                                 <TextField fx:id="modelFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location, e.g. C:\Documents\IBIS Model.fsm" HBox.hgrow="ALWAYS">
                                     <cursor>
                                        <Cursor fx:constant="DEFAULT" />
                                     </cursor>
                                  </TextField>
                               </children>
                            </HBox>
-                           <Label text="Input File Location: " GridPane.rowIndex="2">
+                           <Label text="Input Excel (.xlsx) Location: " GridPane.rowIndex="2">
                               <tooltip>
                                  <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Input Excel file address" />
                               </tooltip>
@@ -84,14 +97,14 @@
                            </Label>
                            <HBox fx:id="inputFileDragTarget" onDragDropped="#inputDragDropped" onDragOver="#inputDragOver" GridPane.columnIndex="1" GridPane.rowIndex="2">
                               <children>
-                                 <TextField fx:id="inputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. C:\Documents\Input.xlsx" HBox.hgrow="ALWAYS">
+                                 <TextField fx:id="inputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location, e.g. C:\Documents\Input.xlsx" HBox.hgrow="ALWAYS">
                                     <cursor>
                                        <Cursor fx:constant="DEFAULT" />
                                     </cursor>
                                  </TextField>
                               </children>
                            </HBox>
-                           <Label text="Output File Location: " GridPane.rowIndex="3">
+                           <Label text="Output Excel (.xlsx) Location: " GridPane.rowIndex="3">
                               <tooltip>
                                  <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Output Excel file address" />
                               </tooltip>
@@ -101,7 +114,7 @@
                            </Label>
                            <HBox fx:id="outputFileDragTarget" onDragDropped="#outputDragDropped" onDragOver="#outputDragOver" GridPane.columnIndex="1" GridPane.rowIndex="3">
                               <children>
-                                 <TextField fx:id="outputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location e.g. C:\Documents\Output.xlsx" HBox.hgrow="ALWAYS">
+                                 <TextField fx:id="outputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location, e.g. C:\Documents\Output.xlsx" HBox.hgrow="ALWAYS">
                                     <cursor>
                                        <Cursor fx:constant="DEFAULT" />
                                     </cursor>
@@ -110,9 +123,21 @@
                            </HBox>
                         </children>
                         <VBox.margin>
-                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
                         </VBox.margin>
                      </GridPane>
+                     <VBox>
+                        <children>
+                           <Label text="Simulation Run Parameters">
+                              <VBox.margin>
+                                 <Insets left="20.0" top="10.0" />
+                              </VBox.margin>
+                              <font>
+                                 <Font name="System Bold" size="16.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </VBox>
                      <GridPane>
                         <columnConstraints>
                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
@@ -162,9 +187,21 @@
                               </GridPane.margin></TextField>
                         </children>
                         <VBox.margin>
-                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
                         </VBox.margin>
                      </GridPane>
+                     <VBox>
+                        <children>
+                           <Label text="Batch Size for Runs">
+                              <VBox.margin>
+                                 <Insets left="20.0" top="10.0" />
+                              </VBox.margin>
+                              <font>
+                                 <Font name="System Bold" size="16.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </VBox>
                      <GridPane>
                        <columnConstraints>
                          <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="180.0" />
@@ -219,9 +256,21 @@
                            </Spinner>
                         </children>
                         <VBox.margin>
-                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
                         </VBox.margin>
                      </GridPane>
+                     <VBox>
+                        <children>
+                           <Label text="Additional Parameters">
+                              <VBox.margin>
+                                 <Insets left="20.0" top="10.0" />
+                              </VBox.margin>
+                              <font>
+                                 <Font name="System Bold" size="16.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </VBox>
                      <GridPane>
                        <columnConstraints>
                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
@@ -230,9 +279,11 @@
                        <rowConstraints>
                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                        </rowConstraints>
                         <VBox.margin>
-                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
                         </VBox.margin>
                         <children>
                            <Label text="Resource Select Criteria:">
@@ -280,6 +331,44 @@
                                     </HBox.margin>
                                  </RadioButton>
                                  <RadioButton fx:id="lotSelectionCriteria3" mnemonicParsing="false" text="Lot with same loader kit &amp; BIB type as previous lot processed + Least changeover time">
+                                    <HBox.margin>
+                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </HBox.margin>
+                                 </RadioButton>
+                              </children>
+                           </HBox>
+                           <Label text="Trolley Location Select Criteria:" GridPane.rowIndex="2">
+                              <tooltip>
+                                 <Tooltip text="This option allows trolley to be placed at one of the empty trolley locations for a production location based on these criteria" />
+                              </tooltip>
+                           </Label>
+                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                              <children>
+                                 <RadioButton fx:id="trolleyLocationSelectCriteria0" mnemonicParsing="false" text="Shortest Distance">
+                                    <HBox.margin>
+                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </HBox.margin>
+                                 </RadioButton>
+                                 <RadioButton fx:id="trolleyLocationSelectCriteria1" mnemonicParsing="false" text="Shortest Queue">
+                                    <HBox.margin>
+                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </HBox.margin>
+                                 </RadioButton>
+                              </children>
+                           </HBox>
+                           <Label text="BIB Load on Lot Criteria:" GridPane.rowIndex="3">
+                              <tooltip>
+                                 <Tooltip text="This feature is to use standard procedure to load BIB, or to maximize the use of BIB by allowing multiple lots to be loaded onto a single BIB" />
+                              </tooltip>
+                           </Label>
+                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                              <children>
+                                 <RadioButton fx:id="bibLoadOnLotCriteria1" mnemonicParsing="false" text="One lot per BIB">
+                                    <HBox.margin>
+                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </HBox.margin>
+                                 </RadioButton>
+                                 <RadioButton fx:id="bibLoadOnLotCriteria2" mnemonicParsing="false" text="Multi lots per BIB">
                                     <HBox.margin>
                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>

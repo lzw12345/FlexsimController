@@ -17,6 +17,8 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import com.nusinfineon.exceptions.CustomException;
 
+import javafx.scene.control.ToggleGroup;
+
 public class Core {
 
     private String flexsimLocation;
@@ -35,6 +37,8 @@ public class Core {
     private String batchSizeStepString;
     private String resourceSelectCriteria;
     private String lotSelectionCriteria;
+    private String trolleyLocationSelectCriteria;
+    private String bibLoadOnLotCriteria;
     private boolean isModelShown;
 
     private final static Logger LOGGER = Logger.getLogger(Core.class.getName());
@@ -43,6 +47,8 @@ public class Core {
     private final static String INIT_STEP_SIZE = "1";
     private final static String INIT_RESOURCE_SELECT_CRITERIA = "4";
     private final static String INIT_LOT_SELECTION_CRITERIA = "2";
+    private final static String INIT_TROLLEY_LOCATION_SELECT_CRITERIA = "0";
+    private final static String INIT_BIB_LOAD_ON_LOT_CRITERIA = "2";
 
     /**
      * main execute function, generates script and runs model
@@ -60,7 +66,8 @@ public class Core {
                         String outputLocation, String runSpeed, String warmUpPeriod,
                         String stopTime, boolean isModelShown, String batchSizeMinString,
                         String batchSizeMaxString, String batchSizeStepString, String resourceSelectCriteria,
-                        String lotSelectionCriteria) throws IOException, CustomException {
+                        String lotSelectionCriteria, String trolleyLocationSelectCriteria,
+                        String bibLoadOnLotCriteria) throws IOException, CustomException {
 
         file = new File(scriptFilepath);
         if (!file.createNewFile()){}
@@ -79,7 +86,8 @@ public class Core {
 
         // Code block handling creation of excel file for batch iterating
         BatchSizeCore batchSizeCore = new BatchSizeCore(inputLocation, batchSizeMinString,
-                batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria);
+                batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria,
+                trolleyLocationSelectCriteria, bibLoadOnLotCriteria);
         try {
             batchSizeCore.execute();
         } catch (IOException e) {
@@ -118,7 +126,8 @@ public class Core {
     public void inputData(String flexsimLocation, String modelLocation, String inputLocation,
                           String outputLocation, String runSpeed, String warmUpPeriod, String stopTime,
                           String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString,
-                          String resourceSelectCriteria, String lotSelectionCriteria){
+                          String resourceSelectCriteria, String lotSelectionCriteria,
+                          String trolleyLocationSelectCriteria, String bibLoadOnLotCriteria){
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
         this.inputLocation = inputLocation;
@@ -133,6 +142,8 @@ public class Core {
 
         this.resourceSelectCriteria = resourceSelectCriteria;
         this.lotSelectionCriteria = lotSelectionCriteria;
+        this.trolleyLocationSelectCriteria = trolleyLocationSelectCriteria;
+        this.bibLoadOnLotCriteria = bibLoadOnLotCriteria;
     }
 
     /**
@@ -231,6 +242,22 @@ public class Core {
             return INIT_LOT_SELECTION_CRITERIA;
         } else {
             return lotSelectionCriteria;
+        }
+    }
+
+    public String getTrolleyLocationSelectCriteria() {
+        if (trolleyLocationSelectCriteria == null) {
+            return INIT_TROLLEY_LOCATION_SELECT_CRITERIA;
+        } else {
+            return trolleyLocationSelectCriteria;
+        }
+    }
+
+    public String getBibLoadOnLotCriteria() {
+        if (bibLoadOnLotCriteria == null) {
+            return INIT_BIB_LOAD_ON_LOT_CRITERIA;
+        } else {
+            return bibLoadOnLotCriteria;
         }
     }
 

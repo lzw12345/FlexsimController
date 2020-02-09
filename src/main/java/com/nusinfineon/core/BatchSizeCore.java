@@ -32,9 +32,11 @@ public class BatchSizeCore {
     private static final String SETTINGS_SHEET_NAME = "Settings";
     private static final int SETTINGS_PARAMETER_COLUMN = 0;
     private static final int SETTINGS_VALUE_COLUMN = 1;
+    private static final String BATCH_SIZE_PARAMETER = "Burn In BIB Batch Size";
     private static final String RESOURCE_SELECT_CRITERIA_PARAMETER = "Resource Select Criteria";
     private static final String LOT_SELECTION_CRITERIA_PARAMETER = "Lot Selection Criteria for Loading";
-    private static final String BATCH_SIZE_PARAMETER = "Burn In BIB Batch Size";
+    private static final String TROLLEY_LOCATION_SELECT_CRITERIA_PARAMETER = "Trolley Location Select Criteria";
+    private static final String BIB_LOAD_ON_LOT_CRITERIA_PARAMETER = "BIB Load on Lot Criteria";
 
     private final static Logger LOGGER = Logger.getLogger(BatchSizeCore.class.getName());
 
@@ -44,13 +46,16 @@ public class BatchSizeCore {
     private ArrayList<File> excelFiles;
     private String resourceSelectCriteria;
     private String lotSelectionCriteria;
+    private String trolleyLocationSelectCriteria;
+    private String bibLoadOnLotCriteria;
 
     /**
      * Creates an object from the user defined Strings.
      */
     public BatchSizeCore(String excelFilePath, String batchSizeMinString,
                          String batchSizeMaxString, String batchSizeStepString,
-                         String resourceSelectCriteria, String lotSelectionCriteria){
+                         String resourceSelectCriteria, String lotSelectionCriteria,
+                         String trolleyLocationSelectCriteria, String bibLoadOnLotCriteria){
 
         this.originalInputExcelFile = new File(excelFilePath);
         int minBatchSize = Integer.parseInt(batchSizeMinString);
@@ -65,6 +70,8 @@ public class BatchSizeCore {
 
         this.resourceSelectCriteria = resourceSelectCriteria;
         this.lotSelectionCriteria = lotSelectionCriteria;
+        this.trolleyLocationSelectCriteria = trolleyLocationSelectCriteria;
+        this.bibLoadOnLotCriteria = bibLoadOnLotCriteria;
 
         this.excelFiles = new ArrayList<File>();
 
@@ -122,6 +129,13 @@ public class BatchSizeCore {
                     break;
                 case LOT_SELECTION_CRITERIA_PARAMETER:
                     row.getCell(SETTINGS_VALUE_COLUMN).setCellValue(Integer.parseInt(this.lotSelectionCriteria));
+                    break;
+                case TROLLEY_LOCATION_SELECT_CRITERIA_PARAMETER:
+                    row.getCell(SETTINGS_VALUE_COLUMN).setCellValue(
+                            Integer.parseInt(this.trolleyLocationSelectCriteria));
+                    break;
+                case BIB_LOAD_ON_LOT_CRITERIA_PARAMETER:
+                    row.getCell(SETTINGS_VALUE_COLUMN).setCellValue(Integer.parseInt(this.bibLoadOnLotCriteria));
                     break;
                 default:
                     break;
@@ -194,8 +208,6 @@ public class BatchSizeCore {
 
     public String getResourceSelectCriteria(String resourceSelectCriteria) {
         switch (resourceSelectCriteria) {
-        case "1":
-            return "First Available";
         case "2":
             return "ShortestQueue";
         case "3":

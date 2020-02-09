@@ -81,10 +81,20 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private RadioButton lotSelectionCriteria3;
     @FXML
+    private RadioButton trolleyLocationSelectCriteria0;
+    @FXML
+    private RadioButton trolleyLocationSelectCriteria1;
+    @FXML
+    private RadioButton bibLoadOnLotCriteria1;
+    @FXML
+    private RadioButton bibLoadOnLotCriteria2;
+    @FXML
     private CheckBox showModel;
 
     private ToggleGroup resourceSelectCriteria;
     private ToggleGroup lotSelectionCriteria;
+    private ToggleGroup trolleyLocationSelectCriteria;
+    private ToggleGroup bibLoadOnLotCriteria;
 
     public MainGui(Stage primaryStage, Core core) {
         super(FXML, primaryStage);
@@ -121,6 +131,16 @@ public class MainGui extends UiPart<Stage> {
         lotSelectionCriteria2.setToggleGroup(lotSelectionCriteria);
         lotSelectionCriteria3.setToggleGroup(lotSelectionCriteria);
         lotSelectionCriteria.selectToggle(getLotSelectionCriteria());
+
+        trolleyLocationSelectCriteria = new ToggleGroup();
+        trolleyLocationSelectCriteria0.setToggleGroup(trolleyLocationSelectCriteria);
+        trolleyLocationSelectCriteria1.setToggleGroup(trolleyLocationSelectCriteria);
+        trolleyLocationSelectCriteria.selectToggle(getTrolleyLocationSelectCriteria());
+
+        bibLoadOnLotCriteria = new ToggleGroup();
+        bibLoadOnLotCriteria1.setToggleGroup(bibLoadOnLotCriteria);
+        bibLoadOnLotCriteria2.setToggleGroup(bibLoadOnLotCriteria);
+        bibLoadOnLotCriteria.selectToggle(getBibLoadOnLotCriteria());
     }
 
     /** Gets the saved radio button for Resource Select Criteria
@@ -150,6 +170,30 @@ public class MainGui extends UiPart<Stage> {
                 return lotSelectionCriteria2;
             default:
                 return lotSelectionCriteria3;
+        }
+    }
+
+    /** Gets the saved radio button for Trolley Location Select Criteria
+     */
+    private RadioButton getTrolleyLocationSelectCriteria() {
+        String selection = core.getTrolleyLocationSelectCriteria();
+        switch (selection) {
+        case "1":
+            return trolleyLocationSelectCriteria1;
+        default:
+            return trolleyLocationSelectCriteria0;
+        }
+    }
+
+    /** Gets the saved radio button for BIB Load on Lot Criteria
+     */
+    private RadioButton getBibLoadOnLotCriteria() {
+        String selection = core.getBibLoadOnLotCriteria();
+        switch (selection) {
+        case "1":
+            return bibLoadOnLotCriteria1;
+        default:
+            return bibLoadOnLotCriteria2;
         }
     }
 
@@ -313,17 +357,17 @@ public class MainGui extends UiPart<Stage> {
              */
             showErrorBox("Run Speed and/or Stop Time must be a number (integer/double)!");
         } else if (!isValidMinBatchSize(batchSizeMin.getValueFactory().getValue())) {
-            showErrorBox("Min batch size must be at least 1 and at most 24!");
+            showErrorBox("Minimum batch size must be at least 1 and at most 24!");
         } else if (!isValidMaxBatchSize(batchSizeMax.getValueFactory().getValue())) {
-            showErrorBox("Max batch size must be at least 1 and at most 24!");
+            showErrorBox("Maximum batch size must be at least 1 and at most 24!");
         } else if (!isValidMinMax(batchSizeMin.getValueFactory().getValue(),
                 batchSizeMax.getValueFactory().getValue())) {
-            showErrorBox("Min batch size (" + batchSizeMin.getValueFactory().getValue() +
-                    ") cannot be larger than max batch size (" + batchSizeMax.getValueFactory().getValue() + ")!");
+            showErrorBox("Minimum batch size (" + batchSizeMin.getValueFactory().getValue() +
+                    ") cannot be larger than maximum batch size (" + batchSizeMax.getValueFactory().getValue() + ")!");
         } else if (!isValidStepSize(batchSizeStep.getValueFactory().getValue(),
                 batchSizeMin.getValueFactory().getValue(),
                 batchSizeMax.getValueFactory().getValue())) {
-            showErrorBox("Step size can at most be " +
+            showErrorBox("Step Size between Runs cannot exceed " +
                     Math.max(1, (batchSizeMax.getValueFactory().getValue() - batchSizeMin.getValueFactory().getValue()))
                     + "!");
         } else {
@@ -334,7 +378,9 @@ public class MainGui extends UiPart<Stage> {
                         Integer.toString(batchSizeMax.getValueFactory().getValue()),
                         Integer.toString(batchSizeStep.getValueFactory().getValue()),
                         getSelectedResourceSelectCriteria(resourceSelectCriteria),
-                        getSelectedLotSelectionCriteria(lotSelectionCriteria));
+                        getSelectedLotSelectionCriteria(lotSelectionCriteria),
+                        getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
+                        getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
             } catch (IOException e) {
                 showErrorBox("An IO Exception has occurred.");
             } catch (CustomException e) {
@@ -373,6 +419,30 @@ public class MainGui extends UiPart<Stage> {
         }
     }
 
+    /** Get the selected radio button for Trolley Location Select Criteria from user input
+     * @param trolleyLocationSelectCriteria Toggle group for Trolley Location Select Criteria
+     */
+    private String getSelectedTrolleyLocationSelectCriteria(ToggleGroup trolleyLocationSelectCriteria) {
+        Toggle selection = trolleyLocationSelectCriteria.getSelectedToggle();
+        if (selection == trolleyLocationSelectCriteria1) {
+            return "1";
+        } else {
+            return "0";
+        }
+    }
+
+    /** Get the selected radio button for BIB Load On Lot Criteria from user input
+     * @param bibLoadOnLotCriteria Toggle group for BIB Load On Lot Criteria
+     */
+    private String getSelectedBibLoadOnLotCriteria(ToggleGroup bibLoadOnLotCriteria) {
+        Toggle selection = bibLoadOnLotCriteria.getSelectedToggle();
+        if (selection == bibLoadOnLotCriteria1) {
+            return "1";
+        } else {
+            return "2";
+        }
+    }
+
     /**
      * Helper function to raise alert box with a supplied alert text.
      * @param alertText Alert text string to be displayed to the user.
@@ -381,6 +451,8 @@ public class MainGui extends UiPart<Stage> {
         Alert errorAlert = new Alert(Alert.AlertType.ERROR);
         errorAlert.setHeaderText("Invalid Input");
         errorAlert.setContentText(alertText);
+        errorAlert.setResizable(true);
+        errorAlert.getDialogPane().setPrefSize(480, 240);
         errorAlert.showAndWait();
     }
 
@@ -547,7 +619,9 @@ public class MainGui extends UiPart<Stage> {
                 Integer.toString(batchSizeMax.getValueFactory().getValue()),
                 Integer.toString(batchSizeStep.getValueFactory().getValue()),
                 getSelectedResourceSelectCriteria(resourceSelectCriteria),
-                getSelectedLotSelectionCriteria(lotSelectionCriteria));
+                getSelectedLotSelectionCriteria(lotSelectionCriteria),
+                getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
+                getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
         primaryStage.hide();
     }
 }
