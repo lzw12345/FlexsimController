@@ -10,8 +10,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCombination;
@@ -25,8 +30,9 @@ import javafx.stage.Stage;
  */
 public class MainGui extends UiPart<Stage> {
     private static final int MAX_ALLOWABLE_BATCH_SIZE = 24;
-    private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - 1;
-    private static final int MIN_ALLOWABLE_BATCH_SIZE = 0;
+    private static final int MIN_ALLOWABLE_BATCH_SIZE = 1;
+    private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - MIN_ALLOWABLE_BATCH_SIZE;
+    private static final int MIN_ALLOWABLE_STEP_SIZE = 1;
     private static final String FXML = "MainGui.fxml";
 
     private Stage primaryStage;
@@ -55,13 +61,40 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private TextField stopTime;
     @FXML
+    private Spinner<Integer> batchSizeMin;
+    @FXML
+    private Spinner<Integer> batchSizeMax;
+    @FXML
+    private Spinner<Integer> batchSizeStep;
+    @FXML
+    private RadioButton resourceSelectCriteria1;
+    @FXML
+    private RadioButton resourceSelectCriteria2;
+    @FXML
+    private RadioButton resourceSelectCriteria3;
+    @FXML
+    private RadioButton resourceSelectCriteria4;
+    @FXML
+    private RadioButton lotSelectionCriteria1;
+    @FXML
+    private RadioButton lotSelectionCriteria2;
+    @FXML
+    private RadioButton lotSelectionCriteria3;
+    @FXML
+    private RadioButton trolleyLocationSelectCriteria0;
+    @FXML
+    private RadioButton trolleyLocationSelectCriteria1;
+    @FXML
+    private RadioButton bibLoadOnLotCriteria1;
+    @FXML
+    private RadioButton bibLoadOnLotCriteria2;
+    @FXML
     private CheckBox showModel;
-    @FXML
-    private TextField batchSizeMin;
-    @FXML
-    private TextField batchSizeMax;
-    @FXML
-    private TextField batchSizeStep;
+
+    private ToggleGroup resourceSelectCriteria;
+    private ToggleGroup lotSelectionCriteria;
+    private ToggleGroup trolleyLocationSelectCriteria;
+    private ToggleGroup bibLoadOnLotCriteria;
 
     public MainGui(Stage primaryStage, Core core) {
         super(FXML, primaryStage);
@@ -78,9 +111,90 @@ public class MainGui extends UiPart<Stage> {
         runSpeed.setText(core.getRunSpeed());
         warmUpPeriod.setText(core.getWarmUpPeriod());
         stopTime.setText(core.getStopTime());
-        batchSizeMin.setText(core.getBatchSizeMinString());
-        batchSizeMax.setText(core.getBatchSizeMaxString());
-        batchSizeStep.setText(core.getBatchSizeStepString());
+
+        batchSizeMin.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                MIN_ALLOWABLE_BATCH_SIZE, MAX_ALLOWABLE_BATCH_SIZE, Integer.parseInt(core.getBatchSizeMinString())));
+        batchSizeMax.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                MIN_ALLOWABLE_BATCH_SIZE, MAX_ALLOWABLE_BATCH_SIZE, Integer.parseInt(core.getBatchSizeMaxString())));
+        batchSizeStep.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                MIN_ALLOWABLE_STEP_SIZE, MAX_ALLOWABLE_STEP_SIZE, Integer.parseInt(core.getBatchSizeStepString())));
+
+        resourceSelectCriteria = new ToggleGroup();
+        resourceSelectCriteria1.setToggleGroup(resourceSelectCriteria);
+        resourceSelectCriteria2.setToggleGroup(resourceSelectCriteria);
+        resourceSelectCriteria3.setToggleGroup(resourceSelectCriteria);
+        resourceSelectCriteria4.setToggleGroup(resourceSelectCriteria);
+        resourceSelectCriteria.selectToggle(getResourceSelectCriteria());
+
+        lotSelectionCriteria = new ToggleGroup();
+        lotSelectionCriteria1.setToggleGroup(lotSelectionCriteria);
+        lotSelectionCriteria2.setToggleGroup(lotSelectionCriteria);
+        lotSelectionCriteria3.setToggleGroup(lotSelectionCriteria);
+        lotSelectionCriteria.selectToggle(getLotSelectionCriteria());
+
+        trolleyLocationSelectCriteria = new ToggleGroup();
+        trolleyLocationSelectCriteria0.setToggleGroup(trolleyLocationSelectCriteria);
+        trolleyLocationSelectCriteria1.setToggleGroup(trolleyLocationSelectCriteria);
+        trolleyLocationSelectCriteria.selectToggle(getTrolleyLocationSelectCriteria());
+
+        bibLoadOnLotCriteria = new ToggleGroup();
+        bibLoadOnLotCriteria1.setToggleGroup(bibLoadOnLotCriteria);
+        bibLoadOnLotCriteria2.setToggleGroup(bibLoadOnLotCriteria);
+        bibLoadOnLotCriteria.selectToggle(getBibLoadOnLotCriteria());
+    }
+
+    /** Gets the saved radio button for Resource Select Criteria
+     */
+    private RadioButton getResourceSelectCriteria() {
+        String selection = core.getResourceSelectCriteria();
+        switch (selection) {
+        case "1":
+            return resourceSelectCriteria1;
+        case "2":
+            return resourceSelectCriteria2;
+        case "3":
+            return resourceSelectCriteria3;
+        default:
+            return resourceSelectCriteria4;
+        }
+    }
+
+    /** Gets the saved radio button for Lot Selection Criteria
+     */
+    private RadioButton getLotSelectionCriteria() {
+        String selection = core.getLotSelectionCriteria();
+        switch (selection) {
+            case "1":
+                return lotSelectionCriteria1;
+            case "2":
+                return lotSelectionCriteria2;
+            default:
+                return lotSelectionCriteria3;
+        }
+    }
+
+    /** Gets the saved radio button for Trolley Location Select Criteria
+     */
+    private RadioButton getTrolleyLocationSelectCriteria() {
+        String selection = core.getTrolleyLocationSelectCriteria();
+        switch (selection) {
+        case "1":
+            return trolleyLocationSelectCriteria1;
+        default:
+            return trolleyLocationSelectCriteria0;
+        }
+    }
+
+    /** Gets the saved radio button for BIB Load on Lot Criteria
+     */
+    private RadioButton getBibLoadOnLotCriteria() {
+        String selection = core.getBibLoadOnLotCriteria();
+        switch (selection) {
+        case "1":
+            return bibLoadOnLotCriteria1;
+        default:
+            return bibLoadOnLotCriteria2;
+        }
     }
 
     /**
@@ -88,7 +202,7 @@ public class MainGui extends UiPart<Stage> {
      * @param event
      */
     @FXML
-    public void  modelDragOver(DragEvent event) {
+    public void modelDragOver(DragEvent event) {
         if (event.getGestureSource() != modelDragTarget
                 && event.getDragboard().hasFiles()) {
             /* allow for both copying and moving, whatever user chooses */
@@ -110,7 +224,7 @@ public class MainGui extends UiPart<Stage> {
         if (db.hasFiles() && isAccepted ) {
             modelFileLocation.setText(db.getFiles().toString().replaceAll("\\[", "").replaceAll("\\]",""));
             success = true;
-        }else {
+        } else {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Input not valid");
             errorAlert.setContentText("file must be a flexsim nus.infineon.model with extension .fsm");
@@ -124,7 +238,7 @@ public class MainGui extends UiPart<Stage> {
     }
 
     @FXML
-    public void  inputDragOver(DragEvent event) {
+    public void inputDragOver(DragEvent event) {
         if (event.getGestureSource() != inputFileDragTarget
                 && event.getDragboard().hasFiles()) {
             /* allow for both copying and moving, whatever user chooses */
@@ -156,7 +270,7 @@ public class MainGui extends UiPart<Stage> {
     }
 
     @FXML
-    public void  outputDragOver(DragEvent event) {
+    public void outputDragOver(DragEvent event) {
         if (event.getGestureSource() != outputFileDragTarget
                 && event.getDragboard().hasFiles()) {
             /* allow for both copying and moving, whatever user chooses */
@@ -188,7 +302,7 @@ public class MainGui extends UiPart<Stage> {
     }
 
     @FXML
-    public void  exeDragOver(DragEvent event) {
+    public void exeDragOver(DragEvent event) {
         if (event.getGestureSource() != exeDragTarget
                 && event.getDragboard().hasFiles()) {
             /* allow for both copying and moving, whatever user chooses */
@@ -219,49 +333,113 @@ public class MainGui extends UiPart<Stage> {
         event.consume();
     }
 
-
-
     @FXML
     public void handleModelExecution() throws IOException {
 
         if (exeLocation.getText().isBlank() && inputFileLocation.getText().isBlank()
-                && outputFileLocation.getText().isBlank() && modelFileLocation.getText().isBlank()){
+                && outputFileLocation.getText().isBlank() && modelFileLocation.getText().isBlank()) {
             /*
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Invalid Input");
             errorAlert.setContentText("file locations cannot be blank");
             errorAlert.showAndWait();
              */
-            showErrorBox("File locations cannot be blank");
+            showErrorBox("File locations cannot be blank!");
         }
-
-        if (isNotDouble(runSpeed.getText()) && isNotDouble(stopTime.getText())) {
+        if (runSpeed.getText().isBlank() || stopTime.getText().isBlank()) {
+            showErrorBox("Run Speed and/or Stop Time cannot be blank!");
+        } else if (isNotDouble(runSpeed.getText()) || isNotDouble(stopTime.getText())) {
             /*
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Invalid Input");
             errorAlert.setContentText("Run speed and Stop time must be an integer or double");
             errorAlert.showAndWait();
              */
-            showErrorBox("Run speed and Stop time must be an integer or double");
-        } else if (!isValidMinBatchSize(batchSizeMin.getText())) {
-            showErrorBox("Min batch size must be > 0 and < 24");
-        } else if (!isValidMaxBatchSize(batchSizeMax.getText())) {
-            showErrorBox("Max batch size must be > 0 and < 24");
-        } else if (!isValidStepSize(batchSizeStep.getText())) {
-            showErrorBox("Step size must be an integer and < " + MAX_ALLOWABLE_STEP_SIZE);
-        } else if (!isValidMinMax(batchSizeMin.getText(), batchSizeMax.getText())) {
-            showErrorBox("Min batch (" + batchSizeMin.getText() + ") must be smaller than max ("
-                                + batchSizeMax.getText() + ")");
+            showErrorBox("Run Speed and/or Stop Time must be a number (integer/double)!");
+        } else if (!isValidMinBatchSize(batchSizeMin.getValueFactory().getValue())) {
+            showErrorBox("Minimum batch size must be at least 1 and at most 24!");
+        } else if (!isValidMaxBatchSize(batchSizeMax.getValueFactory().getValue())) {
+            showErrorBox("Maximum batch size must be at least 1 and at most 24!");
+        } else if (!isValidMinMax(batchSizeMin.getValueFactory().getValue(),
+                batchSizeMax.getValueFactory().getValue())) {
+            showErrorBox("Minimum batch size (" + batchSizeMin.getValueFactory().getValue() +
+                    ") cannot be larger than maximum batch size (" + batchSizeMax.getValueFactory().getValue() + ")!");
+        } else if (!isValidStepSize(batchSizeStep.getValueFactory().getValue(),
+                batchSizeMin.getValueFactory().getValue(),
+                batchSizeMax.getValueFactory().getValue())) {
+            showErrorBox("Step Size between Runs cannot exceed " +
+                    Math.max(1, (batchSizeMax.getValueFactory().getValue() - batchSizeMin.getValueFactory().getValue()))
+                    + "!");
         } else {
             try {
                 core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
                         outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                        showModel.isSelected(), batchSizeMin.getText(), batchSizeMax.getText(), batchSizeStep.getText());
+                        showModel.isSelected(), Integer.toString(batchSizeMin.getValueFactory().getValue()),
+                        Integer.toString(batchSizeMax.getValueFactory().getValue()),
+                        Integer.toString(batchSizeStep.getValueFactory().getValue()),
+                        getSelectedResourceSelectCriteria(resourceSelectCriteria),
+                        getSelectedLotSelectionCriteria(lotSelectionCriteria),
+                        getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
+                        getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
             } catch (IOException e) {
-                showErrorBox("Oops, an IO Exception has occurred");
+                showErrorBox("An IO Exception has occurred.");
             } catch (CustomException e) {
                 showErrorBox(e.getMessage());
             }
+        }
+    }
+
+    /** Get the selected radio button for Resource Select Criteria from user input
+     * @param resourceSelectCriteria Toggle group for Resource Select Criteria
+     */
+    private String getSelectedResourceSelectCriteria(ToggleGroup resourceSelectCriteria) {
+        Toggle selection = resourceSelectCriteria.getSelectedToggle();
+        if (selection == resourceSelectCriteria1) {
+            return "1";
+        } else if (selection == resourceSelectCriteria2) {
+            return "2";
+        } else if (selection == resourceSelectCriteria3) {
+            return "3";
+        } else {
+            return "4";
+        }
+    }
+
+    /** Get the selected radio button for Lot Selection Criteria from user input
+     * @param lotSelectionCriteria Toggle group for Lot Selection Criteria
+     */
+    private String getSelectedLotSelectionCriteria(ToggleGroup lotSelectionCriteria) {
+        Toggle selection = lotSelectionCriteria.getSelectedToggle();
+        if (selection == lotSelectionCriteria1) {
+            return "1";
+        } else if (selection == lotSelectionCriteria2) {
+            return "2";
+        } else {
+            return "3";
+        }
+    }
+
+    /** Get the selected radio button for Trolley Location Select Criteria from user input
+     * @param trolleyLocationSelectCriteria Toggle group for Trolley Location Select Criteria
+     */
+    private String getSelectedTrolleyLocationSelectCriteria(ToggleGroup trolleyLocationSelectCriteria) {
+        Toggle selection = trolleyLocationSelectCriteria.getSelectedToggle();
+        if (selection == trolleyLocationSelectCriteria1) {
+            return "1";
+        } else {
+            return "0";
+        }
+    }
+
+    /** Get the selected radio button for BIB Load On Lot Criteria from user input
+     * @param bibLoadOnLotCriteria Toggle group for BIB Load On Lot Criteria
+     */
+    private String getSelectedBibLoadOnLotCriteria(ToggleGroup bibLoadOnLotCriteria) {
+        Toggle selection = bibLoadOnLotCriteria.getSelectedToggle();
+        if (selection == bibLoadOnLotCriteria1) {
+            return "1";
+        } else {
+            return "2";
         }
     }
 
@@ -273,21 +451,19 @@ public class MainGui extends UiPart<Stage> {
         Alert errorAlert = new Alert(Alert.AlertType.ERROR);
         errorAlert.setHeaderText("Invalid Input");
         errorAlert.setContentText(alertText);
+        errorAlert.setResizable(true);
+        errorAlert.getDialogPane().setPrefSize(480, 240);
         errorAlert.showAndWait();
     }
 
     /**
-     * Checks if min is lesser than max. Assumes min and max can be converted to valid integers.
-     *
-     * @param minBatchString String representing minimum batch size.
-     * @param maxBatchString String representing maximum batch size.
+     * Checks if min is lesser than max.
+     * @param minBatchSize representing minimum batch size.
+     * @param maxBatchSize representing maximum batch size.
      * @return Boolean.
      */
-    private boolean isValidMinMax(String minBatchString, String maxBatchString) {
-        int min = Integer.parseInt(minBatchString);
-        int max = Integer.parseInt(maxBatchString);
-
-        if (min < max) {
+    private boolean isValidMinMax(int minBatchSize, int maxBatchSize) {
+        if (minBatchSize <= maxBatchSize) {
             return true;
         } else {
             return false;
@@ -295,20 +471,39 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Returns true if the batch step size is acceptable ie between 0 and MAX_ALLOWABLE_sTEP_SIZE.
-     * @param batchStepSizeString String representing batch step size.
+     * Returns true if the batch step size is acceptable i.e. smaller than difference between min and max batch sizes.
+     * @param stepSize representing batch step size.
+     * @param minBatchSize representing minimum batch size.
+     * @param maxBatchSize representing maximum batch size.
      * @return Boolean
      */
-    private boolean isValidStepSize(String batchStepSizeString) {
+    private boolean isValidStepSize(int stepSize, int minBatchSize, int maxBatchSize) {
         try {
-            int batchStepSize = Integer.parseInt(batchStepSizeString);
-
-            if ( (batchStepSize > 0) && (batchStepSize<MAX_ALLOWABLE_STEP_SIZE) ) {
+            if ((maxBatchSize == minBatchSize) && (stepSize == 1)){
+                return true;
+            } else if (stepSize <= (maxBatchSize - minBatchSize)) {
                 return true;
             } else {
                 return false;
             }
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
+    /**
+     * Returns true if a batchMinString falls within the range of
+     * MIN_ALLOWABLE_BATCH_SIZE and MAX_ALLOWABLE_BATCH_SIZE.
+     * @param minBatchSize representing Batch Min Size.
+     * @return Boolean.
+     */
+    private boolean isValidMinBatchSize(int minBatchSize) {
+        try {
+            if ( (minBatchSize >= MIN_ALLOWABLE_BATCH_SIZE) && (minBatchSize <= MAX_ALLOWABLE_BATCH_SIZE)) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (NumberFormatException e) {
             return false;
         }
@@ -316,11 +511,11 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Follows the same logic as "isValidMinBatchSize".
-     * @param maxBatchSizeString String representing Batch Max Size.
+     * @param maxBatchSize representing Batch Max Size.
      * @return Boolean
      */
-    private boolean isValidMaxBatchSize(String maxBatchSizeString){
-        return isValidMinBatchSize(maxBatchSizeString);
+    private boolean isValidMaxBatchSize(int maxBatchSize){
+        return isValidMinBatchSize(maxBatchSize);
     }
 
     /**
@@ -337,34 +532,15 @@ public class MainGui extends UiPart<Stage> {
         }
     }
 
-    /**
-     * Returns true if a batchMinString is (i) a valid int and (ii) falls within the range of
-     * MIN_ALLOWABLE_BATCH_SIZE and MAX_ALLOWABLE_BATCH_SIZE.
-     * @param minBatchSizeString String representing batchMin
-     * @return Boolean.
-     */
-    private boolean isValidMinBatchSize(String minBatchSizeString) {
-        try {
-            int batchMinSize = Integer.parseInt(minBatchSizeString);
-            if ( (batchMinSize > MIN_ALLOWABLE_BATCH_SIZE) && (batchMinSize < MAX_ALLOWABLE_BATCH_SIZE)) {
-                return true;
-            } else {
-                return false;
-            }
-
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
     public Stage getPrimaryStage() {
         return primaryStage;
     }
 
-    //to be added
-/*    private void setAccelerators() {
+    /* TODO: to be added
+    private void setAccelerators() {
         setAccelerator(helpMenuItem, KeyCombination.valueOf("F1"));
-    }*/
+    }
+    */
 
     /**
      * Sets the accelerator of a MenuItem.
@@ -428,7 +604,6 @@ public class MainGui extends UiPart<Stage> {
         }
     }*/
 
-
     void show() {
         primaryStage.show();
     }
@@ -440,7 +615,13 @@ public class MainGui extends UiPart<Stage> {
     private void handleExit() {
         core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
                 outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                batchSizeMin.getText(), batchSizeMax.getText(), batchSizeStep.getText());
+                Integer.toString(batchSizeMin.getValueFactory().getValue()),
+                Integer.toString(batchSizeMax.getValueFactory().getValue()),
+                Integer.toString(batchSizeStep.getValueFactory().getValue()),
+                getSelectedResourceSelectCriteria(resourceSelectCriteria),
+                getSelectedLotSelectionCriteria(lotSelectionCriteria),
+                getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
+                getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
         primaryStage.hide();
     }
 }
