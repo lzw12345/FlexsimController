@@ -1,14 +1,11 @@
 package com.nusinfineon.ui;
 
-
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import com.nusinfineon.Main;
 import com.nusinfineon.core.Core;
-
-
 
 /**
  * The manager that operates the whole nus.infineon.ui running logic.

@@ -17,6 +17,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import com.nusinfineon.exceptions.CustomException;
 
+import javafx.scene.control.ToggleGroup;
 
 public class Core {
 
@@ -34,9 +35,20 @@ public class Core {
     private String batchSizeMinString;
     private String batchSizeMaxString;
     private String batchSizeStepString;
+    private String resourceSelectCriteria;
+    private String lotSelectionCriteria;
+    private String trolleyLocationSelectCriteria;
+    private String bibLoadOnLotCriteria;
     private boolean isModelShown;
 
     private final static Logger LOGGER = Logger.getLogger(Core.class.getName());
+    private final static String INIT_MAX_BATCH_SIZE = "24";
+    private final static String INIT_MIN_BATCH_SIZE = "1";
+    private final static String INIT_STEP_SIZE = "1";
+    private final static String INIT_RESOURCE_SELECT_CRITERIA = "4";
+    private final static String INIT_LOT_SELECTION_CRITERIA = "2";
+    private final static String INIT_TROLLEY_LOCATION_SELECT_CRITERIA = "0";
+    private final static String INIT_BIB_LOAD_ON_LOT_CRITERIA = "2";
 
     /**
      * main execute function, generates script and runs model
@@ -53,7 +65,9 @@ public class Core {
     public void execute(String flexsimLocation, String modelLocation, String inputLocation,
                         String outputLocation, String runSpeed, String warmUpPeriod,
                         String stopTime, boolean isModelShown, String batchSizeMinString,
-                        String batchSizeMaxString, String batchSizeStepString) throws IOException, CustomException {
+                        String batchSizeMaxString, String batchSizeStepString, String resourceSelectCriteria,
+                        String lotSelectionCriteria, String trolleyLocationSelectCriteria,
+                        String bibLoadOnLotCriteria) throws IOException, CustomException {
 
         file = new File(scriptFilepath);
         if (!file.createNewFile()){}
@@ -72,7 +86,8 @@ public class Core {
 
         // Code block handling creation of excel file for batch iterating
         BatchSizeCore batchSizeCore = new BatchSizeCore(inputLocation, batchSizeMinString,
-                batchSizeMaxString, batchSizeStepString);
+                batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria,
+                trolleyLocationSelectCriteria, bibLoadOnLotCriteria);
         try {
             batchSizeCore.execute();
         } catch (IOException e) {
@@ -91,8 +106,8 @@ public class Core {
             System.out.println("Batch size: " + batchSizes.get(i) + ". File path: " + excelFiles.get(i).toString());
         }
 
-        //TODO: Hook back the command line generator
-        //commandLineGenerator(isModelShown);
+        // Executes the command line to run model
+        commandLineGenerator(isModelShown);
     }
 
     /**
@@ -110,7 +125,9 @@ public class Core {
      */
     public void inputData(String flexsimLocation, String modelLocation, String inputLocation,
                           String outputLocation, String runSpeed, String warmUpPeriod, String stopTime,
-                          String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString){
+                          String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString,
+                          String resourceSelectCriteria, String lotSelectionCriteria,
+                          String trolleyLocationSelectCriteria, String bibLoadOnLotCriteria){
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
         this.inputLocation = inputLocation;
@@ -122,20 +139,25 @@ public class Core {
         this.batchSizeMinString = batchSizeMinString;
         this.batchSizeMaxString = batchSizeMaxString;
         this.batchSizeStepString = batchSizeStepString;
+
+        this.resourceSelectCriteria = resourceSelectCriteria;
+        this.lotSelectionCriteria = lotSelectionCriteria;
+        this.trolleyLocationSelectCriteria = trolleyLocationSelectCriteria;
+        this.bibLoadOnLotCriteria = bibLoadOnLotCriteria;
     }
 
     /**
-     * creates the commandline to execute model
+     * Creates the commandline to execute model
      * @throws IOException
      */
-    public void commandLineGenerator (boolean isModelShown) throws IOException {
+    public void commandLineGenerator(boolean isModelShown) throws IOException {
         Process a = Runtime.getRuntime().exec('"' + flexsimLocation + '"' +
                 '"' + modelLocation + '"' + " /maintenance " + (isModelShown?"":"nogui_") + "runscript " +
                 "/scriptpath" + file.getAbsolutePath() );
     }
 
     /**
-     * Creates the flexscript for the model
+     * Creates the Flexscript for the model
      * @throws IOException
      */
     public void scriptCreator() throws IOException {
@@ -145,7 +167,7 @@ public class Core {
             + "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
             + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
                 +  ",\"MAIN15WriteReports(true, \\\""
-                +outputLocation  + "\", " + "\\\"" + outputFile
+                + outputLocation  + "\", " + "\\\"" + outputFile
                 + "\\\" , \\\"OutputNew\\\");\\n\\thideprogressbar();\\n}\")" )
             + editNodeCode("ProcessTime", "MODEL:/Tools/UserCommands/ProcessTimeGetTotal/code", GETPROCESSTIMECODE)
             + editNodeCode("MAIN15", "MODEL://Tools/UserCommands//MAIN15WriteReports//code", MAIN15CODE)
@@ -154,8 +176,6 @@ public class Core {
         fileWriter.close();
 
     }
-
-
 
     public String getFlexsimLocation() {
         return flexsimLocation;
@@ -186,48 +206,87 @@ public class Core {
     }
 
     public String getBatchSizeMinString() {
-        return batchSizeMinString;
+        if (batchSizeMinString == null) {
+            return INIT_MIN_BATCH_SIZE;
+        } else {
+            return batchSizeMinString;
+        }
     }
 
     public String getBatchSizeMaxString() {
-        return batchSizeMaxString;
+        if (batchSizeMaxString == null) {
+            return INIT_MAX_BATCH_SIZE;
+        } else {
+            return batchSizeMaxString;
+        }
     }
 
     public String getBatchSizeStepString() {
-        return batchSizeStepString;
+        if (batchSizeMinString == null) {
+            return INIT_STEP_SIZE;
+        } else {
+            return batchSizeStepString;
+        }
+    }
+
+    public String getResourceSelectCriteria() {
+        if (resourceSelectCriteria == null) {
+            return INIT_RESOURCE_SELECT_CRITERIA;
+        } else {
+            return resourceSelectCriteria;
+        }
+    }
+
+    public String getLotSelectionCriteria() {
+        if (lotSelectionCriteria == null) {
+            return INIT_LOT_SELECTION_CRITERIA;
+        } else {
+            return lotSelectionCriteria;
+        }
+    }
+
+    public String getTrolleyLocationSelectCriteria() {
+        if (trolleyLocationSelectCriteria == null) {
+            return INIT_TROLLEY_LOCATION_SELECT_CRITERIA;
+        } else {
+            return trolleyLocationSelectCriteria;
+        }
+    }
+
+    public String getBibLoadOnLotCriteria() {
+        if (bibLoadOnLotCriteria == null) {
+            return INIT_BIB_LOAD_ON_LOT_CRITERIA;
+        } else {
+            return bibLoadOnLotCriteria;
+        }
     }
 
     /**
      * Deletes existing output files to prevent excel overwrite popup
      * @param pathname
      */
-    public void deleteExistingFile (String pathname){
-        try
-        {
-            File f= new File(pathname);           //file to be delete
-            if(f.delete())                      //returns Boolean value
-            {
+    public void deleteExistingFile(String pathname){
+        try {
+            File f = new File(pathname);                         //file to be delete
+            if(f.delete()) {                                    //returns Boolean value
                 System.out.println(f.getName() + " deleted");   //getting and printing the file name
-            }
-            else
-            {
-                System.out.println(pathname + "doesn't exist");
+            } else {
+                System.out.println(pathname + " doesn't exist");
             }
         }
-        catch(Exception e)
-        {
+        catch(Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Function to generate a default template for replace code in a flexsim node
+     * Function to generate a default template for replace code in a Flexsim node
      * @param name
      * @param nodePath
      * @param code
      * @return
      */
-    public String editNodeCode (String name ,String nodePath , String code){
+    public String editNodeCode(String name ,String nodePath , String code){
         String nodename = name + "Node";
         String codeName = name + "Code";
         String script = "treenode " + nodename + " = node(\"" + nodePath + "\");\n"
