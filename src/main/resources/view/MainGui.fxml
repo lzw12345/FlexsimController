@@ -31,7 +31,7 @@
                   <children>
                      <VBox>
                         <children>
-                           <Label text="File Locations">
+                           <Label text="File Directories">
                               <VBox.margin>
                                  <Insets left="20.0" top="10.0" />
                               </VBox.margin>
@@ -53,7 +53,7 @@
                          <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
                        </rowConstraints>
                         <children>
-                           <Label text="Flexsim (.exe) Location: ">
+                           <Label text="Flexsim (.exe): ">
                               <tooltip>
                                  <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="flexsim.exe address (Found in Flexsim installation directory)" />
                               </tooltip>
@@ -63,14 +63,14 @@
                            </Label>
                            <HBox fx:id="exeDragTarget" onDragDropped="#exeDragDropped" onDragOver="#exeDragOver" GridPane.columnIndex="1">
                               <children>
-                                 <TextField fx:id="exeLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location, e.g. C:\Program Files (x86)\FlexSim7.3\program\flexsim.exe" HBox.hgrow="ALWAYS">
+                                 <TextField fx:id="exeLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file address, e.g. C:\Program Files (x86)\FlexSim7.3\program\flexsim.exe" HBox.hgrow="ALWAYS">
                                     <cursor>
                                        <Cursor fx:constant="DEFAULT" />
                                     </cursor>
                                  </TextField>
                               </children>
                            </HBox>
-                           <Label text="Model (.fsm) Location: " GridPane.rowIndex="1">
+                           <Label text="Model (.fsm): " GridPane.rowIndex="1">
                               <tooltip>
                                  <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Base Flexsim model file address" />
                               </tooltip>
@@ -80,14 +80,14 @@
                            </Label>
                            <HBox fx:id="modelDragTarget" onDragDropped="#modelDragDropped" onDragOver="#modelDragOver" GridPane.columnIndex="1" GridPane.rowIndex="1">
                               <children>
-                                 <TextField fx:id="modelFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location, e.g. C:\Documents\IBIS Model.fsm" HBox.hgrow="ALWAYS">
+                                 <TextField fx:id="modelFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file address, e.g. C:\Documents\IBIS Model.fsm" HBox.hgrow="ALWAYS">
                                     <cursor>
                                        <Cursor fx:constant="DEFAULT" />
                                     </cursor>
                                  </TextField>
                               </children>
                            </HBox>
-                           <Label text="Input Excel (.xlsx) Location: " GridPane.rowIndex="2">
+                           <Label text="Input Excel (.xlsx): " GridPane.rowIndex="2">
                               <tooltip>
                                  <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Input Excel file address" />
                               </tooltip>
@@ -97,14 +97,14 @@
                            </Label>
                            <HBox fx:id="inputFileDragTarget" onDragDropped="#inputDragDropped" onDragOver="#inputDragOver" GridPane.columnIndex="1" GridPane.rowIndex="2">
                               <children>
-                                 <TextField fx:id="inputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location, e.g. C:\Documents\Input.xlsx" HBox.hgrow="ALWAYS">
+                                 <TextField fx:id="inputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file address, e.g. C:\Documents\Input.xlsx" HBox.hgrow="ALWAYS">
                                     <cursor>
                                        <Cursor fx:constant="DEFAULT" />
                                     </cursor>
                                  </TextField>
                               </children>
                            </HBox>
-                           <Label text="Output Excel (.xlsx) Location: " GridPane.rowIndex="3">
+                           <Label text="Output Excel (.xlsx): " GridPane.rowIndex="3">
                               <tooltip>
                                  <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Output Excel file address" />
                               </tooltip>
@@ -114,7 +114,7 @@
                            </Label>
                            <HBox fx:id="outputFileDragTarget" onDragDropped="#outputDragDropped" onDragOver="#outputDragOver" GridPane.columnIndex="1" GridPane.rowIndex="3">
                               <children>
-                                 <TextField fx:id="outputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file location, e.g. C:\Documents\Output.xlsx" HBox.hgrow="ALWAYS">
+                                 <TextField fx:id="outputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file address, e.g. C:\Documents\Output.xlsx" HBox.hgrow="ALWAYS">
                                     <cursor>
                                        <Cursor fx:constant="DEFAULT" />
                                     </cursor>
@@ -402,7 +402,7 @@
                  <menus>
                    <Menu mnemonicParsing="false" text="File">
                      <items>
-                       <MenuItem mnemonicParsing="false" text="Close" />
+                       <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Close" />
                      </items>
                    </Menu>
                    <Menu mnemonicParsing="false" text="Edit">
