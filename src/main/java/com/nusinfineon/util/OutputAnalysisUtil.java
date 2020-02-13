@@ -14,8 +14,41 @@ public class OutputAnalysisUtil {
      * @param hashMapOfValuesToWrite Hash map of String to Double values to write.
      * @param excelWorkbook Workbook to write data to.
      */
-    public static void saveHashMapToNewSheet(String sheetName, HashMap<String, Double> hashMapOfValuesToWrite,
-                                             Workbook excelWorkbook) {
+    public static void saveStringDoubleHashMapToNewSheet(String sheetName, HashMap<String, Double> hashMapOfValuesToWrite,
+                                                         Workbook excelWorkbook) {
+        // Deletes sheet if it already exists
+        if (excelWorkbook.getSheet(sheetName) != null) {
+            excelWorkbook.removeSheetAt(excelWorkbook.getSheetIndex(sheetName));
+        }
+
+        Sheet sheetToWrite = excelWorkbook.createSheet(sheetName);
+
+        int rowIndex = 0;
+
+        for (String columnName: hashMapOfValuesToWrite.keySet()) {
+            Row row = sheetToWrite.createRow(rowIndex);
+
+            // Write column name
+            Cell cell = row.createCell(0, CellType.STRING);
+            cell.setCellValue(columnName);
+
+            // Write corresponding value
+            cell = row.createCell(1, CellType.NUMERIC);
+            cell.setCellValue(hashMapOfValuesToWrite.get(columnName));
+
+            rowIndex ++;
+        }
+
+    }
+
+    /**
+     * Creates a new sheet inside the given excel workbook. Will write values from the provided hash map to the sheet.
+     * @param sheetName Name of the new sheet to save the data in.
+     * @param hashMapOfValuesToWrite Hash map of String to Double values to write.
+     * @param excelWorkbook Workbook to write data to.
+     */
+    public static void saveStringLongHashMapToNewSheet(String sheetName, HashMap<String, Long> hashMapOfValuesToWrite,
+                                                         Workbook excelWorkbook) {
         // Deletes sheet if it already exists
         if (excelWorkbook.getSheet(sheetName) != null) {
             excelWorkbook.removeSheetAt(excelWorkbook.getSheetIndex(sheetName));

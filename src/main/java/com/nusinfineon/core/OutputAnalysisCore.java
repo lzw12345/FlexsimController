@@ -36,24 +36,24 @@ public class OutputAnalysisCore {
             throw new IOException("Excel file doesn't contain sheet: " + UTIL_RES_REP);
         }
         HashMap<String, Double> hashMapOfAverageUtilizationRates = OutputAnalysisCalculation.calculateAverageIbisOvenUtilRate(utilSheet);
-        OutputAnalysisUtil.saveHashMapToNewSheet("IBIS AVG UTIL SUMMARY", hashMapOfAverageUtilizationRates, workbook);
+        OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("IBIS AVG UTIL SUMMARY", hashMapOfAverageUtilizationRates, workbook);
         // =========================== End of section on IBIS Oven utilization rates ===================================
 
-        // =============================== Get Product throughput from Daily throughput  ===============================
+        // =============================== Get Product throughput from Daily throughput Resource =======================
         final String DAILY_THROUGHPUT_RES_REP = "Daily Throughput Res Rep";
         Sheet dailyThroughputSheet = workbook.getSheet(DAILY_THROUGHPUT_RES_REP);
         if (dailyThroughputSheet == null) {
             throw new IOException("Excel file doesn't contain sheet: " + DAILY_THROUGHPUT_RES_REP);
         }
-        HashMap<String, Double> hashMapOfSummarizedDailyThroughput = OutputAnalysisCalculation.calculateThroughputBasedOnDailyThroughput(dailyThroughputSheet);
-        OutputAnalysisUtil.saveHashMapToNewSheet("TOTAL THROUGHPUT FROM DAILY", hashMapOfSummarizedDailyThroughput, workbook);
+        HashMap<String, Double> hashMapOfSummarizedDailyThroughputByResource = OutputAnalysisCalculation.calculateThroughputBasedOnDailyThroughputByResource(dailyThroughputSheet);
+        OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("THROUGHPUT FROM DAILY", hashMapOfSummarizedDailyThroughputByResource, workbook);
         // =========================== End of section on Summarizing Daily Throughput ==================================
 
         // =============================== Get average cycle time of products ==========================================
         final String THROUGHPUT_PRODUCT_REP = "Throughput Product Rep";
         Sheet productCycleTimeSheet = workbook.getSheet(THROUGHPUT_PRODUCT_REP);
         HashMap<String, Double>hashMapOfAverageProductCycleTime = OutputAnalysisCalculation.calculateAverageProductCycleTime(productCycleTimeSheet);
-        OutputAnalysisUtil.saveHashMapToNewSheet("AVERAGE CYCLE TIME", hashMapOfAverageProductCycleTime, workbook);
+        OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("AVERAGE CYCLE TIME", hashMapOfAverageProductCycleTime, workbook);
         // =============================== End of Cycle Time Calculation ===============================================
 
         // =============================== Get value of throughput =====================================================
@@ -66,8 +66,13 @@ public class OutputAnalysisCore {
         Sheet dailyProductThroughputSheet = workbook.getSheet(DAILY_THROUGHPUT_PRODUCT_REP);
         HashMap<String, Double> hashMapOfTotalThroughputWorth = OutputAnalysisCalculation.calculateTotalProductWorth(dailyProductThroughputSheet, productCostSheet);
         productCostWorkbook.close();
-        OutputAnalysisUtil.saveHashMapToNewSheet("TOTAL WORTH", hashMapOfTotalThroughputWorth, workbook);
+        OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("TOTAL WORTH", hashMapOfTotalThroughputWorth, workbook);
         // =========================== End of throughput worth calculation =============================================
+
+        // =========================== Get Product Throughput from Daily Throughput Product ============================
+        //final String DAILY_THROUGHPUT_PRODUCT_REP = "Daily Throughput Product Rep";
+        HashMap<String, Long> hashMapOfSummarizedDailyThroughputByProduct = OutputAnalysisCalculation.calculateThroughputBasedOnDailyThroughputByProduct(dailyProductThroughputSheet);
+        OutputAnalysisUtil.saveStringLongHashMapToNewSheet("THROUGHPUT FROM PRODUCT", hashMapOfSummarizedDailyThroughputByProduct, workbook);
 
         // Saves the current edited workbook by overwriting the original file
         FileOutputStream outputStream = new FileOutputStream(outputExcelFilePath);

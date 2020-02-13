@@ -204,16 +204,76 @@ public class OutputAnalysisCalculation {
         return mapOfColumnNameToAveragelUtilRate;
     }
 
+    public static HashMap<String, Long> calculateThroughputBasedOnDailyThroughputByProduct(Sheet dailyThroughputProductSheet) {
+
+        final String QTY_IN = "Qty In";
+        final String QTY_OUT = "Qty Out";
+        final String LOTS_IN = "Lots In";
+        final String LOTS_OUT = "Lots Out";
+        final String PRODUCT = "Product";
+
+        // Get index of column names and initialize counts
+        HashMap<String, Integer> mapOfColumnsToIndex = new HashMap<String, Integer>();
+        HashMap<String, Long> mapOfCounts = new HashMap<String, Long>();
+        int productColumnIndex = -1;
+
+        Row headerRow = dailyThroughputProductSheet.getRow(0);
+        for (int cellIndex = 0; cellIndex < headerRow.getPhysicalNumberOfCells(); cellIndex ++) {
+            String cellValue = headerRow.getCell(cellIndex).getStringCellValue();
+            switch (cellValue) {
+                case QTY_IN:
+                    mapOfColumnsToIndex.put(QTY_IN, cellIndex);
+                    mapOfCounts.put(QTY_IN, Long.valueOf(0));
+                    break;
+                case QTY_OUT:
+                    mapOfColumnsToIndex.put(QTY_OUT, cellIndex);
+                    mapOfCounts.put(QTY_OUT, Long.valueOf(0));
+                    break;
+                case LOTS_IN:
+                    mapOfColumnsToIndex.put(LOTS_IN, cellIndex);
+                    mapOfCounts.put(LOTS_IN, Long.valueOf(0));
+                    break;
+                case LOTS_OUT:
+                    mapOfColumnsToIndex.put(LOTS_OUT, cellIndex);
+                    mapOfCounts.put(LOTS_OUT, Long.valueOf(0));
+                    break;
+                case PRODUCT:
+                    productColumnIndex = cellIndex;
+                default:
+                    break;
+            } // End of switch case block
+        } // End of for loop block
+
+        // Iterate through all rows and get the counts
+        for (int rowIndex = 1; rowIndex < dailyThroughputProductSheet.getPhysicalNumberOfRows(); rowIndex ++) {
+            Row currentRow = dailyThroughputProductSheet.getRow(rowIndex);
+
+            // Checks if product cell is valid
+            if (currentRow.getCell(productColumnIndex) != null) {
+                // Populate counts
+                for (String columnName : mapOfColumnsToIndex.keySet()) {
+                    int columnIndex = mapOfColumnsToIndex.get(columnName);
+                    long cellValue = (long) (currentRow.getCell(columnIndex).getNumericCellValue());
+                    long currentCount = mapOfCounts.get(columnName);
+                    mapOfCounts.put(columnName, currentCount + cellValue);
+                }
+            }
+        }
+
+        return mapOfCounts;
+
+    }
+
     /**
      *
      *  Logic: Looks at the input and output for the whole factory.
      *  Input = "Load/Burn In/Transfer Normal Qty" + "Load/Burn In/Transfer YRTP Qty"
      *  Output = "Unload Normal Qty" + "Unload YRTP Qty"
      *
-     * @param dailyThroughputSheet
+     * @param dailyThroughputResourceSheet
      * @return
      */
-    public static HashMap<String, Double> calculateThroughputBasedOnDailyThroughput(Sheet dailyThroughputSheet) {
+    public static HashMap<String, Double> calculateThroughputBasedOnDailyThroughputByResource(Sheet dailyThroughputResourceSheet) {
 
         final String LOAD_NORMAL_COLUMN = "Load/Burn In/Transfer Normal Qty";
         final String LOAD_YRTP_COLUMN = "Load/Burn In/Transfer YRTP Qty";
@@ -223,7 +283,7 @@ public class OutputAnalysisCalculation {
         // Get index of column names and initialize counts
         HashMap<String, Integer> mapOfThroughputToIndex = new HashMap<String, Integer>();
         HashMap<String, Long> mapOfThroughputToCounts = new HashMap<String, Long>();
-        Row headerRow = dailyThroughputSheet.getRow(0);
+        Row headerRow = dailyThroughputResourceSheet.getRow(0);
         for (int cellIndex = 0; cellIndex < headerRow.getPhysicalNumberOfCells(); cellIndex ++) {
             String cellValue = headerRow.getCell(cellIndex).getStringCellValue();
             switch (cellValue) {
@@ -249,8 +309,8 @@ public class OutputAnalysisCalculation {
         } // End of for loop block
 
         // Iterate through all rows and get the counts
-        for (int rowIndex = 1; rowIndex < dailyThroughputSheet.getPhysicalNumberOfRows(); rowIndex ++) {
-            Row currentRow = dailyThroughputSheet.getRow(rowIndex);
+        for (int rowIndex = 1; rowIndex < dailyThroughputResourceSheet.getPhysicalNumberOfRows(); rowIndex ++) {
+            Row currentRow = dailyThroughputResourceSheet.getRow(rowIndex);
 
             // Populate counts
             for (String columnName: mapOfThroughputToIndex.keySet()) {
