@@ -73,6 +73,13 @@ public class OutputAnalysisCore {
         //final String DAILY_THROUGHPUT_PRODUCT_REP = "Daily Throughput Product Rep";
         HashMap<String, Long> hashMapOfSummarizedDailyThroughputByProduct = OutputAnalysisCalculation.calculateThroughputBasedOnDailyThroughputByProduct(dailyProductThroughputSheet);
         OutputAnalysisUtil.saveStringLongHashMapToNewSheet("THROUGHPUT FROM PRODUCT", hashMapOfSummarizedDailyThroughputByProduct, workbook);
+        // =========================== End of Product Throughput from Daily Throughput Product =========================
+
+        // ========================== Get Product Throughput from "Throughput Res Rep" =================================
+        final String THROUGHPUT_RES_REP = "Throughput Res Rep";
+        Sheet throughputResourceSheet = workbook.getSheet(THROUGHPUT_RES_REP);
+        HashMap<String, Double> hashMapOfSummarizedThroughputByFlexsim = OutputAnalysisCalculation.calculateThroughputBasedOnThroughputByResource(throughputResourceSheet);
+        OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("THROUGHPUT FROM RES FLEXSIM", hashMapOfSummarizedThroughputByFlexsim, workbook);
 
         // Saves the current edited workbook by overwriting the original file
         FileOutputStream outputStream = new FileOutputStream(outputExcelFilePath);

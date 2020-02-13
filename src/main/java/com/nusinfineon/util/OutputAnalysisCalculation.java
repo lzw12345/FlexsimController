@@ -204,6 +204,76 @@ public class OutputAnalysisCalculation {
         return mapOfColumnNameToAveragelUtilRate;
     }
 
+    public static HashMap<String, Double> calculateThroughputBasedOnThroughputByResource(Sheet throughputResourceSheet) {
+        final String PLATFORM = "Platform";
+        final String EQUIPMENT = "Equipment";
+        final String TOTAL_INPUT = "Total Input";
+        final String TOTAL_OUTPUT = "Total Output";
+
+        // Obtain column indexes
+        HashMap<String, Integer> mapOfColumnsToIndex = new HashMap<String, Integer>();
+
+        Row headerRow = throughputResourceSheet.getRow(0);
+        for (int cellIndex = 0; cellIndex < headerRow.getPhysicalNumberOfCells(); cellIndex ++) {
+            String cellValue = headerRow.getCell(cellIndex).getStringCellValue();
+            switch (cellValue) {
+                case PLATFORM:
+                    mapOfColumnsToIndex.put(PLATFORM, cellIndex);
+                    break;
+                case EQUIPMENT:
+                    mapOfColumnsToIndex.put(EQUIPMENT, cellIndex);
+                    break;
+                case TOTAL_INPUT:
+                    mapOfColumnsToIndex.put(TOTAL_INPUT, cellIndex);
+                    break;
+                case TOTAL_OUTPUT:
+                    mapOfColumnsToIndex.put(TOTAL_OUTPUT, cellIndex);
+                    break;
+                default:
+                    break;
+            } // End of switch case block
+        } // End of for loop block
+
+        // FlexSim has already summarized the outputs and inputs of each resource.
+        // The summarized values have a "-" in their EQUIPMENT Column
+        // Iterate through all rows and look for a "-".
+        HashMap<String, Double> mapOfPlatformToTotalThroughput = new HashMap<String, Double>();
+        for (int rowIndex = 1; rowIndex < throughputResourceSheet.getPhysicalNumberOfRows(); rowIndex ++) {
+            Row currentRow = throughputResourceSheet.getRow(rowIndex);
+
+            // Checks if product cell is valid
+            if (currentRow.getCell(mapOfColumnsToIndex.get(EQUIPMENT)).getStringCellValue().equals("-")) {
+                // Extract the value and store in a hash map
+                String platformType = currentRow.getCell(mapOfColumnsToIndex.get(PLATFORM)).getStringCellValue();
+                Double platformTotalInput = currentRow.getCell(mapOfColumnsToIndex.get(TOTAL_INPUT)).getNumericCellValue();
+                Double platformTotalOutput = currentRow.getCell(mapOfColumnsToIndex.get(TOTAL_OUTPUT)).getNumericCellValue();
+
+                switch (platformType) {
+                    case "IBIS":
+                        mapOfPlatformToTotalThroughput.put("IBIS Total Input", platformTotalInput);
+                        mapOfPlatformToTotalThroughput.put("IBIS Total Output", platformTotalOutput);
+                        break;
+                    case "ETM":
+                        mapOfPlatformToTotalThroughput.put("ETM Total Input", platformTotalInput);
+                        mapOfPlatformToTotalThroughput.put("ETM Total Output", platformTotalOutput);
+                        break;
+                    case "MIS":
+                        mapOfPlatformToTotalThroughput.put("MIS Total Input", platformTotalInput);
+                        mapOfPlatformToTotalThroughput.put("MIS Total Output", platformTotalOutput);
+                        break;
+                    case "JTS":
+                        mapOfPlatformToTotalThroughput.put("JTS Total Input", platformTotalInput);
+                        mapOfPlatformToTotalThroughput.put("JTS Total Output", platformTotalOutput);
+                        break;
+                    default:
+                        break;
+                } // End of switch case
+
+            } // End of if statement
+        } // End of for loop
+        return mapOfPlatformToTotalThroughput;
+    }
+
     public static HashMap<String, Long> calculateThroughputBasedOnDailyThroughputByProduct(Sheet dailyThroughputProductSheet) {
 
         final String QTY_IN = "Qty In";
