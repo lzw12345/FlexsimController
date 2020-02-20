@@ -5,6 +5,7 @@
 <?import javafx.scene.Scene?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -192,6 +193,45 @@
                      </GridPane>
                      <VBox>
                         <children>
+                           <Label text="Lot Dispatch">
+                              <VBox.margin>
+                                 <Insets left="20.0" top="10.0" />
+                              </VBox.margin>
+                              <font>
+                                 <Font name="System Bold" size="16.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </VBox>
+                     <GridPane>
+                        <columnConstraints>
+                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
+                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="1020.0" minWidth="10.0" prefWidth="1020.0" />
+                        </columnConstraints>
+                        <rowConstraints>
+                           <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                        </rowConstraints>
+                        <children>
+                           <Label alignment="CENTER" contentDisplay="CENTER" text="Lot Sequencing Rule:">
+                              <tooltip>
+                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Default is First-Come-First-Served (FCFS) in order of Actual Lot Info" />
+                              </tooltip>
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
+                           </Label>
+                           <ChoiceBox fx:id="lotSequencingRule" prefWidth="300.0" GridPane.columnIndex="1">
+                              <GridPane.margin>
+                                 <Insets bottom="5.0" top="5.0" />
+                              </GridPane.margin>
+                           </ChoiceBox>
+                        </children>
+                        <VBox.margin>
+                           <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                        </VBox.margin>
+                     </GridPane>
+                     <VBox>
+                        <children>
                            <Label text="Batch Size for Runs">
                               <VBox.margin>
                                  <Insets left="20.0" top="10.0" />
@@ -277,20 +317,39 @@
                          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                        </columnConstraints>
                        <rowConstraints>
-                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                        </rowConstraints>
                         <VBox.margin>
                            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
                         </VBox.margin>
                         <children>
-                           <Label text="Resource Select Criteria:">
+                           <Label text="BIB Load on Lot Criteria:">
+                              <tooltip>
+                                 <Tooltip text="This feature is to use standard procedure to load BIB, or to maximize the use of BIB by allowing multiple lots to be loaded onto a single BIB" />
+                              </tooltip>
+                           </Label>
+                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
+                              <children>
+                                 <RadioButton fx:id="bibLoadOnLotCriteria1" mnemonicParsing="false" text="One lot per BIB">
+                                    <HBox.margin>
+                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </HBox.margin>
+                                 </RadioButton>
+                                 <RadioButton fx:id="bibLoadOnLotCriteria2" mnemonicParsing="false" text="Multi lots per BIB">
+                                    <HBox.margin>
+                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </HBox.margin>
+                                 </RadioButton>
+                              </children>
+                           </HBox>
+                           <Label text="Resource Select Criteria:" GridPane.rowIndex="1">
                               <tooltip>
                                  <Tooltip text="Criteria to select resource" />
                               </tooltip></Label>
-                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
+                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                               <children>
                                  <RadioButton fx:id="resourceSelectCriteria1" mnemonicParsing="false" text="First Available">
                                     <HBox.margin>
@@ -314,11 +373,11 @@
                                  </RadioButton>
                               </children>
                            </HBox>
-                           <Label text="Lot Selection Criteria for Loading:" GridPane.rowIndex="1">
+                           <Label text="Lot Selection Criteria for Loading:" GridPane.rowIndex="2">
                               <tooltip>
                                  <Tooltip text="Lot selection criteria by loaders" />
                               </tooltip></Label>
-                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                               <children>
                                  <RadioButton fx:id="lotSelectionCriteria1" mnemonicParsing="false" text="First-In-First-Out (FIFO)">
                                     <HBox.margin>
@@ -337,12 +396,12 @@
                                  </RadioButton>
                               </children>
                            </HBox>
-                           <Label text="Trolley Location Select Criteria:" GridPane.rowIndex="2">
+                           <Label text="Trolley Location Select Criteria:" GridPane.rowIndex="3">
                               <tooltip>
                                  <Tooltip text="This option allows trolley to be placed at one of the empty trolley locations for a production location based on these criteria" />
                               </tooltip>
                            </Label>
-                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                               <children>
                                  <RadioButton fx:id="trolleyLocationSelectCriteria0" mnemonicParsing="false" text="Shortest Distance">
                                     <HBox.margin>
@@ -350,25 +409,6 @@
                                     </HBox.margin>
                                  </RadioButton>
                                  <RadioButton fx:id="trolleyLocationSelectCriteria1" mnemonicParsing="false" text="Shortest Queue">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                              </children>
-                           </HBox>
-                           <Label text="BIB Load on Lot Criteria:" GridPane.rowIndex="3">
-                              <tooltip>
-                                 <Tooltip text="This feature is to use standard procedure to load BIB, or to maximize the use of BIB by allowing multiple lots to be loaded onto a single BIB" />
-                              </tooltip>
-                           </Label>
-                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                              <children>
-                                 <RadioButton fx:id="bibLoadOnLotCriteria1" mnemonicParsing="false" text="One lot per BIB">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                                 <RadioButton fx:id="bibLoadOnLotCriteria2" mnemonicParsing="false" text="Multi lots per BIB">
                                     <HBox.margin>
                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>

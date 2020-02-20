@@ -6,10 +6,12 @@ import java.io.IOException;
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
@@ -68,6 +70,8 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private Spinner<Integer> batchSizeStep;
     @FXML
+    private ChoiceBox<String> lotSequencingRule;
+    @FXML
     private RadioButton resourceSelectCriteria1;
     @FXML
     private RadioButton resourceSelectCriteria2;
@@ -112,6 +116,10 @@ public class MainGui extends UiPart<Stage> {
         runSpeed.setText(core.getRunSpeed());
         warmUpPeriod.setText(core.getWarmUpPeriod());
         stopTime.setText(core.getStopTime());
+        showModel.setSelected(core.getIsModelShown());
+
+        lotSequencingRule.setItems(FXCollections.observableArrayList(core.getLotSequencingRulesList()));
+        lotSequencingRule.setValue(core.getLotSequencingRuleString());
 
         batchSizeMin.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
                 MIN_ALLOWABLE_BATCH_SIZE, MAX_ALLOWABLE_BATCH_SIZE, Integer.parseInt(core.getBatchSizeMinString())));
@@ -377,7 +385,8 @@ public class MainGui extends UiPart<Stage> {
             try {
                 core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
                         outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                        showModel.isSelected(), Integer.toString(batchSizeMin.getValueFactory().getValue()),
+                        showModel.isSelected(), lotSequencingRule.getValue(),
+                        Integer.toString(batchSizeMin.getValueFactory().getValue()),
                         Integer.toString(batchSizeMax.getValueFactory().getValue()),
                         Integer.toString(batchSizeStep.getValueFactory().getValue()),
                         getSelectedResourceSelectCriteria(resourceSelectCriteria),
@@ -688,6 +697,7 @@ public class MainGui extends UiPart<Stage> {
     private void handleExit() {
         core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
                 outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
+                showModel.isSelected(), lotSequencingRule.getValue(),
                 Integer.toString(batchSizeMin.getValueFactory().getValue()),
                 Integer.toString(batchSizeMax.getValueFactory().getValue()),
                 Integer.toString(batchSizeStep.getValueFactory().getValue()),
