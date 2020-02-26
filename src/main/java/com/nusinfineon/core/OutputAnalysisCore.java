@@ -16,11 +16,23 @@ public class OutputAnalysisCore {
 
     public static void main(String[] args) throws IOException {
         // Declare output file and cost file paths
-        String outputExcelFilePath = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_min_size_20.xlsx";
         String productKeyCostExcelFilePath = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\product_key_cost.xlsx";
+        String outputExcelFilePath = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_min_size_20.xlsx";
+
+        String outputExcelFilePath2 = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_min_size_21.xlsx";
+        String outputExcelFilePath3 = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_min_size_22.xlsx";
+        String outputExcelFilePath4 = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_min_size_23.xlsx";
+        String outputExcelFilePath5 = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_min_size_24.xlsx";
+        String outputExcelFilePath6 = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_shortest_queue_resource_selection.xlsx";
 
         // Execute the summary statistics. Summary data will be appended to the output excel file.
-        getOutputSummaryStatistics(outputExcelFilePath, productKeyCostExcelFilePath);
+        //getOutputSummaryStatistics(outputExcelFilePath, productKeyCostExcelFilePath);
+        //getOutputSummaryStatistics(outputExcelFilePath2, productKeyCostExcelFilePath);
+        //getOutputSummaryStatistics(outputExcelFilePath3, productKeyCostExcelFilePath);
+        //getOutputSummaryStatistics(outputExcelFilePath4, productKeyCostExcelFilePath);
+        getOutputSummaryStatistics(outputExcelFilePath5, productKeyCostExcelFilePath);
+        //getOutputSummaryStatistics(outputExcelFilePath6, productKeyCostExcelFilePath);
+
     }
 
     public static void getOutputSummaryStatistics(String outputExcelFilePath, String productKeyCostExcelFilePath) throws IOException {
