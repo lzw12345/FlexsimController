@@ -172,6 +172,18 @@ public class OutputAnalysisUtil {
         workbook.close();
     }
 
+    /**
+     * Returns the string stack trace of an exception object.
+     * @param e An exception object.
+     * @return String
+     */
+    public static String ExceptionToString(Exception e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        String exceptionAsString = sw.toString();
+        return exceptionAsString;
+    }
+
 
 
 }

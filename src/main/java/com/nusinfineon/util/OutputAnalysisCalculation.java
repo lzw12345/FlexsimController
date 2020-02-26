@@ -1,6 +1,5 @@
 package com.nusinfineon.util;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
@@ -103,7 +102,7 @@ public class OutputAnalysisCalculation {
            return totalWorthMap;
 
         } catch (Exception e) {
-            throw new CustomException(e.getMessage() + " thrown from 'calculateTotalProductWorth' method");
+            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
         }
     }
 
@@ -167,7 +166,7 @@ public class OutputAnalysisCalculation {
             return mapOfStayTimeToAverageStayTime;
 
         } catch (Exception e) {
-            throw new CustomException(e.getMessage() + " thrown from 'calculateAverageProductCycleTime' method");
+            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
         }
     }
 
@@ -234,7 +233,7 @@ public class OutputAnalysisCalculation {
             return mapOfColumnNameToAveragelUtilRate;
 
         } catch (Exception e) {
-            throw new CustomException(e.getMessage() + " thrown from 'calculateAverageIbisOvenUtilRate' method");
+            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
         }
     }
 
@@ -312,7 +311,7 @@ public class OutputAnalysisCalculation {
             return mapOfPlatformToTotalThroughput;
 
         } catch (Exception e) {
-            throw new CustomException(e.getMessage() + " thrown from 'calculateThroughputBasedOnThroughputByResource' method");
+            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
         }
 
     }
@@ -379,7 +378,7 @@ public class OutputAnalysisCalculation {
             return mapOfCounts;
 
         } catch (Exception e) {
-            throw new CustomException(e.getMessage() + " thrown from 'calculateThroughputBasedOnDailyThroughputByProduct' method");
+            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
         }
 
     }
@@ -454,7 +453,7 @@ public class OutputAnalysisCalculation {
             return mapOfInputAndOutput;
 
         } catch (Exception e) {
-            throw new CustomException(e.getMessage() + " thrown from 'calculateThroughputBasedOnDailyThroughputByResource' method");
+            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
         }
     }
 
