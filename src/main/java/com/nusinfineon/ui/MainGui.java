@@ -1,14 +1,17 @@
 package com.nusinfineon.ui;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
@@ -67,6 +70,8 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private Spinner<Integer> batchSizeStep;
     @FXML
+    private ChoiceBox<String> lotSequencingRule;
+    @FXML
     private RadioButton resourceSelectCriteria1;
     @FXML
     private RadioButton resourceSelectCriteria2;
@@ -111,6 +116,10 @@ public class MainGui extends UiPart<Stage> {
         runSpeed.setText(core.getRunSpeed());
         warmUpPeriod.setText(core.getWarmUpPeriod());
         stopTime.setText(core.getStopTime());
+        showModel.setSelected(core.getIsModelShown());
+
+        lotSequencingRule.setItems(FXCollections.observableArrayList(core.getLotSequencingRulesList()));
+        lotSequencingRule.setValue(core.getLotSequencingRuleString());
 
         batchSizeMin.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
                 MIN_ALLOWABLE_BATCH_SIZE, MAX_ALLOWABLE_BATCH_SIZE, Integer.parseInt(core.getBatchSizeMinString())));
@@ -227,7 +236,7 @@ public class MainGui extends UiPart<Stage> {
         } else {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Input not valid");
-            errorAlert.setContentText("file must be a flexsim nus.infineon.model with extension .fsm");
+            errorAlert.setContentText("File must be a Flexsim nus.infineon.model with extension .fsm");
             errorAlert.showAndWait();
         }
         /* let the source know whether the string was successfully
@@ -259,7 +268,7 @@ public class MainGui extends UiPart<Stage> {
         } else {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Input not valid");
-            errorAlert.setContentText("file must be a excel file with extension .xlsx");
+            errorAlert.setContentText("File must be an Excel file with extension .xlsx");
             errorAlert.showAndWait();
         }
         /* let the source know whether the string was successfully
@@ -291,7 +300,7 @@ public class MainGui extends UiPart<Stage> {
         } else {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Input not valid");
-            errorAlert.setContentText("file must be a excel file with extension .xlsx");
+            errorAlert.setContentText("File must be an Excel file with extension .xlsx");
             errorAlert.showAndWait();
         }
         /* let the source know whether the string was successfully
@@ -323,7 +332,7 @@ public class MainGui extends UiPart<Stage> {
         } else {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Input not valid");
-            errorAlert.setContentText("file must be a executable file with extension .exe");
+            errorAlert.setContentText("File must be a executable file with extension .exe");
             errorAlert.showAndWait();
         }
         /* let the source know whether the string was successfully
@@ -336,25 +345,27 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     public void handleModelExecution() throws IOException {
 
-        if (exeLocation.getText().isBlank() && inputFileLocation.getText().isBlank()
-                && outputFileLocation.getText().isBlank() && modelFileLocation.getText().isBlank()) {
-            /*
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setHeaderText("Invalid Input");
-            errorAlert.setContentText("file locations cannot be blank");
-            errorAlert.showAndWait();
-             */
-            showErrorBox("File locations cannot be blank!");
-        }
-        if (runSpeed.getText().isBlank() || stopTime.getText().isBlank()) {
+        if (isBlankFiles()) {
+            showErrorBox("File directories cannot be blank!");
+        } else if (!isFoundFiles(exeLocation.getText())) {
+            showErrorBox("Flexsim (.exe) address cannot be found!");
+        } else if (!isFoundFiles(modelFileLocation.getText())) {
+            showErrorBox("Model (.fsm) address cannot be found!");
+        } else if (!isFoundFiles(inputFileLocation.getText())) {
+            showErrorBox("Input (.xlsx) address cannot be found!");
+        } else if (!isFoundFiles(outputFileLocation.getText())) {
+            showErrorBox("Output (.xlsx) address cannot be found!");
+        } else if (!isValidExeLocation()) {
+            showErrorBox("Flexsim (.exe) must be the executable file: flexsim.exe");
+        } else if (!isValidExtension(modelFileLocation.getText(), "fsm")) {
+            showErrorBox("Model (.fsm) must be a Flexsim nus.infineon.model with extension .fsm!");
+        } else if (!isValidExtension(inputFileLocation.getText(), "xlsx")) {
+            showErrorBox("Input (.xlsx) must be an Excel file with extension .xlsx!");
+        } else if (!isValidExtension(outputFileLocation.getText(), "xlsx")) {
+            showErrorBox("Output (.xlsx) must be an Excel file with extension .xlsx!");
+        } else if (isBlankRunParams()) {
             showErrorBox("Run Speed and/or Stop Time cannot be blank!");
         } else if (isNotDouble(runSpeed.getText()) || isNotDouble(stopTime.getText())) {
-            /*
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setHeaderText("Invalid Input");
-            errorAlert.setContentText("Run speed and Stop time must be an integer or double");
-            errorAlert.showAndWait();
-             */
             showErrorBox("Run Speed and/or Stop Time must be a number (integer/double)!");
         } else if (!isValidMinBatchSize(batchSizeMin.getValueFactory().getValue())) {
             showErrorBox("Minimum batch size must be at least 1 and at most 24!");
@@ -374,7 +385,8 @@ public class MainGui extends UiPart<Stage> {
             try {
                 core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
                         outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                        showModel.isSelected(), Integer.toString(batchSizeMin.getValueFactory().getValue()),
+                        showModel.isSelected(), lotSequencingRule.getValue(),
+                        Integer.toString(batchSizeMin.getValueFactory().getValue()),
                         Integer.toString(batchSizeMax.getValueFactory().getValue()),
                         Integer.toString(batchSizeStep.getValueFactory().getValue()),
                         getSelectedResourceSelectCriteria(resourceSelectCriteria),
@@ -454,6 +466,76 @@ public class MainGui extends UiPart<Stage> {
         errorAlert.setResizable(true);
         errorAlert.getDialogPane().setPrefSize(480, 240);
         errorAlert.showAndWait();
+    }
+
+    /**
+     * Returns true if any of the file locations are blank.
+     * @return Boolean.
+     */
+    private boolean isBlankFiles() {
+        if (exeLocation.getText() == null || exeLocation.getText().isBlank() ||
+                modelFileLocation.getText() == null || modelFileLocation.getText().isBlank() ||
+                inputFileLocation.getText() == null || inputFileLocation.getText().isBlank() ||
+                outputFileLocation.getText() == null || outputFileLocation.getText().isBlank()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns true if the given file locations can be found.
+     * @return Boolean.
+     */
+    private boolean isFoundFiles(String fileLocation) {
+        File file = new File(fileLocation);
+
+        if (file.exists()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns true if flexsim.exe is valid.
+     * @return Boolean.
+     */
+    private boolean isValidExeLocation() {
+        String fileName = exeLocation.getText().substring(exeLocation.getText().lastIndexOf("\\") + 1);
+
+        if (fileName.equals("flexsim.exe")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns true if file extension is valid.
+     * @return Boolean.
+     */
+    private boolean isValidExtension(String fileLocation, String extension) {
+        String fileName = fileLocation.substring(fileLocation.lastIndexOf(".") + 1);
+
+        if (fileName.equals(extension)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Returns true if any of the required simulation run parameters are blank.
+     * @return Boolean.
+     */
+    private boolean isBlankRunParams() {
+        if (runSpeed.getText() == null || runSpeed.getText().isBlank() ||
+                stopTime.getText() == null || stopTime.getText().isBlank()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -615,6 +697,7 @@ public class MainGui extends UiPart<Stage> {
     private void handleExit() {
         core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
                 outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
+                showModel.isSelected(), lotSequencingRule.getValue(),
                 Integer.toString(batchSizeMin.getValueFactory().getValue()),
                 Integer.toString(batchSizeMax.getValueFactory().getValue()),
                 Integer.toString(batchSizeStep.getValueFactory().getValue()),

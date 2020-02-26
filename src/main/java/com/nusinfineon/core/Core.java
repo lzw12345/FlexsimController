@@ -13,11 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-
 import com.nusinfineon.exceptions.CustomException;
-
-import javafx.scene.control.ToggleGroup;
 
 public class Core {
 
@@ -32,6 +28,7 @@ public class Core {
     private String stopTime;
     private String scriptFilepath = "./script.txt";
     private File file;
+    private String lotSequencingRuleString;
     private String batchSizeMinString;
     private String batchSizeMaxString;
     private String batchSizeStepString;
@@ -42,6 +39,10 @@ public class Core {
     private boolean isModelShown;
 
     private final static Logger LOGGER = Logger.getLogger(Core.class.getName());
+    private final static String LOT_SEQUENCE_FCFS = "First-Come-First-Served (Default)";
+    private final static String LOT_SEQUENCE_SPT = "Shortest Processing Time";
+    private final static String LOT_SEQUENCE_MJ = "Most Jobs";
+    private final static String LOT_SEQUENCE_RAND = "Random";
     private final static String INIT_MAX_BATCH_SIZE = "24";
     private final static String INIT_MIN_BATCH_SIZE = "1";
     private final static String INIT_STEP_SIZE = "1";
@@ -62,11 +63,11 @@ public class Core {
      * @param isModelShown
      * @throws IOException
      */
-    public void execute(String flexsimLocation, String modelLocation, String inputLocation,
-                        String outputLocation, String runSpeed, String warmUpPeriod,
-                        String stopTime, boolean isModelShown, String batchSizeMinString,
-                        String batchSizeMaxString, String batchSizeStepString, String resourceSelectCriteria,
-                        String lotSelectionCriteria, String trolleyLocationSelectCriteria,
+    public void execute(String flexsimLocation, String modelLocation, String inputLocation, String outputLocation,
+                        String runSpeed, String warmUpPeriod, String stopTime, boolean isModelShown,
+                        String lotSequencingRuleString, String batchSizeMinString, String batchSizeMaxString,
+                        String batchSizeStepString, String resourceSelectCriteria, String lotSelectionCriteria,
+                        String trolleyLocationSelectCriteria,
                         String bibLoadOnLotCriteria) throws IOException, CustomException {
 
         file = new File(scriptFilepath);
@@ -85,11 +86,11 @@ public class Core {
         scriptCreator();
 
         // Code block handling creation of excel file for batch iterating
-        BatchSizeCore batchSizeCore = new BatchSizeCore(inputLocation, batchSizeMinString,
+        ExcelInputCore excelInputCore = new ExcelInputCore(inputLocation, lotSequencingRuleString, batchSizeMinString,
                 batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria,
                 trolleyLocationSelectCriteria, bibLoadOnLotCriteria);
         try {
-            batchSizeCore.execute();
+            excelInputCore.execute();
         } catch (IOException e) {
             LOGGER.severe("Unable to create files");
             throw new CustomException("Error in creating temp files");
@@ -99,15 +100,15 @@ public class Core {
         }
 
         // Extract the array of files and sizes from batchSizeCore
-        ArrayList<File> excelFiles = batchSizeCore.getExcelFiles();
-        ArrayList<Integer> batchSizes = batchSizeCore.getListOfBatchSizes();
+        ArrayList<File> excelFiles = excelInputCore.getExcelFiles();
+        ArrayList<Integer> batchSizes = excelInputCore.getListOfBatchSizes();
 
         for (int i = 0; i < excelFiles.size(); i++) {
             System.out.println("Batch size: " + batchSizes.get(i) + ". File path: " + excelFiles.get(i).toString());
         }
 
         // Executes the command line to run model
-        commandLineGenerator(isModelShown);
+        // commandLineGenerator(isModelShown);
     }
 
     /**
@@ -125,9 +126,10 @@ public class Core {
      */
     public void inputData(String flexsimLocation, String modelLocation, String inputLocation,
                           String outputLocation, String runSpeed, String warmUpPeriod, String stopTime,
-                          String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString,
-                          String resourceSelectCriteria, String lotSelectionCriteria,
-                          String trolleyLocationSelectCriteria, String bibLoadOnLotCriteria){
+                          boolean isModelShown, String lotSequencingRuleString, String batchSizeMinString,
+                          String batchSizeMaxString, String batchSizeStepString, String resourceSelectCriteria,
+                          String lotSelectionCriteria, String trolleyLocationSelectCriteria,
+                          String bibLoadOnLotCriteria){
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
         this.inputLocation = inputLocation;
@@ -135,6 +137,9 @@ public class Core {
         this.runSpeed = runSpeed;
         this.warmUpPeriod = warmUpPeriod;
         this.stopTime = stopTime;
+        this.isModelShown = isModelShown;
+
+        this.lotSequencingRuleString = lotSequencingRuleString;
 
         this.batchSizeMinString = batchSizeMinString;
         this.batchSizeMaxString = batchSizeMaxString;
@@ -203,6 +208,29 @@ public class Core {
 
     public String getStopTime() {
         return stopTime;
+    }
+
+    public boolean getIsModelShown() {
+        return isModelShown;
+    }
+
+    public ArrayList<String> getLotSequencingRulesList() {
+        ArrayList<String> rulesList = new ArrayList<>();
+
+        rulesList.add(LOT_SEQUENCE_FCFS);
+        rulesList.add(LOT_SEQUENCE_SPT);
+        rulesList.add(LOT_SEQUENCE_MJ);
+        rulesList.add(LOT_SEQUENCE_RAND);
+
+        return rulesList;
+    }
+
+    public String getLotSequencingRuleString() {
+        if (lotSequencingRuleString == null) {
+            return LOT_SEQUENCE_FCFS;
+        } else {
+            return lotSequencingRuleString;
+        }
     }
 
     public String getBatchSizeMinString() {
