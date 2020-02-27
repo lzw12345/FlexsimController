@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.nusinfineon.exceptions.CustomException;
+import sun.reflect.generics.tree.Tree;
 
 /**
  * This class provides the core logic and code that goes into processing the output excel file and generating relevant
@@ -96,7 +97,7 @@ public class OutputAnalysisCalculation {
             }
 
             TreeMap<String, Double> totalWorthMap = new TreeMap<String, Double>();
-            totalWorthMap.put("TOTAL WORTH", totalWorth);
+            totalWorthMap.put("THROUGHPUT_WORTH", totalWorth);
 
            return totalWorthMap;
 
@@ -159,6 +160,7 @@ public class OutputAnalysisCalculation {
             for (String cycleTime : mapOfStayTimeToCounts.keySet()) {
                 long currentValue = mapOfStayTimeToCounts.get(cycleTime);
                 Double averageCycleTime = (double) currentValue / (double) (productCycleTimeSheet.getPhysicalNumberOfRows() - 1);
+                cycleTime = "CYCLETIME_" + cycleTime.toUpperCase();
                 mapOfStayTimeToAverageStayTime.put(cycleTime, averageCycleTime);
             }
 
@@ -234,7 +236,7 @@ public class OutputAnalysisCalculation {
                 Double rateSum = mapOfColumnNameToTotalUtilRate.get(columnName);
                 if (UTIL_COLUMNS_LIST.contains(columnName)) { // Only select the columns that have been pre-determined to be > 0 for IBIS rows.
                     Double averageRate = rateSum / ibisRows.size();
-                    mapOfColumnNameToAverageUtilRate.put(columnName, averageRate);
+                    mapOfColumnNameToAverageUtilRate.put("UTILIZATION_RATE_" + columnName.toUpperCase(), averageRate);
                 }
             }
 
@@ -295,20 +297,20 @@ public class OutputAnalysisCalculation {
 
                     switch (platformType) {
                         case "IBIS":
-                            mapOfPlatformToTotalThroughput.put("IBIS Total Input", platformTotalInput);
-                            mapOfPlatformToTotalThroughput.put("IBIS Total Output", platformTotalOutput);
+                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_IBIS_TOTAL_INPUT", platformTotalInput);
+                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_IBIS_TOTAL_OUTPUT", platformTotalOutput);
                             break;
                         case "ETM":
-                            mapOfPlatformToTotalThroughput.put("ETM Total Input", platformTotalInput);
-                            mapOfPlatformToTotalThroughput.put("ETM Total Output", platformTotalOutput);
+                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_ETN_TOTAL_INPUT", platformTotalInput);
+                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_ETN_TOTAL_OUTPUT", platformTotalOutput);
                             break;
                         case "MIS":
-                            mapOfPlatformToTotalThroughput.put("MIS Total Input", platformTotalInput);
-                            mapOfPlatformToTotalThroughput.put("MIS Total Output", platformTotalOutput);
+                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_MIS_TOTAL_INPUT", platformTotalInput);
+                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_ETN_TOTAL_OUTPUT", platformTotalOutput);
                             break;
                         case "JTS":
-                            mapOfPlatformToTotalThroughput.put("JTS Total Input", platformTotalInput);
-                            mapOfPlatformToTotalThroughput.put("JTS Total Output", platformTotalOutput);
+                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_JTS_TOTAL_INPUT", platformTotalInput);
+                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_JTS_TOTAL_OUTPUT", platformTotalOutput);
                             break;
                         default:
                             break;
@@ -383,7 +385,15 @@ public class OutputAnalysisCalculation {
                 }
             }
 
-            return mapOfCounts;
+            TreeMap<String, Double> mapOfCountsFinal = new TreeMap<String, Double>();
+            // Renames entries in the map
+            for (String columnName : mapOfCounts.keySet()) {
+                String newColumnName = "THROUGHPUT_BY_PRODUCT_SHEET_" + columnName.toUpperCase();
+                double count = mapOfCounts.get(columnName);
+                mapOfCountsFinal.put(newColumnName, count);
+            }
+
+            return mapOfCountsFinal;
 
         } catch (Exception e) {
             throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
@@ -453,9 +463,9 @@ public class OutputAnalysisCalculation {
 
             // Sum up to input and output
             TreeMap<String, Double> mapOfInputAndOutput = new TreeMap<String, Double>();
-            mapOfInputAndOutput.put("TOTAL INPUT", (double) mapOfThroughputToCounts.get(LOAD_NORMAL_COLUMN)
+            mapOfInputAndOutput.put("THROUGHPUT_BY_RESOURCE_TOTAL_INPUT", (double) mapOfThroughputToCounts.get(LOAD_NORMAL_COLUMN)
                     + mapOfThroughputToCounts.get(LOAD_YRTP_COLUMN));
-            mapOfInputAndOutput.put("TOTAL OUTPUT", (double) mapOfThroughputToCounts.get(UNLOAD_NORMAL_COLUMN)
+            mapOfInputAndOutput.put("THROUGHPUT_BY_RESOURCE_TOTAL_OUTPUT", (double) mapOfThroughputToCounts.get(UNLOAD_NORMAL_COLUMN)
                     + mapOfThroughputToCounts.get(UNLOAD_YRTP_COLUMN));
 
             return mapOfInputAndOutput;

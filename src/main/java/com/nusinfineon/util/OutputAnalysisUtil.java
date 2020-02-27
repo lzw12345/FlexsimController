@@ -10,27 +10,37 @@ import java.util.TreeMap;
 public class OutputAnalysisUtil {
 
     public static void saveOverallOutputDataToNewSheet(String sheetName, String runtype,
-                                                       TreeMap<String, Double> treeMapOfAverageUtilizationRates,
-                                                       TreeMap<String, Double> treeMapOfSummarizedDailyThroughputByResource,
-                                                       TreeMap<String, Double> treeMapOfAverageProductCycleTime,
-                                                       TreeMap<String, Double> treeMapOfTotalThroughputWorth,
-                                                       TreeMap<String, Double> treeMapOfSummarizedDailyThroughputByProduct,
-                                                       TreeMap<String, Double> treeMapOfSummarizedThroughputByFlexsim,
+                                                       TreeMap<String, Double> mapOfSummaryStatistics,
                                                        Workbook excelWorkbook) {
+        final int HEADER_ROW_INDEX = 0;
+        final int SUMMARY_ROW_INDEX = 1;
+
         // Deletes sheet if it already exists
         if (excelWorkbook.getSheet(sheetName) != null) {
             excelWorkbook.removeSheetAt(excelWorkbook.getSheetIndex(sheetName));
         }
 
+        // Create sheet and rows
         Sheet sheetToWrite = excelWorkbook.createSheet(sheetName);
+        Row headerRow = sheetToWrite.createRow(HEADER_ROW_INDEX);
+        Row summaryRow = sheetToWrite.createRow(SUMMARY_ROW_INDEX);
 
-        System.out.println(treeMapOfAverageUtilizationRates);
-        System.out.println(treeMapOfSummarizedDailyThroughputByResource);
-        System.out.println(treeMapOfAverageProductCycleTime);
-        System.out.println(treeMapOfTotalThroughputWorth);
-        System.out.println(treeMapOfSummarizedDailyThroughputByProduct);
-        System.out.println(treeMapOfSummarizedThroughputByFlexsim);
+        // Write simulation run data
+        Cell headerCell = headerRow.createCell(0, CellType.STRING);
+        Cell summaryCell = summaryRow.createCell(0, CellType.STRING);
+        headerCell.setCellValue("RUN_TYPE");
+        summaryCell.setCellValue(runtype);
 
+        // Write the  summary data
+        int columnCount = 1;
+        for (String category: mapOfSummaryStatistics.keySet()) {
+            Double statistic = mapOfSummaryStatistics.get(category);
+            headerCell = headerRow.createCell(columnCount, CellType.STRING);
+            summaryCell = summaryRow.createCell(columnCount, CellType.STRING);
+            headerCell.setCellValue(category);
+            summaryCell.setCellValue(statistic);
+            columnCount = columnCount + 1;
+        }
     }
 
     /**
