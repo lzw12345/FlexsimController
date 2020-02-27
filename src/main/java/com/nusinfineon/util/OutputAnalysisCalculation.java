@@ -4,8 +4,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 import com.nusinfineon.exceptions.CustomException;
 
@@ -26,7 +25,7 @@ public class OutputAnalysisCalculation {
      * @param productCostSheet Product cost sheet.
      * @return
      */
-    public static HashMap<String, Double> calculateTotalProductWorth(Sheet dailyThroughputSheet, Sheet productCostSheet)
+    public static TreeMap<String, Double> calculateTotalProductWorth(Sheet dailyThroughputSheet, Sheet productCostSheet)
             throws CustomException {
 
         try {
@@ -96,7 +95,7 @@ public class OutputAnalysisCalculation {
                 totalWorth += productWorth;
             }
 
-            HashMap<String, Double> totalWorthMap = new HashMap<String, Double>();
+            TreeMap<String, Double> totalWorthMap = new TreeMap<String, Double>();
             totalWorthMap.put("TOTAL WORTH", totalWorth);
 
            return totalWorthMap;
@@ -106,7 +105,7 @@ public class OutputAnalysisCalculation {
         }
     }
 
-    public static HashMap<String, Double> calculateAverageProductCycleTime(Sheet productCycleTimeSheet) throws CustomException {
+    public static TreeMap<String, Double> calculateAverageProductCycleTime(Sheet productCycleTimeSheet) throws CustomException {
 
         try {
 
@@ -156,7 +155,7 @@ public class OutputAnalysisCalculation {
             }
 
             // Average out the Stay-Cycle Time
-            HashMap<String, Double> mapOfStayTimeToAverageStayTime = new HashMap<String, Double>();
+            TreeMap<String, Double> mapOfStayTimeToAverageStayTime = new TreeMap<String, Double>();
             for (String cycleTime : mapOfStayTimeToCounts.keySet()) {
                 long currentValue = mapOfStayTimeToCounts.get(cycleTime);
                 Double averageCycleTime = (double) currentValue / (double) (productCycleTimeSheet.getPhysicalNumberOfRows() - 1);
@@ -180,9 +179,18 @@ public class OutputAnalysisCalculation {
      * @return A hash map of utilization categories to their respective rates.
      * @throws IOException
      */
-    public static HashMap<String, Double> calculateAverageIbisOvenUtilRate(Sheet utilizationSheet) throws CustomException {
+    public static TreeMap<String, Double> calculateAverageIbisOvenUtilRate(Sheet utilizationSheet) throws CustomException {
 
         try {
+
+            // Hard code the columns that we are interested in.
+            final String WAITING_FOR_OPERATOR = "waiting for operator";
+            final String IDLE = "idle";
+            final String PROCESSING = "processing";
+            final String WAITING_FOR_TRANSPORTER = "waiting for transporter";
+            final String SETUP = "setup";
+            final String[] UTIL_COLUMNS  = new String[]{WAITING_FOR_OPERATOR, IDLE, PROCESSING, SETUP, WAITING_FOR_TRANSPORTER};
+            List<String> UTIL_COLUMNS_LIST = Arrays.asList(UTIL_COLUMNS);
 
             // Get column names and corresponding index. Assumes first 2 columns are "platform" and "name"
             HashMap<Integer, String> mapOfIndexToColumnName = new HashMap<Integer, String>();
@@ -221,23 +229,23 @@ public class OutputAnalysisCalculation {
                     mapOfColumnNameToTotalUtilRate.put(columnName, currentUtilRate + cellValue);
                 }
             }
-            HashMap<String, Double> mapOfColumnNameToAveragelUtilRate = new HashMap<String, Double>();
+            TreeMap<String, Double> mapOfColumnNameToAverageUtilRate = new TreeMap<>();
             for (String columnName : mapOfColumnNameToTotalUtilRate.keySet()) {
                 Double rateSum = mapOfColumnNameToTotalUtilRate.get(columnName);
-                if (rateSum > 0) { // Remove 0 entries
+                if (UTIL_COLUMNS_LIST.contains(columnName)) { // Only select the columns that have been pre-determined to be > 0 for IBIS rows.
                     Double averageRate = rateSum / ibisRows.size();
-                    mapOfColumnNameToAveragelUtilRate.put(columnName, averageRate);
+                    mapOfColumnNameToAverageUtilRate.put(columnName, averageRate);
                 }
             }
 
-            return mapOfColumnNameToAveragelUtilRate;
+            return mapOfColumnNameToAverageUtilRate;
 
         } catch (Exception e) {
             throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
         }
     }
 
-    public static HashMap<String, Double> calculateThroughputBasedOnThroughputByResource(Sheet throughputResourceSheet)
+    public static TreeMap<String, Double> calculateThroughputBasedOnThroughputByResource(Sheet throughputResourceSheet)
             throws CustomException {
 
         try {
@@ -274,7 +282,7 @@ public class OutputAnalysisCalculation {
             // FlexSim has already summarized the outputs and inputs of each resource.
             // The summarized values have a "-" in their EQUIPMENT Column
             // Iterate through all rows and look for a "-".
-            HashMap<String, Double> mapOfPlatformToTotalThroughput = new HashMap<String, Double>();
+            TreeMap<String, Double> mapOfPlatformToTotalThroughput = new TreeMap<String, Double>();
             for (int rowIndex = 1; rowIndex < throughputResourceSheet.getPhysicalNumberOfRows(); rowIndex++) {
                 Row currentRow = throughputResourceSheet.getRow(rowIndex);
 
@@ -316,7 +324,7 @@ public class OutputAnalysisCalculation {
 
     }
 
-    public static HashMap<String, Long> calculateThroughputBasedOnDailyThroughputByProduct(Sheet dailyThroughputProductSheet)
+    public static TreeMap<String, Long> calculateThroughputBasedOnDailyThroughputByProduct(Sheet dailyThroughputProductSheet)
             throws CustomException {
 
         try {
@@ -329,7 +337,7 @@ public class OutputAnalysisCalculation {
 
             // Get index of column names and initialize counts
             HashMap<String, Integer> mapOfColumnsToIndex = new HashMap<String, Integer>();
-            HashMap<String, Long> mapOfCounts = new HashMap<String, Long>();
+            TreeMap<String, Long> mapOfCounts = new TreeMap<String, Long>();
             int productColumnIndex = -1;
 
             Row headerRow = dailyThroughputProductSheet.getRow(0);
@@ -392,7 +400,7 @@ public class OutputAnalysisCalculation {
      * @param dailyThroughputResourceSheet
      * @return
      */
-    public static HashMap<String, Double> calculateThroughputBasedOnDailyThroughputByResource(Sheet dailyThroughputResourceSheet)
+    public static TreeMap<String, Double> calculateThroughputBasedOnDailyThroughputByResource(Sheet dailyThroughputResourceSheet)
             throws CustomException {
 
         try {
@@ -444,7 +452,7 @@ public class OutputAnalysisCalculation {
             }
 
             // Sum up to input and output
-            HashMap<String, Double> mapOfInputAndOutput = new HashMap<String, Double>();
+            TreeMap<String, Double> mapOfInputAndOutput = new TreeMap<String, Double>();
             mapOfInputAndOutput.put("TOTAL INPUT", (double) mapOfThroughputToCounts.get(LOAD_NORMAL_COLUMN)
                     + mapOfThroughputToCounts.get(LOAD_YRTP_COLUMN));
             mapOfInputAndOutput.put("TOTAL OUTPUT", (double) mapOfThroughputToCounts.get(UNLOAD_NORMAL_COLUMN)

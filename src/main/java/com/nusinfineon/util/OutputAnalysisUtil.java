@@ -5,8 +5,33 @@ import org.apache.poi.ss.usermodel.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public class OutputAnalysisUtil {
+
+    public static void saveOverallOutputDataToNewSheet(String sheetName, String runtype,
+                                                       TreeMap<String, Double> hashMapOfAverageUtilizationRates,
+                                                       TreeMap<String, Double> hashMapOfSummarizedDailyThroughputByResource,
+                                                       TreeMap<String, Double> hashMapOfAverageProductCycleTime,
+                                                       TreeMap<String, Double> hashMapOfTotalThroughputWorth,
+                                                       TreeMap<String, Long> hashMapOfSummarizedDailyThroughputByProduct,
+                                                       TreeMap<String, Double> hashMapOfSummarizedThroughputByFlexsim,
+                                                       Workbook excelWorkbook) {
+        // Deletes sheet if it already exists
+        if (excelWorkbook.getSheet(sheetName) != null) {
+            excelWorkbook.removeSheetAt(excelWorkbook.getSheetIndex(sheetName));
+        }
+
+        Sheet sheetToWrite = excelWorkbook.createSheet(sheetName);
+
+        System.out.println(hashMapOfAverageUtilizationRates);
+        System.out.println(hashMapOfSummarizedDailyThroughputByResource);
+        System.out.println(hashMapOfAverageProductCycleTime);
+        System.out.println(hashMapOfTotalThroughputWorth);
+        System.out.println(hashMapOfSummarizedDailyThroughputByProduct);
+        System.out.println(hashMapOfSummarizedThroughputByFlexsim);
+
+    }
 
     /**
      * Creates a new sheet inside the given excel workbook. Will write values from the provided hash map to the sheet.
@@ -184,7 +209,18 @@ public class OutputAnalysisUtil {
         return exceptionAsString;
     }
 
-
+    /**
+     * Converts a File's toString() into just the file itself. Removes directory and file extension.
+     *
+     * @param filePath from File.toString(). Sample: 'C:\Users\Ahmad\Documents\NUS\IE 3100M\Data Files\summary_appended\output_24.xlsx'
+     * @return Just the file name ie 'output_24'
+     */
+    public static String fileStringToFileName(String filePath) {
+        String[] strings = filePath.split("\\\\");
+        String fileNameWithExtension = strings[strings.length - 1];
+        String fileName = fileNameWithExtension.split("\\.")[0];
+        return fileName;
+    }
 
 }
 
