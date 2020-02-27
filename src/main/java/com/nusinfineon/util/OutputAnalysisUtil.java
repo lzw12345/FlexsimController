@@ -10,12 +10,12 @@ import java.util.TreeMap;
 public class OutputAnalysisUtil {
 
     public static void saveOverallOutputDataToNewSheet(String sheetName, String runtype,
-                                                       TreeMap<String, Double> hashMapOfAverageUtilizationRates,
-                                                       TreeMap<String, Double> hashMapOfSummarizedDailyThroughputByResource,
-                                                       TreeMap<String, Double> hashMapOfAverageProductCycleTime,
-                                                       TreeMap<String, Double> hashMapOfTotalThroughputWorth,
-                                                       TreeMap<String, Long> hashMapOfSummarizedDailyThroughputByProduct,
-                                                       TreeMap<String, Double> hashMapOfSummarizedThroughputByFlexsim,
+                                                       TreeMap<String, Double> treeMapOfAverageUtilizationRates,
+                                                       TreeMap<String, Double> treeMapOfSummarizedDailyThroughputByResource,
+                                                       TreeMap<String, Double> treeMapOfAverageProductCycleTime,
+                                                       TreeMap<String, Double> treeMapOfTotalThroughputWorth,
+                                                       TreeMap<String, Double> treeMapOfSummarizedDailyThroughputByProduct,
+                                                       TreeMap<String, Double> treeMapOfSummarizedThroughputByFlexsim,
                                                        Workbook excelWorkbook) {
         // Deletes sheet if it already exists
         if (excelWorkbook.getSheet(sheetName) != null) {
@@ -24,12 +24,12 @@ public class OutputAnalysisUtil {
 
         Sheet sheetToWrite = excelWorkbook.createSheet(sheetName);
 
-        System.out.println(hashMapOfAverageUtilizationRates);
-        System.out.println(hashMapOfSummarizedDailyThroughputByResource);
-        System.out.println(hashMapOfAverageProductCycleTime);
-        System.out.println(hashMapOfTotalThroughputWorth);
-        System.out.println(hashMapOfSummarizedDailyThroughputByProduct);
-        System.out.println(hashMapOfSummarizedThroughputByFlexsim);
+        System.out.println(treeMapOfAverageUtilizationRates);
+        System.out.println(treeMapOfSummarizedDailyThroughputByResource);
+        System.out.println(treeMapOfAverageProductCycleTime);
+        System.out.println(treeMapOfTotalThroughputWorth);
+        System.out.println(treeMapOfSummarizedDailyThroughputByProduct);
+        System.out.println(treeMapOfSummarizedThroughputByFlexsim);
 
     }
 

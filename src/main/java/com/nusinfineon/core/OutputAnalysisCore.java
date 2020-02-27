@@ -53,8 +53,8 @@ public class OutputAnalysisCore {
             if (utilSheet == null) {
                 throw new IOException("Excel file doesn't contain sheet: " + UTIL_RES_REP);
             }
-            TreeMap<String, Double> hashMapOfAverageUtilizationRates = OutputAnalysisCalculation.calculateAverageIbisOvenUtilRate(utilSheet);
-            // OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("IBIS AVG UTIL SUMMARY", hashMapOfAverageUtilizationRates, workbook);
+            TreeMap<String, Double> treeMapOfAverageUtilizationRates = OutputAnalysisCalculation.calculateAverageIbisOvenUtilRate(utilSheet);
+            // OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("IBIS AVG UTIL SUMMARY", treeMapOfAverageUtilizationRates, workbook);
             // =========================== End of section on IBIS Oven utilization rates ===================================
 
             // =============================== Get Product throughput from Daily throughput Resource =======================
@@ -63,15 +63,15 @@ public class OutputAnalysisCore {
             if (dailyThroughputSheet == null) {
                 throw new IOException("Excel file doesn't contain sheet: " + DAILY_THROUGHPUT_RES_REP);
             }
-            TreeMap<String, Double> hashMapOfSummarizedDailyThroughputByResource = OutputAnalysisCalculation.calculateThroughputBasedOnDailyThroughputByResource(dailyThroughputSheet);
-            // OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("THROUGHPUT FROM DAILY", hashMapOfSummarizedDailyThroughputByResource, workbook);
+            TreeMap<String, Double> treeMapOfSummarizedDailyThroughputByResource = OutputAnalysisCalculation.calculateThroughputBasedOnDailyThroughputByResource(dailyThroughputSheet);
+            // OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("THROUGHPUT FROM DAILY", treeMapOfSummarizedDailyThroughputByResource, workbook);
             // =========================== End of section on Summarizing Daily Throughput ==================================
 
             // =============================== Get average cycle time of products ==========================================
             final String THROUGHPUT_PRODUCT_REP = "Throughput Product Rep";
             Sheet productCycleTimeSheet = workbook.getSheet(THROUGHPUT_PRODUCT_REP);
-            TreeMap<String, Double> hashMapOfAverageProductCycleTime = OutputAnalysisCalculation.calculateAverageProductCycleTime(productCycleTimeSheet);
-            // OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("AVERAGE CYCLE TIME", hashMapOfAverageProductCycleTime, workbook);
+            TreeMap<String, Double> treeMapOfAverageProductCycleTime = OutputAnalysisCalculation.calculateAverageProductCycleTime(productCycleTimeSheet);
+            // OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("AVERAGE CYCLE TIME", treeMapOfAverageProductCycleTime, workbook);
             // =============================== End of Cycle Time Calculation ===============================================
 
             // =============================== Get value of throughput =====================================================
@@ -82,30 +82,30 @@ public class OutputAnalysisCore {
             Workbook productCostWorkbook = WorkbookFactory.create(productCostFile);
             Sheet productCostSheet = productCostWorkbook.getSheetAt(0);
             Sheet dailyProductThroughputSheet = workbook.getSheet(DAILY_THROUGHPUT_PRODUCT_REP);
-            TreeMap<String, Double> hashMapOfTotalThroughputWorth = OutputAnalysisCalculation.calculateTotalProductWorth(dailyProductThroughputSheet, productCostSheet);
+            TreeMap<String, Double> treeMapOfTotalThroughputWorth = OutputAnalysisCalculation.calculateTotalProductWorth(dailyProductThroughputSheet, productCostSheet);
             productCostWorkbook.close();
-            // OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("TOTAL WORTH", hashMapOfTotalThroughputWorth, workbook);
+            // OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("TOTAL WORTH", treeMapOfTotalThroughputWorth, workbook);
             // =========================== End of throughput worth calculation =============================================
 
             // =========================== Get Product Throughput from Daily Throughput Product ============================
             //final String DAILY_THROUGHPUT_PRODUCT_REP = "Daily Throughput Product Rep";
-            TreeMap<String, Long> hashMapOfSummarizedDailyThroughputByProduct = OutputAnalysisCalculation.calculateThroughputBasedOnDailyThroughputByProduct(dailyProductThroughputSheet);
-            // OutputAnalysisUtil.saveStringLongHashMapToNewSheet("THROUGHPUT FROM PRODUCT", hashMapOfSummarizedDailyThroughputByProduct, workbook);
+            TreeMap<String, Double> treeMapOfSummarizedDailyThroughputByProduct = OutputAnalysisCalculation.calculateThroughputBasedOnDailyThroughputByProduct(dailyProductThroughputSheet);
+            // OutputAnalysisUtil.saveStringLongHashMapToNewSheet("THROUGHPUT FROM PRODUCT", treeMapOfSummarizedDailyThroughputByProduct, workbook);
             // =========================== End of Product Throughput from Daily Throughput Product =========================
 
             // ========================== Get Product Throughput from "Throughput Res Rep" =================================
             final String THROUGHPUT_RES_REP = "Throughput Res Rep";
             Sheet throughputResourceSheet = workbook.getSheet(THROUGHPUT_RES_REP);
-            TreeMap<String, Double> hashMapOfSummarizedThroughputByFlexsim = OutputAnalysisCalculation.calculateThroughputBasedOnThroughputByResource(throughputResourceSheet);
-            // OutputAnalysisUtil.saveStringDoubleHashMapToNewSheet("THROUGHPUT FROM RES FLEXSIM", hashMapOfSummarizedThroughputByFlexsim, workbook);
+            TreeMap<String, Double> treeMapOfSummarizedThroughputByFlexsim = OutputAnalysisCalculation.calculateThroughputBasedOnThroughputByResource(throughputResourceSheet);
+            // OutputAnalysisUttreeMapOfSummarizedDailyThroughputByProductil.saveStringDoubleHashMapToNewSheet("THROUGHPUT FROM RES FLEXSIM", treeMapOfSummarizedThroughputByFlexsim, workbook);
 
             // =========================== Extract run data remarks to a new sheet ==============================================
             String runType = OutputAnalysisUtil.fileStringToFileName(originalInputFile.toString());
 
             // Saves all the extracted information to a new sheet.
             OutputAnalysisUtil.saveOverallOutputDataToNewSheet("OVERALL_SUMMARY", runType,
-                    hashMapOfAverageUtilizationRates, hashMapOfSummarizedDailyThroughputByResource, hashMapOfAverageProductCycleTime,
-                    hashMapOfTotalThroughputWorth, hashMapOfSummarizedDailyThroughputByProduct, hashMapOfSummarizedThroughputByFlexsim,
+                    treeMapOfAverageUtilizationRates, treeMapOfSummarizedDailyThroughputByResource, treeMapOfAverageProductCycleTime,
+                    treeMapOfTotalThroughputWorth, treeMapOfSummarizedDailyThroughputByProduct, treeMapOfSummarizedThroughputByFlexsim,
                     workbook);
 
             // Saves the current edited workbook by overwriting the original file

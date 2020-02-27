@@ -324,7 +324,7 @@ public class OutputAnalysisCalculation {
 
     }
 
-    public static TreeMap<String, Long> calculateThroughputBasedOnDailyThroughputByProduct(Sheet dailyThroughputProductSheet)
+    public static TreeMap<String, Double> calculateThroughputBasedOnDailyThroughputByProduct(Sheet dailyThroughputProductSheet)
             throws CustomException {
 
         try {
@@ -337,7 +337,7 @@ public class OutputAnalysisCalculation {
 
             // Get index of column names and initialize counts
             HashMap<String, Integer> mapOfColumnsToIndex = new HashMap<String, Integer>();
-            TreeMap<String, Long> mapOfCounts = new TreeMap<String, Long>();
+            TreeMap<String, Double> mapOfCounts = new TreeMap<String, Double>();
             int productColumnIndex = -1;
 
             Row headerRow = dailyThroughputProductSheet.getRow(0);
@@ -346,19 +346,19 @@ public class OutputAnalysisCalculation {
                 switch (cellValue) {
                     case QTY_IN:
                         mapOfColumnsToIndex.put(QTY_IN, cellIndex);
-                        mapOfCounts.put(QTY_IN, Long.valueOf(0));
+                        mapOfCounts.put(QTY_IN, Double.valueOf(0));
                         break;
                     case QTY_OUT:
                         mapOfColumnsToIndex.put(QTY_OUT, cellIndex);
-                        mapOfCounts.put(QTY_OUT, Long.valueOf(0));
+                        mapOfCounts.put(QTY_OUT, Double.valueOf(0));
                         break;
                     case LOTS_IN:
                         mapOfColumnsToIndex.put(LOTS_IN, cellIndex);
-                        mapOfCounts.put(LOTS_IN, Long.valueOf(0));
+                        mapOfCounts.put(LOTS_IN, Double.valueOf(0));
                         break;
                     case LOTS_OUT:
                         mapOfColumnsToIndex.put(LOTS_OUT, cellIndex);
-                        mapOfCounts.put(LOTS_OUT, Long.valueOf(0));
+                        mapOfCounts.put(LOTS_OUT, Double.valueOf(0));
                         break;
                     case PRODUCT:
                         productColumnIndex = cellIndex;
@@ -376,8 +376,8 @@ public class OutputAnalysisCalculation {
                     // Populate counts
                     for (String columnName : mapOfColumnsToIndex.keySet()) {
                         int columnIndex = mapOfColumnsToIndex.get(columnName);
-                        long cellValue = (long) (currentRow.getCell(columnIndex).getNumericCellValue());
-                        long currentCount = mapOfCounts.get(columnName);
+                        double cellValue = (currentRow.getCell(columnIndex).getNumericCellValue());
+                        double currentCount = mapOfCounts.get(columnName);
                         mapOfCounts.put(columnName, currentCount + cellValue);
                     }
                 }
