@@ -43,10 +43,12 @@ public class OutputAnalysisUtil {
         }
     }
 
-    public static File getProductKeyCostExcelFileFromRelativeDirectory() {
+    public static File getProductKeyCostExcelFileFromRelativeDirectory() throws IOException {
         final String relativeFilePath = "src/main/resources/sample-output-files/product-key-cost-file/product_key_cost.xlsx";
         File productCostFile = new File(relativeFilePath);
-        return productCostFile;
+        File tempOutputFile = new File(productCostFile.toString() + "temp.xlsx");
+        copyFileUsingStream(productCostFile, tempOutputFile);
+        return tempOutputFile;
     }
 
     /**
