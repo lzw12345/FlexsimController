@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.*;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
@@ -18,57 +17,36 @@ public class OutputAnalysisCore {
     private final static Logger LOGGER = Logger.getLogger(OutputAnalysisCore.class.getName());
 
     public static void main(String[] args) throws IOException, CustomException {
+        File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
 
         // Generate output statistics for all excel files in a folder
-        File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
-        appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+        //appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
-        /*
-        // Execute the summary statistics. Summary data will be appended to the output excel file. =======================
-        getOutputSummaryStatistics(outputExcelFilePath1, productKeyCostExcelFilePath);
-        getOutputSummaryStatistics(outputExcelFilePath2, productKeyCostExcelFilePath);
-        getOutputSummaryStatistics(outputExcelFilePath3, productKeyCostExcelFilePath);
-        getOutputSummaryStatistics(outputExcelFilePath4, productKeyCostExcelFilePath);
-        getOutputSummaryStatistics(outputExcelFilePath5, productKeyCostExcelFilePath);
-        getOutputSummaryStatistics(outputExcelFilePath6, productKeyCostExcelFilePath);
-        */
-        // ==============================================================================================================
-
-
-
-        // Generate a single excel output file (for Tableau) from multiple output files (already parsed). ==============
-        /*
-        File outputFile1 = new File(outputExcelFilePath1);
-        File outputFile2 = new File(outputExcelFilePath2);
-        File outputFile3 = new File(outputExcelFilePath3);
-        File outputFile4 = new File(outputExcelFilePath4);
-        File outputFile5 = new File(outputExcelFilePath5);
-        File outputFile6 = new File(outputExcelFilePath6);
-        ArrayList<File> fileArrayList = new ArrayList<File>();
-
-        fileArrayList.add(outputFile1);
-        fileArrayList.add(outputFile2);
-        fileArrayList.add(outputFile3);
-        fileArrayList.add(outputFile4);
-        fileArrayList.add(outputFile5);
-        fileArrayList.add(outputFile6);
-
-        File destinationFile = new File("C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_files_with_summary\\tableau_file.xlsx");
-
-        generateExcelTableauFile(fileArrayList, destinationFile);
-        */
-        // =============================================================================================================
+        // Generate the tableau excel file from the folder of excel files (with output data appended)
+        generateExcelTableauFile(folderDirectory);
 
     }
 
     /**
      * Generates a single excel file to be used with Tableau. Summarizes the output file data for each excel file.
-     * @param excelFiles
+     * Saves the file into "src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx"
      */
-    public static void generateExcelTableauFile(List<File> excelFiles, File destinationFile) throws IOException {
+    public static void generateExcelTableauFile(File folderOfExcelFiles) throws IOException, CustomException {
         LOGGER.info("Starting generateExcelTableauFile method");
 
-        // Create the destination excel workbook and excel file
+        // Generate a list of excel files from the folder
+        if (!folderOfExcelFiles.isDirectory()) {
+            throw new CustomException("Argument for generateExcelTableauFile() method is not a folder");
+        }
+        ArrayList<File> excelFiles = new ArrayList<File>();
+        for (File file: folderOfExcelFiles.listFiles()) {
+            if (file.exists() && (!file.isDirectory())) {
+                excelFiles.add(file);
+            }
+        }
+
+        // Create the destination excel file
+        final File destinationFile = new File("src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx");
         if (!destinationFile.exists()) {
             destinationFile.createNewFile();
         }
@@ -147,6 +125,7 @@ public class OutputAnalysisCore {
         destinationWorkbook.write(outputStream);
         outputStream.close();
         destinationWorkbook.close();
+        LOGGER.info("SUCCESSFULLY generated Tableau Excel file at: " + destinationFile.toString());
     }
 
     /**
