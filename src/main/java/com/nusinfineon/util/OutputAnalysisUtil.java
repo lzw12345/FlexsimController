@@ -5,9 +5,88 @@ import org.apache.poi.ss.usermodel.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TreeMap;
 
 public class OutputAnalysisUtil {
+
+    public static void saveDailyOutputSheet(String sheetName, TreeMap<Double, Double> treeMapOfDayToOutput,
+                                            Workbook excelWorkbook) {
+        final int DAY_COLUMN = 0;
+        final int OUTPUT_COLUMN = 1;
+        int rowIndex = 0;
+
+        // Deletes sheet if it already exists
+        if (excelWorkbook.getSheet(sheetName) != null) {
+            excelWorkbook.removeSheetAt(excelWorkbook.getSheetIndex(sheetName));
+        }
+
+        // Create sheet and rows of headers
+        Sheet sheetToWrite = excelWorkbook.createSheet(sheetName);
+        Row headerRow = sheetToWrite.createRow(rowIndex);
+
+        Cell dayCell = headerRow.createCell(DAY_COLUMN, CellType.STRING);
+        dayCell.setCellValue("Day");
+
+        Cell outputCell = headerRow.createCell(OUTPUT_COLUMN, CellType.STRING);
+        outputCell.setCellValue("Output");
+
+        rowIndex = rowIndex + 1;
+        for (Double day: treeMapOfDayToOutput.keySet()) {
+            Double output = treeMapOfDayToOutput.get(day);
+
+            Row newRow = sheetToWrite.createRow(rowIndex);
+
+            dayCell = newRow.createCell(DAY_COLUMN, CellType.NUMERIC);
+            dayCell.setCellValue(day);
+
+            outputCell = newRow.createCell(OUTPUT_COLUMN, CellType.NUMERIC);
+            outputCell.setCellValue(output);
+
+            rowIndex = rowIndex + 1;
+        }
+
+    }
+
+
+
+    public static void saveProductThroughputToNewSheet(String sheetName, TreeMap<String, Double> treeMapOfAverageThroughput,
+                                                       Workbook excelWorkbook) {
+        final int PRODUCT_ID_COLUMN = 0;
+        final int THROUGHPUT_COLUMN = 1;
+        int rowIndex = 0;
+
+        // Deletes sheet if it already exists
+        if (excelWorkbook.getSheet(sheetName) != null) {
+            excelWorkbook.removeSheetAt(excelWorkbook.getSheetIndex(sheetName));
+        }
+
+        // Create sheet and rows of headers
+        Sheet sheetToWrite = excelWorkbook.createSheet(sheetName);
+        Row headerRow = sheetToWrite.createRow(rowIndex);
+
+        Cell productCell = headerRow.createCell(PRODUCT_ID_COLUMN, CellType.STRING);
+        productCell.setCellValue("Product ID");
+
+        Cell cycleTimeCell = headerRow.createCell(THROUGHPUT_COLUMN, CellType.STRING);
+        cycleTimeCell.setCellValue("Throughput");
+
+        rowIndex = rowIndex + 1;
+        for (String productID: treeMapOfAverageThroughput.keySet()) {
+            Double cycleTime = treeMapOfAverageThroughput.get(productID);
+
+            Row newRow = sheetToWrite.createRow(rowIndex);
+
+            productCell = newRow.createCell(PRODUCT_ID_COLUMN, CellType.STRING);
+            productCell.setCellValue(productID);
+
+            cycleTimeCell = newRow.createCell(THROUGHPUT_COLUMN, CellType.NUMERIC);
+            cycleTimeCell.setCellValue(cycleTime);
+
+            rowIndex = rowIndex + 1;
+        }
+
+    }
 
     public static void saveOverallOutputDataToNewSheet(String sheetName, String runtype,
                                                        TreeMap<String, Double> mapOfSummaryStatistics,
@@ -41,6 +120,44 @@ public class OutputAnalysisUtil {
             summaryCell.setCellValue(statistic);
             columnCount = columnCount + 1;
         }
+    }
+
+    public static void saveProductCycleTimeToNewSheet(String sheetName, TreeMap<String, Double> treeMapOfAverageCycleTimes,
+                                                      Workbook excelWorkbook) {
+        final int PRODUCT_ID_COLUMN = 0;
+        final int CYCLE_TIME_COLUMN = 1;
+        int rowIndex = 0;
+
+        // Deletes sheet if it already exists
+        if (excelWorkbook.getSheet(sheetName) != null) {
+            excelWorkbook.removeSheetAt(excelWorkbook.getSheetIndex(sheetName));
+        }
+
+        // Create sheet and rows of headers
+        Sheet sheetToWrite = excelWorkbook.createSheet(sheetName);
+        Row headerRow = sheetToWrite.createRow(rowIndex);
+
+        Cell productCell = headerRow.createCell(PRODUCT_ID_COLUMN, CellType.STRING);
+        productCell.setCellValue("Product ID");
+
+        Cell cycleTimeCell = headerRow.createCell(CYCLE_TIME_COLUMN, CellType.STRING);
+        cycleTimeCell.setCellValue("Cycle Time");
+
+        rowIndex = rowIndex + 1;
+        for (String productID: treeMapOfAverageCycleTimes.keySet()) {
+            Double cycleTime = treeMapOfAverageCycleTimes.get(productID);
+
+            Row newRow = sheetToWrite.createRow(rowIndex);
+
+            productCell = newRow.createCell(PRODUCT_ID_COLUMN, CellType.STRING);
+            productCell.setCellValue(productID);
+
+            cycleTimeCell = newRow.createCell(CYCLE_TIME_COLUMN, CellType.NUMERIC);
+            cycleTimeCell.setCellValue(cycleTime);
+
+            rowIndex = rowIndex + 1;
+        }
+
     }
 
     public static File getProductKeyCostExcelFileFromRelativeDirectory() throws IOException {
@@ -238,6 +355,29 @@ public class OutputAnalysisUtil {
         String fileNameWithExtension = strings[strings.length - 1];
         String fileName = fileNameWithExtension.split("\\.")[0];
         return fileName;
+    }
+
+    /**
+     * Returns the median of an array of double values
+     * @param doubleValues Array of double values
+     * @return Median value within the array.
+     */
+    public static Double medianOfDoubleList(ArrayList<Double> doubleValues) {
+        Double median = -1.0;
+        if ((doubleValues.size() % 2) == 0) {
+            // Even sized array
+            Double middleRank = doubleValues.size() / 2.0;
+            int upperIndex = (int) Math.round(middleRank);
+            int  lowerIndex = upperIndex + 1;
+            System.out.println(upperIndex);
+            System.out.println(lowerIndex);
+            median = (doubleValues.get(upperIndex - 1) + doubleValues.get(lowerIndex - 1) ) / 2.0;
+        } else {
+            // Odd sized array
+            int middleRank = (doubleValues.size() + 1) / 2;
+            median = doubleValues.get(middleRank - 1);
+        }
+        return median;
     }
 
 }

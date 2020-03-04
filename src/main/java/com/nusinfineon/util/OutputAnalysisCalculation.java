@@ -1,19 +1,236 @@
 package com.nusinfineon.util;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+
+import org.apache.commons.math3.stat.descriptive.rank.*;
 
 import java.io.IOException;
 import java.util.*;
 
 import com.nusinfineon.exceptions.CustomException;
-import sun.reflect.generics.tree.Tree;
 
 /**
  * This class provides the core logic and code that goes into processing the output excel file and generating relevant
  * summary statistics.
  */
 public class OutputAnalysisCalculation {
+
+    public static TreeMap<String, Double> calculateProductThroughput(Sheet throughputSheet) throws CustomException {
+        try {
+            // Declare column names used
+            final String PRODUCT_ID = "Product";
+            final String QTY_OUT = "Qty Out";
+            final String TIME_IN_SYSTEM = "Time In System";
+
+            // Get column index for required columns
+            int qtyOutColumnIndex = -1;
+            int productColumnIndex = -1;
+            int timeColumnIndex = -1;
+            Row headerRow = throughputSheet.getRow(0);
+            for (int cellIndex = 0; cellIndex < headerRow.getPhysicalNumberOfCells(); cellIndex++) {
+                String cellValue = headerRow.getCell(cellIndex).getStringCellValue();
+                switch (cellValue) {
+                    case PRODUCT_ID:
+                        productColumnIndex = cellIndex;
+                        break;
+                    case QTY_OUT:
+                        qtyOutColumnIndex = cellIndex;
+                        break;
+                    case TIME_IN_SYSTEM:
+                        timeColumnIndex = cellIndex;
+                        break;
+                    default:
+                        break;
+                } // End of switch case block
+            } // End of for loop block
+
+            // Iterate through the rows and get counts and sum of throughput.
+            // Throughput = Time-in-system / Qty out
+            HashMap<String, Double> productThroughputs = new HashMap<>();
+            HashMap<String, Integer> productRowCounts = new HashMap();
+            for (int rowIndex = 1; rowIndex < throughputSheet.getPhysicalNumberOfRows(); rowIndex++) {
+                Row currentRow = throughputSheet.getRow(rowIndex);
+                Cell qtyCell = currentRow.getCell(qtyOutColumnIndex);
+
+                if ( (qtyCell != null) ) { // To avoid empty or non-existing rows
+                    Double qtyValue = qtyCell.getNumericCellValue();
+                    Double timeInSystem = currentRow.getCell(timeColumnIndex).getNumericCellValue();
+                    if ( (qtyValue > 0.0) && (timeInSystem > 0.0)) {
+                        String product = currentRow.getCell(productColumnIndex).getStringCellValue();
+                        Double throughput = qtyValue / timeInSystem;
+
+                        if (productRowCounts.containsKey(product)) {
+                            Integer currentCount = productRowCounts.get(product);
+                            productRowCounts.put(product, currentCount + 1);
+                        } else {
+                            productRowCounts.put(product, 1);
+                        }
+
+                        if (productThroughputs.containsKey(product)) {
+                            Double currentThroughput = productThroughputs.get(product);
+                            productThroughputs.put(product, currentThroughput + throughput );
+                        } else {
+                            productThroughputs.put(product, throughput );
+                        }
+
+                    }
+                } // End of If statement
+
+            } // End of for loop
+
+            // Get average throughputs for each product
+            TreeMap<String, Double> productAverageThroughput = new TreeMap<>();
+            for (String product: productRowCounts.keySet()) {
+                Integer count = productRowCounts.get(product);
+                Double throughputSum = productThroughputs.get(product);
+                Double averageThroughput = throughputSum / count;
+                productAverageThroughput.put(product, averageThroughput);
+            }
+            return productAverageThroughput;
+        } catch (Exception e) {
+            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
+        }
+    }
+
+    public static TreeMap<Double, Double> calculateDailyThroughput(Sheet throughputSheet)
+        throws CustomException {
+        try {
+            final String PRODUCT_ID = "Product";
+            final String QTY_OUT = "Qty Out";
+            final String DAY = "Day";
+
+            // Get column index for required columns
+            int qtyOutColumnIndex = -1;
+            int productColumnIndex = -1;
+            int dayColumnIndex = -1;
+            Row headerRow = throughputSheet.getRow(0);
+            for (int cellIndex = 0; cellIndex < headerRow.getPhysicalNumberOfCells(); cellIndex++) {
+                String cellValue = headerRow.getCell(cellIndex).getStringCellValue();
+                switch (cellValue) {
+                    case PRODUCT_ID:
+                        productColumnIndex = cellIndex;
+                        break;
+                    case QTY_OUT:
+                        qtyOutColumnIndex = cellIndex;
+                        break;
+                    case DAY:
+                        dayColumnIndex = cellIndex;
+                        break;
+                    default:
+                        break;
+                } // End of switch case block
+            } // End of for loop block
+
+            // Iterate through the rows and get sum of quantity out for each day
+            TreeMap<Double, Double> dailyOutputs = new TreeMap<>();
+
+            for (int rowIndex = 1; rowIndex < throughputSheet.getPhysicalNumberOfRows(); rowIndex++) {
+                Row currentRow = throughputSheet.getRow(rowIndex);
+                Cell qtyCell = currentRow.getCell(qtyOutColumnIndex);
+
+                if (qtyCell != null) {
+                    Double qtyValue = qtyCell.getNumericCellValue();
+                    if ((qtyValue > 0.0) ) {
+                        Double day = currentRow.getCell(dayColumnIndex).getNumericCellValue();
+                        if (dailyOutputs.containsKey(day)) {
+                          Double currentOutput = dailyOutputs.get(day);
+                          dailyOutputs.put(day, currentOutput + qtyValue);
+                        } else {
+                            dailyOutputs.put(day,  qtyValue);
+                        }
+                    }
+
+                }
+
+            } // end of for loop
+            return dailyOutputs;
+
+
+        } catch (Exception e) {
+            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
+        }
+    }
+
+    public static TreeMap<String, Double> calculateProductCycleTime(Sheet cycleTimeSheet)
+        throws CustomException {
+
+        try {
+            // Declare column name required
+            final String cycleTimeColumnName = "StayTime Average (hr)";
+            final String productColumnName = "Product";
+            int cycleTimeIndex = -1;
+            int prooductIndex = -1;
+
+            // Get index which the column belongs to
+            Row headerRow = cycleTimeSheet.getRow(0);
+            for (int cellIndex = 0; cellIndex < headerRow.getPhysicalNumberOfCells(); cellIndex++) {
+                Cell cell = headerRow.getCell(cellIndex);
+                if (cell != null) {
+                    String cellValue = headerRow.getCell(cellIndex).getStringCellValue();
+                    switch (cellValue) {
+                        case cycleTimeColumnName:
+                            cycleTimeIndex = cellIndex;
+                            break;
+                        case productColumnName:
+                            prooductIndex = cellIndex;
+                        default:
+                            break;
+                    } // End of switch case block
+                }
+            }
+
+            // Declare maps to store product id counts and
+            TreeMap<String, Integer> productIDCounts = new TreeMap<String, Integer>();
+            TreeMap<String, Double> productIDTotalCycleTime = new TreeMap<String, Double>();
+
+            // Iterate through the rows and obtain the number of counts for each unique product ID and their cumulative CTs
+            for (int rowIndex = 1; rowIndex < cycleTimeSheet.getPhysicalNumberOfRows(); rowIndex++) {
+                Row currentRow = cycleTimeSheet.getRow(rowIndex);
+
+                // Obtain number of counts for each product ID. End goal is to get the total for each product and get average CT for each product.
+                if (currentRow.getCell(prooductIndex) != null) {
+                    String productID = currentRow.getCell(prooductIndex).getStringCellValue();
+                    if (productIDCounts.containsKey(productID)) {
+                        Integer currentCount = productIDCounts.get(productID);
+                        productIDCounts.put(productID, currentCount + 1);
+                    } else {
+                        productIDCounts.put(productID, 1);
+                    }
+                }
+
+                // Obtain the cumulative total for each product ID
+                if (currentRow.getCell(cycleTimeIndex) != null) {
+                    String productID = currentRow.getCell(prooductIndex).getStringCellValue();
+                    Double productCycleTimeAverage = currentRow.getCell(cycleTimeIndex).getNumericCellValue();
+                    if (productIDTotalCycleTime.containsKey(productID)) {
+                        Double currentTotal = productIDTotalCycleTime.get(productID);
+                        productIDTotalCycleTime.put(productID, currentTotal + productCycleTimeAverage);
+                    } else {
+                        productIDTotalCycleTime.put(productID, productCycleTimeAverage);
+                    }
+                }
+
+            } // End of for loop
+
+            // Obtain the average cycle time for each product
+            TreeMap<String, Double> averageCycleTimeForEachProduct = new TreeMap<String, Double>();
+
+            for (String productID: productIDCounts.keySet()) {
+                Integer productCounts = productIDCounts.get(productID);
+                Double productTotal = productIDTotalCycleTime.get(productID);
+                Double productAverageCT = productTotal / (double) productCounts;
+                averageCycleTimeForEachProduct.put(productID, productAverageCT);
+            }
+
+            return averageCycleTimeForEachProduct;
+
+        } catch (Exception e) {
+            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
+        }
+
+    }
 
     /**
      * Calculates the overall worth of products that have passed through.

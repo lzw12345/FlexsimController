@@ -17,14 +17,20 @@ public class OutputAnalysisCore {
     private final static Logger LOGGER = Logger.getLogger(OutputAnalysisCore.class.getName());
 
     public static void main(String[] args) throws IOException, CustomException {
+
+        // =============== Tests on the whole folder ===================================================================
         File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
 
         // Generate output statistics for all excel files in a folder
-        //appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+        appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
         // Generate the tableau excel file from the folder of excel files (with output data appended)
-        generateExcelTableauFile(folderDirectory);
+        // generateExcelTableauFile(folderDirectory);
 
+
+        // ======= Tests on a single excel file ========================================================================
+        //File excelFile = new File("C:\\Users\\Ahmad\\Documents\\Workspace\\flexsim-controller\\src\\main\\resources\\sample-output-files\\output-files-with-summary-data\\output_min_size_20.xlsx");
+        //appendSummaryStatisticsOfSingleOutputExcelFile(excelFile);
     }
 
     /**
@@ -169,6 +175,30 @@ public class OutputAnalysisCore {
             mapOfSummaryStatistics.putAll(treeMapOfAverageUtilizationRates);
             // =========================== End of section on IBIS Oven utilization rates ===================================
 
+            // ====================== Get cycle time data  ============================================================
+            final String THROUGHPUT_PRODUCT_REP = "Throughput Product Rep";
+            Sheet cycleTimeSheet = workbook.getSheet(THROUGHPUT_PRODUCT_REP);
+            if (cycleTimeSheet == null) {
+                throw new IOException("Excel file doesn't contain sheet: " + THROUGHPUT_PRODUCT_REP);
+            }
+            TreeMap<String, Double> treeMapOfProductToAverageCycleTimes = OutputAnalysisCalculation.calculateProductCycleTime(cycleTimeSheet);
+            // ====================== End of section on cycle time summary statistics =====================================
+
+            // ===============================  Get throughput data ====================================================
+            final String DAILY_THROUGHPUT_PRODUCT_REP = "Daily Throughput Product Rep";
+            Sheet throughputSheet = workbook.getSheet(DAILY_THROUGHPUT_PRODUCT_REP);
+            if (throughputSheet == null) {
+                throw new IOException("Excel file doesn't contain sheet: " + DAILY_THROUGHPUT_PRODUCT_REP);
+            }
+            TreeMap<String, Double> treeMapOfProductToAverageThroughput = OutputAnalysisCalculation.calculateProductThroughput(throughputSheet);
+            // ====================== End of section on throughput data ================================================
+
+            //=============================== Get daily throughput =====================================================
+            // Day is stored as a numeric double
+            TreeMap<Double, Double> treeMapOfDayToOutput = OutputAnalysisCalculation.calculateDailyThroughput(throughputSheet);
+            // ======================== End of section on daily throughput =============================================
+
+            /*
             // =============================== Get Product throughput from Daily throughput Resource =======================
             final String DAILY_THROUGHPUT_RES_REP = "Daily Throughput Res Rep";
             Sheet dailyThroughputSheet = workbook.getSheet(DAILY_THROUGHPUT_RES_REP);
@@ -213,11 +243,22 @@ public class OutputAnalysisCore {
             mapOfSummaryStatistics.putAll(treeMapOfSummarizedThroughputByFlexsim);
             // =========================== End of Product Throughput from "Throughput Res Rep" =========================
 
+            */
+
             // =========================== Extract file name ie run specs ==============================================
             String runType = OutputAnalysisUtil.fileStringToFileName(originalInputFile.toString());
 
             // Saves all the extracted information to a new sheet.
             OutputAnalysisUtil.saveOverallOutputDataToNewSheet("OVERALL_SUMMARY", runType, mapOfSummaryStatistics, workbook);
+
+            // Saves the product cycle time to a enw sheet
+            OutputAnalysisUtil.saveProductCycleTimeToNewSheet("PRODUCT_CYCLE_TIME", treeMapOfProductToAverageCycleTimes, workbook);
+
+            // Saves the product throughput to a new sheet
+            OutputAnalysisUtil.saveProductThroughputToNewSheet("PRODUCT_THROUGHPUT", treeMapOfProductToAverageThroughput, workbook);
+
+            // Saves the daily output to a new sheet
+            OutputAnalysisUtil.saveDailyOutputSheet("DAILY_OUTPUT", treeMapOfDayToOutput, workbook);
 
             // Saves the current edited workbook by overwriting the original file
             FileOutputStream outputStream = new FileOutputStream(originalInputFile.toString());
@@ -228,8 +269,8 @@ public class OutputAnalysisCore {
             workbook.close();
             tempOutputFile.delete();
             LOGGER.info("Closed workbook and deleted temporary excel file.");
-            LOGGER.info("SUCCESSFULLY generated Output statistics for " + originalInputFile.getName());
-            LOGGER.info("=========================================================================================");
+            LOGGER.info("SUCCESSFULLY generated Output statistics for " + originalInputFile.getName() + "\n" +
+                                "=========================================================================================");
 
         } catch (CustomException e) {
 
