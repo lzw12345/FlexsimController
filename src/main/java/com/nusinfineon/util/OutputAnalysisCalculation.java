@@ -326,6 +326,7 @@ public class OutputAnalysisCalculation {
 
     }
 
+    //TODO: Take average
     public static TreeMap<String, Double> calculateThroughputBasedOnDailyThroughputByProduct(Sheet dailyThroughputProductSheet)
             throws CustomException {
 
@@ -447,6 +448,8 @@ public class OutputAnalysisCalculation {
                         break;
                 } // End of switch case block
             } // End of for loop block
+
+            //TODO: Filter by IBIS Machines only
 
             // Iterate through all rows and get the counts
             for (int rowIndex = 1; rowIndex < dailyThroughputResourceSheet.getPhysicalNumberOfRows(); rowIndex++) {
