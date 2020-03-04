@@ -17,17 +17,11 @@ public class OutputAnalysisCore {
 
     private final static Logger LOGGER = Logger.getLogger(OutputAnalysisCore.class.getName());
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, CustomException {
 
-
-        // Declare output file and cost file paths
-        String productKeyCostExcelFilePath = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\product_key_cost.xlsx";
-        String outputExcelFilePath1 = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_files_with_summary\\output_min_size_20.xlsx";
-        String outputExcelFilePath2 = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_files_with_summary\\output_min_size_21.xlsx";
-        String outputExcelFilePath3 = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_files_with_summary\\output_min_size_22.xlsx";
-        String outputExcelFilePath4 = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_files_with_summary\\output_min_size_23.xlsx";
-        String outputExcelFilePath5 = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_files_with_summary\\output_min_size_24.xlsx";
-        String outputExcelFilePath6 = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_files_with_summary\\output_shortest_queue_resource_selection.xlsx";
+        // Generate output statistics for all excel files in a folder
+        File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
+        appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
         /*
         // Execute the summary statistics. Summary data will be appended to the output excel file. =======================
@@ -157,21 +151,25 @@ public class OutputAnalysisCore {
 
     /**
      * Generates the summary statistic for a single excel file.
-     * @param outputExcelFilePath
-     * @param productKeyCostExcelFilePath
+     * Sample usage:
+     * "
+     * File outputExcelFile01 = new File("src/main/resources/sample-output-files/output-files-with-summary-data/output_min_size_20.xlsx");
+     * appendSummaryStatisticsOfSingleOutputExcelFile(outputExcelFile01);
+     * "
+     * @param outputExcelFile Output excel file of a single simulation run.
      * @throws IOException
      */
-    public static void getOutputSummaryStatistics(String outputExcelFilePath, String productKeyCostExcelFilePath) throws IOException {
+    public static void appendSummaryStatisticsOfSingleOutputExcelFile(File outputExcelFile) throws IOException {
         LOGGER.info("Starting output summary generation");
 
         // Creates a temp excel file for referencing
-        File originalInputFile = new File(outputExcelFilePath);
-        File tempOutputFile = new File(outputExcelFilePath + "temp.xlsx");
+        File originalInputFile = outputExcelFile;
+        File tempOutputFile = new File(originalInputFile.toString() + "temp.xlsx");
         OutputAnalysisUtil.copyFileUsingStream(originalInputFile, tempOutputFile);
         LOGGER.info("Successfully generated temporary copy of output file.");
 
         if (!tempOutputFile.exists()) {
-            throw new IOException("File not found in: " + outputExcelFilePath);
+            throw new IOException("File not found in: " + originalInputFile.toString());
         }
 
         TreeMap<String, Double> mapOfSummaryStatistics = new TreeMap<String, Double>();
@@ -219,6 +217,7 @@ public class OutputAnalysisCore {
             Sheet dailyProductThroughputSheet = workbook.getSheet(DAILY_THROUGHPUT_PRODUCT_REP);
             TreeMap<String, Double> treeMapOfTotalThroughputWorth = OutputAnalysisCalculation.calculateTotalProductWorth(dailyProductThroughputSheet, productCostSheet);
             productCostWorkbook.close();
+            productCostFile.delete();
             mapOfSummaryStatistics.putAll(treeMapOfTotalThroughputWorth);
             // =========================== End of throughput worth calculation =============================================
 
@@ -242,7 +241,7 @@ public class OutputAnalysisCore {
             OutputAnalysisUtil.saveOverallOutputDataToNewSheet("OVERALL_SUMMARY", runType, mapOfSummaryStatistics, workbook);
 
             // Saves the current edited workbook by overwriting the original file
-            FileOutputStream outputStream = new FileOutputStream(outputExcelFilePath);
+            FileOutputStream outputStream = new FileOutputStream(originalInputFile.toString());
             workbook.write(outputStream);
             outputStream.close();
 
@@ -250,8 +249,8 @@ public class OutputAnalysisCore {
             workbook.close();
             tempOutputFile.delete();
             LOGGER.info("Closed workbook and deleted temporary excel file.");
-
-            LOGGER.info("Output statistics for " + originalInputFile.toString() + " generated successfully");
+            LOGGER.info("SUCCESSFULLY generated Output statistics for " + originalInputFile.getName());
+            LOGGER.info("=========================================================================================");
 
         } catch (CustomException e) {
 
@@ -263,6 +262,25 @@ public class OutputAnalysisCore {
 
         }
 
+    }
+
+    /**
+     * Wrapper function to handle all files in a specified folder.
+     * @param folderDirectory Directory of a folder with excel files to be processed.
+     * @throws CustomException if argument is not a directory.
+     */
+    public static void appendSummaryStatisticsOfFolderOFExcelFiles(File folderDirectory) throws CustomException, IOException {
+        if (!folderDirectory.isDirectory()) {
+            throw new CustomException(folderDirectory.toString() + " is not a directory");
+        }
+        LOGGER.info("Accessing folder: " + folderDirectory.toString());
+
+        // Process all files in the directory and append their respective summary statistics
+        for (File file: folderDirectory.listFiles()) {
+            if (file.exists() && (!file.isDirectory())) {
+                appendSummaryStatisticsOfSingleOutputExcelFile(file);
+            }
+        }
     }
 
 }
