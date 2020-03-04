@@ -43,6 +43,12 @@ public class OutputAnalysisUtil {
         }
     }
 
+    public static File getProductKeyCostExcelFileFromRelativeDirectory() {
+        final String relativeFilePath = "src/main/resources/sample-output-files/product-key-cost-file/product_key_cost.xlsx";
+        File productCostFile = new File(relativeFilePath);
+        return productCostFile;
+    }
+
     /**
      * Creates a new sheet inside the given excel workbook. Will write values from the provided hash map to the sheet.
      * @param sheetName Name of the new sheet to save the data in.

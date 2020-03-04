@@ -30,7 +30,7 @@ public class OutputAnalysisCore {
         String outputExcelFilePath6 = "C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_files_with_summary\\output_shortest_queue_resource_selection.xlsx";
 
         /*
-        // Execute the summary statistics. Summary data will be appended to the output excel file.
+        // Execute the summary statistics. Summary data will be appended to the output excel file. =======================
         getOutputSummaryStatistics(outputExcelFilePath1, productKeyCostExcelFilePath);
         getOutputSummaryStatistics(outputExcelFilePath2, productKeyCostExcelFilePath);
         getOutputSummaryStatistics(outputExcelFilePath3, productKeyCostExcelFilePath);
@@ -38,9 +38,12 @@ public class OutputAnalysisCore {
         getOutputSummaryStatistics(outputExcelFilePath5, productKeyCostExcelFilePath);
         getOutputSummaryStatistics(outputExcelFilePath6, productKeyCostExcelFilePath);
         */
+        // ==============================================================================================================
 
-        // Generate a single excel output file (for Tableau) from multiple output files (already parsed).
 
+
+        // Generate a single excel output file (for Tableau) from multiple output files (already parsed). ==============
+        /*
         File outputFile1 = new File(outputExcelFilePath1);
         File outputFile2 = new File(outputExcelFilePath2);
         File outputFile3 = new File(outputExcelFilePath3);
@@ -59,6 +62,8 @@ public class OutputAnalysisCore {
         File destinationFile = new File("C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Data Files\\output_files_with_summary\\tableau_file.xlsx");
 
         generateExcelTableauFile(fileArrayList, destinationFile);
+        */
+        // =============================================================================================================
 
     }
 
@@ -208,7 +213,7 @@ public class OutputAnalysisCore {
 
             // Read the sheet from product-cost excel file
             final String DAILY_THROUGHPUT_PRODUCT_REP = "Daily Throughput Product Rep";
-            File productCostFile = new File(productKeyCostExcelFilePath);
+            File productCostFile = OutputAnalysisUtil.getProductKeyCostExcelFileFromRelativeDirectory();
             Workbook productCostWorkbook = WorkbookFactory.create(productCostFile);
             Sheet productCostSheet = productCostWorkbook.getSheetAt(0);
             Sheet dailyProductThroughputSheet = workbook.getSheet(DAILY_THROUGHPUT_PRODUCT_REP);
