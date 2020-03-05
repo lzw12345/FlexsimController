@@ -13,8 +13,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
-import java.nio.channels.Channel;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -25,7 +23,9 @@ import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
 
-
+/**
+ * Class to generate an excel listener using DDE
+ */
 public class ExcelListener {
 
     private String flexsimLocation;
@@ -54,7 +54,7 @@ public class ExcelListener {
     public ExcelListener(ArrayList<File> excelFiles, ArrayList<Integer> batchSizes, String flexsimLocation, String modelLocation,
                          String outputLocation,
                          String runSpeed, String warmUpPeriod, String stopTime, boolean isModelShown,
-                         ArrayList<File> excelOutputFiles  ) {
+                         ArrayList<File> excelOutputFiles  ) throws IOException {
 
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
@@ -70,10 +70,90 @@ public class ExcelListener {
         this.batchSizes = batchSizes;
         this.excelOutputFiles.clear();
 
+        currentRunNum = 0;
+        statusFile = generateExcelStatusFile(getFullPath(outputLocation));
+
+        // DDE client
+        conversation = new DDEClientConversation();
+        // We can use UNICODE format if server prefers it
+        //conversation.setTextFormat(ClipboardFormat.CF_UNICODETEXT);
+        try {
+            //creates the event listener methods
+            conversation.setEventListener(new DDEClientEventListener() {
+                public void onDisconnect()
+                {
+                    System.out.println("onDisconnect()");
+
+                }
+
+                //function called when a change is detected in the status excel file
+                public void onItemChanged(String topic, String item, String data) {
+                    excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
+                    if(currentRunNum == batchSizes.size()) {
+                        System.out.println(" batchsizes = " + batchSizes.size());
+                        for (File iter : excelOutputFiles){
+                            System.out.println("outputput file "+  currentRunNum + " = " + iter.toString());
+                        }
+                        try {
+                            endRuns();
+                        } catch (DDEException e) {
+                            e.printStackTrace();
+                        }
+                    }else {
+                        System.out.println("onItemChanged(" + topic + "," + item + "," + data.trim() + " i = " + currentRunNum + ")");
+                        if (data.trim().equals("finished")) {
+                            runModel();
+
+                        }
+                    }
+                    currentRunNum++;
+                }
+            });
+
+            runModel();
+            currentRunNum++;
+
+            Desktop.getDesktop().open(statusFile);
+
+            boolean fileIsNotLocked = statusFile.renameTo(statusFile);
+            while (fileIsNotLocked) {
+                TimeUnit.SECONDS.sleep(1);
+
+                fileIsNotLocked = statusFile.renameTo(statusFile);
+            }
+
+
+
+            System.out.println("Connecting...");
+            conversation.connect("Excel", DEFAULTSTATUSSHEET);
+            try {
+
+                conversation.startAdvice("R1C1");
+                System.out.println("Connected!!");
+                while (currentRunNum <= batchSizes.size() ){
+
+                    TimeUnit.SECONDS.sleep(1);
+                }
+            } finally {
+                //conversation.disconnect();
+            }
+        } catch (DDEMLException e) {
+            System.out.println("DDEMLException: 0x" + Integer.toHexString(e.getErrorCode()) + " " + e.getMessage());
+        } catch (DDEException e) {
+            System.out.println("DDEClientException: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        }
+
+
 
     }
 
-    public DDEClientConversation getListener() throws IOException {
+    /**
+     * generates a listner and starts multiple runs of the program
+     * @throws IOException
+     */
+    public void startIterations() throws IOException, DDEException {
         currentRunNum = 0;
         statusFile = generateExcelStatusFile(getFullPath(outputLocation));
 
@@ -82,24 +162,23 @@ public class ExcelListener {
             // We can use UNICODE format if server prefers it
             //conversation.setTextFormat(ClipboardFormat.CF_UNICODETEXT);
         try {
+            //creates the event listener methods
             conversation.setEventListener(new DDEClientEventListener() {
-                public void onDisconnect() {
+                public void onDisconnect()
+                {
                     System.out.println("onDisconnect()");
-                    for (File iter : excelOutputFiles){
-                        System.out.println("outputput file 1 = " + iter.toString());
-                    }
+
                 }
 
+                //function called when a change is detected in the status excel file
                 public void onItemChanged(String topic, String item, String data) {
                     excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
                     if(currentRunNum == batchSizes.size()) {
                         System.out.println(" batchsizes = " + batchSizes.size());
-                        try {
-                            conversation.disconnect();
+                            for (File iter : excelOutputFiles){
+                                System.out.println("outputput file 1 = " + iter.toString());
+                            }
 
-                        } catch (DDEException e) {
-                            e.printStackTrace();
-                        }
                     }else {
                         System.out.println("onItemChanged(" + topic + "," + item + "," + data.trim() + " i = " + currentRunNum + ")");
                         if (data.trim().equals("finished")) {
@@ -131,8 +210,9 @@ public class ExcelListener {
 
                 conversation.startAdvice("R1C1");
                 System.out.println("Connected!!");
-
-                //conversation.stopAdvice("R1C1");
+                //TimeUnit.SECONDS.sleep(20);
+                //System.out.println("ending");
+               // conversation.stopAdvice("R1C1");
             } finally {
                 //conversation.disconnect();
             }
@@ -144,18 +224,21 @@ public class ExcelListener {
             System.out.println("Exception: " + e);
         }
 
-        return conversation;
+
     }
 
-
+    /**
+     * terminates runs
+     * @throws DDEException
+     */
     public void endRuns () throws DDEException {
         System.out.println("Runs terminated early!");
-        conversation.disconnect();
+        conversation.stopAdvice("R1C1");
     }
 
 
 
-
+    //main code the runs the program
     public void runModel (){
 
         System.out.println("Batch size: " + batchSizes.get(currentRunNum) + ". File path: " + excelInputFiles.get(currentRunNum).toString());
@@ -268,26 +351,5 @@ public class ExcelListener {
             e.printStackTrace();
         }
     }
-
-    private boolean isFileClosed(File file) {
-        boolean closed;
-        Channel channel = null;
-        try {
-            channel = new RandomAccessFile(file, "rw").getChannel();
-            closed = true;
-        } catch(Exception ex) {
-            closed = false;
-        } finally {
-            if(channel!=null) {
-                try {
-                    channel.close();
-                } catch (IOException ex) {
-                    // exception handling
-                }
-            }
-        }
-        return closed;
-    }
-
 
 }

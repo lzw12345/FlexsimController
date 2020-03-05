@@ -3,7 +3,6 @@ package com.nusinfineon.core;
 
 import com.nusinfineon.exceptions.CustomException;
 import com.pretty_tools.dde.DDEException;
-import com.pretty_tools.dde.client.DDEClientConversation;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,8 +88,8 @@ public class Core {
 
         ExcelListener excelListener = new ExcelListener(excelInputFiles, batchSizes, flexsimLocation, modelLocation,
                  outputLocation, runSpeed, warmUpPeriod, stopTime, isModelShown,excelOutputFiles);
+        
 
-        DDEClientConversation modelListener = excelListener.getListener();
     }
 
     /**
