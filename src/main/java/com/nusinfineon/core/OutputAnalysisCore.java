@@ -19,18 +19,18 @@ public class OutputAnalysisCore {
     public static void main(String[] args) throws IOException, CustomException {
 
         // =============== Tests on the whole folder ===================================================================
-        File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
+        //File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
 
         // Generate output statistics for all excel files in a folder
-        appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+        //appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
         // Generate the tableau excel file from the folder of excel files (with output data appended)
         // generateExcelTableauFile(folderDirectory);
 
 
         // ======= Tests on a single excel file ========================================================================
-        //File excelFile = new File("C:\\Users\\Ahmad\\Documents\\Workspace\\flexsim-controller\\src\\main\\resources\\sample-output-files\\output-files-with-summary-data\\output_min_size_20.xlsx");
-        //appendSummaryStatisticsOfSingleOutputExcelFile(excelFile);
+        File excelFile = new File("C:\\Users\\Ahmad\\Documents\\Workspace\\flexsim-controller\\src\\main\\resources\\sample-output-files\\output-files-with-summary-data\\output_min_size_20.xlsx");
+        appendSummaryStatisticsOfSingleOutputExcelFile(excelFile);
     }
 
     /**
@@ -181,7 +181,7 @@ public class OutputAnalysisCore {
             if (cycleTimeSheet == null) {
                 throw new IOException("Excel file doesn't contain sheet: " + THROUGHPUT_PRODUCT_REP);
             }
-            TreeMap<String, Double> treeMapOfProductToAverageCycleTimes = OutputAnalysisCalculation.calculateProductCycleTime(cycleTimeSheet);
+            TreeMap<String, Double> treeMapOfProductToAverageCycleTimesFromThroughputProduct = OutputAnalysisCalculation.calculateProductCycleTimeFromThroughputProduct(cycleTimeSheet);
             // ====================== End of section on cycle time summary statistics =====================================
 
             // ===============================  Get throughput data ====================================================
@@ -197,6 +197,10 @@ public class OutputAnalysisCore {
             // Day is stored as a numeric double
             TreeMap<Double, Double> treeMapOfDayToOutput = OutputAnalysisCalculation.calculateDailyThroughput(throughputSheet);
             // ======================== End of section on daily throughput =============================================
+
+            // ======================= Get cycle time from "Daily Throughput Product Rep" =====================================
+            TreeMap<String, Double> treeMapOfProductToAverageCycleTimesFromDailyThroughput = OutputAnalysisCalculation.calculateProductCycleTimeFromDailyThroughput(throughputSheet);
+            // ======================== End of cycle time section ==============================================================
 
             /*
             // =============================== Get Product throughput from Daily throughput Resource =======================
@@ -252,13 +256,16 @@ public class OutputAnalysisCore {
             OutputAnalysisUtil.saveOverallOutputDataToNewSheet("OVERALL_SUMMARY", runType, mapOfSummaryStatistics, workbook);
 
             // Saves the product cycle time to a enw sheet
-            OutputAnalysisUtil.saveProductCycleTimeToNewSheet("PRODUCT_CYCLE_TIME", treeMapOfProductToAverageCycleTimes, workbook);
+            OutputAnalysisUtil.saveProductCycleTimeToNewSheet("PRODUCT_STAY_TIME", treeMapOfProductToAverageCycleTimesFromThroughputProduct, workbook);
 
             // Saves the product throughput to a new sheet
             OutputAnalysisUtil.saveProductThroughputToNewSheet("PRODUCT_THROUGHPUT", treeMapOfProductToAverageThroughput, workbook);
 
             // Saves the daily output to a new sheet
             OutputAnalysisUtil.saveDailyOutputSheet("DAILY_OUTPUT", treeMapOfDayToOutput, workbook);
+
+            // Save the product cycle time (from daily product throughput) to a new sheet
+            OutputAnalysisUtil.saveProductCycleTimeFromDailyThroughputToNewSheet("PRODUCT_TIME_IN_SYSTEM", treeMapOfProductToAverageCycleTimesFromDailyThroughput, workbook );
 
             // Saves the current edited workbook by overwriting the original file
             FileOutputStream outputStream = new FileOutputStream(originalInputFile.toString());

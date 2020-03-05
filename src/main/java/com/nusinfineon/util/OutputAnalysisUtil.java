@@ -48,6 +48,46 @@ public class OutputAnalysisUtil {
 
     }
 
+    public static void saveProductCycleTimeFromDailyThroughputToNewSheet(String sheetName,
+                                                                         TreeMap<String, Double> treeMapOfProductToAverageCycleTimesFromDailyThroughput,
+                                                                         Workbook excelWorkbook) {
+        final int PRODUCT_ID_COLUMN = 0;
+        final int CYCLETIME_COLUMN = 1;
+        int rowIndex = 0;
+
+        // Deletes sheet if it already exists
+        if (excelWorkbook.getSheet(sheetName) != null) {
+            excelWorkbook.removeSheetAt(excelWorkbook.getSheetIndex(sheetName));
+        }
+
+        // Create sheet and rows of headers
+        Sheet sheetToWrite = excelWorkbook.createSheet(sheetName);
+        Row headerRow = sheetToWrite.createRow(rowIndex);
+
+        Cell productCell = headerRow.createCell(PRODUCT_ID_COLUMN, CellType.STRING);
+        productCell.setCellValue("Product ID");
+
+        Cell cycleTimeCell = headerRow.createCell(CYCLETIME_COLUMN, CellType.STRING);
+        cycleTimeCell.setCellValue("Time In System");
+
+        rowIndex = rowIndex + 1;
+        for (String productID: treeMapOfProductToAverageCycleTimesFromDailyThroughput.keySet()) {
+            Double cycleTime = treeMapOfProductToAverageCycleTimesFromDailyThroughput.get(productID);
+
+            Row newRow = sheetToWrite.createRow(rowIndex);
+
+            productCell = newRow.createCell(PRODUCT_ID_COLUMN, CellType.STRING);
+            productCell.setCellValue(productID);
+
+            cycleTimeCell = newRow.createCell(CYCLETIME_COLUMN, CellType.NUMERIC);
+            cycleTimeCell.setCellValue(cycleTime);
+
+            rowIndex = rowIndex + 1;
+        }
+
+
+    }
+
 
 
     public static void saveProductThroughputToNewSheet(String sheetName, TreeMap<String, Double> treeMapOfAverageThroughput,
@@ -68,8 +108,8 @@ public class OutputAnalysisUtil {
         Cell productCell = headerRow.createCell(PRODUCT_ID_COLUMN, CellType.STRING);
         productCell.setCellValue("Product ID");
 
-        Cell cycleTimeCell = headerRow.createCell(THROUGHPUT_COLUMN, CellType.STRING);
-        cycleTimeCell.setCellValue("Throughput");
+        Cell throughputCell = headerRow.createCell(THROUGHPUT_COLUMN, CellType.STRING);
+        throughputCell.setCellValue("Throughput");
 
         rowIndex = rowIndex + 1;
         for (String productID: treeMapOfAverageThroughput.keySet()) {
@@ -80,8 +120,8 @@ public class OutputAnalysisUtil {
             productCell = newRow.createCell(PRODUCT_ID_COLUMN, CellType.STRING);
             productCell.setCellValue(productID);
 
-            cycleTimeCell = newRow.createCell(THROUGHPUT_COLUMN, CellType.NUMERIC);
-            cycleTimeCell.setCellValue(cycleTime);
+            throughputCell = newRow.createCell(THROUGHPUT_COLUMN, CellType.NUMERIC);
+            throughputCell.setCellValue(cycleTime);
 
             rowIndex = rowIndex + 1;
         }

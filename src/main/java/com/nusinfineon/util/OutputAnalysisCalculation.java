@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 
 import org.apache.commons.math3.stat.descriptive.rank.*;
 
+import java.awt.geom.Arc2D;
 import java.io.IOException;
 import java.util.*;
 
@@ -94,6 +95,75 @@ public class OutputAnalysisCalculation {
         }
     }
 
+    public static TreeMap<String, Double> calculateProductCycleTimeFromDailyThroughput(Sheet throughputSheet)
+        throws CustomException {
+        try {
+            final String PRODUCT_ID = "Product";
+            final String TIME_IN_SYSTEM = "Time In System";
+
+            // Get column index for required columns
+            int timeColumnIndex = -1;
+            int productColumnIndex = -1;
+            Row headerRow = throughputSheet.getRow(0);
+            for (int cellIndex = 0; cellIndex < headerRow.getPhysicalNumberOfCells(); cellIndex++) {
+                String cellValue = headerRow.getCell(cellIndex).getStringCellValue();
+                switch (cellValue) {
+                    case PRODUCT_ID:
+                        productColumnIndex = cellIndex;
+                        break;
+                    case TIME_IN_SYSTEM:
+                        timeColumnIndex = cellIndex;
+                        break;
+                    default:
+                        break;
+                } // End of switch case block
+            } // End of for loop block
+
+            // Obtain counts of product rows and sum up total "time in system".
+            TreeMap<String, Integer> mapOfProductRowCounts = new TreeMap<>();
+            TreeMap<String, Double> mapOfTimeInSystem = new TreeMap<>();
+            for (int rowIndex = 1; rowIndex < throughputSheet.getPhysicalNumberOfRows(); rowIndex++) {
+                Row currentRow = throughputSheet.getRow(rowIndex);
+                Cell timeCell = currentRow.getCell(timeColumnIndex);
+
+                if (timeCell != null) {
+                    Double timeValue = timeCell.getNumericCellValue();
+                    if ((timeValue > 0.0) ) {
+                        String product = currentRow.getCell(productColumnIndex).getStringCellValue();
+                        // Increment the count
+                        if (mapOfProductRowCounts.containsKey(product)) {
+                            Integer currentCount = mapOfProductRowCounts.get(product);
+                            mapOfProductRowCounts.put(product, currentCount + 1);
+                        } else {
+                            mapOfProductRowCounts.put(product,  1);
+                        }
+                        // Sum up the total "Time in system"
+                        if (mapOfTimeInSystem.containsKey(product)) {
+                            Double currentTimeSum = mapOfTimeInSystem.get(product);
+                            mapOfTimeInSystem.put(product, currentTimeSum + timeValue);
+                        } else {
+                            mapOfTimeInSystem.put(product, timeValue);
+                        }
+                    }
+                }
+
+            } // end of for loop
+
+            // Get the average time-in-system for each product
+            TreeMap<String, Double> mapOfProductToAverageTimeInSystem = new TreeMap<>();
+            for (String product: mapOfProductRowCounts.keySet()) {
+                Integer counts = mapOfProductRowCounts.get(product);
+                Double timeSum = mapOfTimeInSystem.get(product);
+                Double averageTimeInSystem = timeSum / counts;
+                mapOfProductToAverageTimeInSystem.put(product, averageTimeInSystem);
+            }
+
+            return mapOfProductToAverageTimeInSystem;
+        } catch (Exception e) {
+            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
+        }
+    }
+
     public static TreeMap<Double, Double> calculateDailyThroughput(Sheet throughputSheet)
         throws CustomException {
         try {
@@ -153,7 +223,7 @@ public class OutputAnalysisCalculation {
         }
     }
 
-    public static TreeMap<String, Double> calculateProductCycleTime(Sheet cycleTimeSheet)
+    public static TreeMap<String, Double> calculateProductCycleTimeFromThroughputProduct(Sheet cycleTimeSheet)
         throws CustomException {
 
         try {
