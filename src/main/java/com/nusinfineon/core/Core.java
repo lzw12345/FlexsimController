@@ -2,6 +2,8 @@ package com.nusinfineon.core;
 
 
 import com.nusinfineon.exceptions.CustomException;
+import com.pretty_tools.dde.DDEException;
+import com.pretty_tools.dde.client.DDEClientConversation;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +31,7 @@ public class Core {
     private String trolleyLocationSelectCriteria;
     private String bibLoadOnLotCriteria;
     private boolean isModelShown;
+    private ArrayList<File> excelOutputFiles;
 
     private final static Logger LOGGER = Logger.getLogger(Core.class.getName());
     private final static String LOT_SEQUENCE_FCFS = "First-Come-First-Served (Default)";
@@ -61,7 +64,7 @@ public class Core {
                         String lotSequencingRuleString, String batchSizeMinString, String batchSizeMaxString,
                         String batchSizeStepString, String resourceSelectCriteria, String lotSelectionCriteria,
                         String trolleyLocationSelectCriteria,
-                        String bibLoadOnLotCriteria) throws IOException, CustomException, InterruptedException {
+                        String bibLoadOnLotCriteria) throws IOException, CustomException, InterruptedException, DDEException {
 
 
         // Code block handling creation of excel file for batch iterating
@@ -81,11 +84,13 @@ public class Core {
         // Extract the array of files and sizes from batchSizeCore
         ArrayList<File> excelInputFiles = excelInputCore.getExcelFiles();
         ArrayList<Integer> batchSizes = excelInputCore.getListOfBatchSizes();
+        excelOutputFiles = new ArrayList<File>();
 
 
         ExcelListener excelListener = new ExcelListener(excelInputFiles, batchSizes, flexsimLocation, modelLocation,
-                 outputLocation, runSpeed, warmUpPeriod, stopTime, isModelShown);
+                 outputLocation, runSpeed, warmUpPeriod, stopTime, isModelShown,excelOutputFiles);
 
+        DDEClientConversation modelListener = excelListener.getListener();
     }
 
     /**

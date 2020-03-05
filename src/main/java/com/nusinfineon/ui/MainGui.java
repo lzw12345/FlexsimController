@@ -2,6 +2,7 @@ package com.nusinfineon.ui;
 
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
+import com.pretty_tools.dde.DDEException;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -397,7 +398,7 @@ public class MainGui extends UiPart<Stage> {
                 showErrorBox("An IO Exception has occurred.");
             } catch (CustomException e) {
                 showErrorBox(e.getMessage());
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | DDEException e) {
                 e.printStackTrace();
             }
         }

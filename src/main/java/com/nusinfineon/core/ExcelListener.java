@@ -46,13 +46,15 @@ public class ExcelListener {
     private ArrayList<File> excelInputFiles;
     private ArrayList<File> excelOutputFiles;
     private ArrayList<Integer> batchSizes;
+    private DDEClientConversation conversation;
 
     private final String DEFAULTSTATUSSHEET = "#()STATUS#()#";
 
 
     public ExcelListener(ArrayList<File> excelFiles, ArrayList<Integer> batchSizes, String flexsimLocation, String modelLocation,
                          String outputLocation,
-                         String runSpeed, String warmUpPeriod, String stopTime, boolean isModelShown  ) throws IOException {
+                         String runSpeed, String warmUpPeriod, String stopTime, boolean isModelShown,
+                         ArrayList<File> excelOutputFiles  ) {
 
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
@@ -63,29 +65,36 @@ public class ExcelListener {
         this.warmUpPeriod = warmUpPeriod;
         this.stopTime = "stoptime(" + stopTime + ");";
         this.isModelShown = isModelShown;
-
+        this.excelOutputFiles = excelOutputFiles;
         this.excelInputFiles = excelFiles;
         this.batchSizes = batchSizes;
+        this.excelOutputFiles.clear();
 
+
+    }
+
+    public DDEClientConversation getListener() throws IOException {
         currentRunNum = 0;
         statusFile = generateExcelStatusFile(getFullPath(outputLocation));
-        try {
+
             // DDE client
-            final DDEClientConversation conversation = new DDEClientConversation();
+            conversation = new DDEClientConversation();
             // We can use UNICODE format if server prefers it
             //conversation.setTextFormat(ClipboardFormat.CF_UNICODETEXT);
-
+        try {
             conversation.setEventListener(new DDEClientEventListener() {
                 public void onDisconnect() {
                     System.out.println("onDisconnect()");
+                    for (File iter : excelOutputFiles){
+                        System.out.println("outputput file 1 = " + iter.toString());
+                    }
                 }
 
                 public void onItemChanged(String topic, String item, String data) {
-                    deleteExistingFile(getFullPath(outputLocation) + "OutputNew.xlsx");
+                    excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
                     if(currentRunNum == batchSizes.size()) {
                         System.out.println(" batchsizes = " + batchSizes.size());
                         try {
-                            conversation.stopAdvice("R1C1");
                             conversation.disconnect();
 
                         } catch (DDEException e) {
@@ -121,7 +130,7 @@ public class ExcelListener {
             try {
 
                 conversation.startAdvice("R1C1");
-
+                System.out.println("Connected!!");
 
                 //conversation.stopAdvice("R1C1");
             } finally {
@@ -135,10 +144,16 @@ public class ExcelListener {
             System.out.println("Exception: " + e);
         }
 
-
+        return conversation;
     }
 
-    
+
+    public void endRuns () throws DDEException {
+        System.out.println("Runs terminated early!");
+        conversation.disconnect();
+    }
+
+
 
 
     public void runModel (){
@@ -147,6 +162,8 @@ public class ExcelListener {
         String tempInputFile = excelInputFiles.get(currentRunNum).toString();
         inputFile = '"' + getBaseName(tempInputFile) + "." + getExtension(tempInputFile);
         inputLocation = getFullPath(tempInputFile).replace("\\", "\\\\");
+        excelOutputFileName = "outputFileForBatchofSize " + batchSizes.get(currentRunNum);
+        deleteExistingFile(getFullPath(outputLocation) + excelOutputFileName + ".xlsx");
         //generate status file and make sure its open
 
         try {
@@ -174,7 +191,7 @@ public class ExcelListener {
                 + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
                 + ",\"MAIN15WriteReports(true, \\\""
                 + outputLocation + "\", " + "\\\"" + outputFile
-                + "\\\" , \\\"OutputNew\\\");\\n hideprogressbar();\\n\\texcelopen(\\\"C:\\\\\\\\Users\\\\\\\\lingz\\\\\\\\Documents\\\\\\\\y4 sem1\\\\\\\\SDP\\\\\\\\onelevel IBIS\\\\\\\\FlexsimControllerStatus.xlsx\\\");\\n\\texcelsetsheet(\\\"sheet1\\\");\\n\\texcelwritestr(1,1,\\\"finished\\\");\\ncmdexit ();\\n}\")")
+                + "\\\" , \\\"" + excelOutputFileName + "\\\");\\n hideprogressbar();\\n\\texcelopen(\\\"C:\\\\\\\\Users\\\\\\\\lingz\\\\\\\\Documents\\\\\\\\y4 sem1\\\\\\\\SDP\\\\\\\\onelevel IBIS\\\\\\\\FlexsimControllerStatus.xlsx\\\");\\n\\texcelsetsheet(\\\"sheet1\\\");\\n\\texcelwritestr(1,1,\\\"finished\\\");\\ncmdexit ();\\n}\")")
                 + editNodeCode("ProcessTime", "MODEL:/Tools/UserCommands/ProcessTimeGetTotal/code", GETPROCESSTIMECODE)
                 + editNodeCode("MAIN15", "MODEL://Tools/UserCommands//MAIN15WriteReports//code", MAIN15CODE)
                 //+ editNodeCode("ExcelExportMultiTable", "MODEL://Tools//UserCommands//ExcelExportMultiTable//code", EXCELEXPORTTABLE)
