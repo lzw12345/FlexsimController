@@ -128,9 +128,9 @@ public class OutputAnalysisUtil {
 
     }
 
-    public static void saveOverallOutputDataToNewSheet(String sheetName, String runtype,
-                                                       TreeMap<String, Double> mapOfSummaryStatistics,
-                                                       Workbook excelWorkbook) {
+    public static void saveRunTypeAndUtilizationRatesTONewSheet(String sheetName, String runtype,
+                                                                TreeMap<String, Double> mapOfSummaryStatistics,
+                                                                Workbook excelWorkbook) {
         final int HEADER_ROW_INDEX = 0;
         final int SUMMARY_ROW_INDEX = 1;
 

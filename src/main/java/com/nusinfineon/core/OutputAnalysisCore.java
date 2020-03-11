@@ -19,18 +19,18 @@ public class OutputAnalysisCore {
     public static void main(String[] args) throws IOException, CustomException {
 
         // =============== Tests on the whole folder ===================================================================
-        //File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
+        File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
 
         // Generate output statistics for all excel files in a folder
-        //appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+        appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
         // Generate the tableau excel file from the folder of excel files (with output data appended)
         // generateExcelTableauFile(folderDirectory);
 
 
         // ======= Tests on a single excel file ========================================================================
-        File excelFile = new File("C:\\Users\\Ahmad\\Documents\\Workspace\\flexsim-controller\\src\\main\\resources\\sample-output-files\\output-files-with-summary-data\\output_min_size_20.xlsx");
-        appendSummaryStatisticsOfSingleOutputExcelFile(excelFile);
+        //File excelFile = new File("C:\\Users\\Ahmad\\Documents\\Workspace\\flexsim-controller\\src\\main\\resources\\sample-output-files\\output-files-with-summary-data\\output_min_size_20.xlsx");
+        //appendSummaryStatisticsOfSingleOutputExcelFile(excelFile);
     }
 
     /**
@@ -157,7 +157,7 @@ public class OutputAnalysisCore {
             throw new IOException("File not found in: " + originalInputFile.toString());
         }
 
-        TreeMap<String, Double> mapOfSummaryStatistics = new TreeMap<String, Double>();
+        TreeMap<String, Double> mapOfUtilizationRates = new TreeMap<String, Double>();
         Workbook workbook = WorkbookFactory.create(tempOutputFile);
         LOGGER.info("Successfully created Workbook from temporary copy of output file");
 
@@ -172,7 +172,7 @@ public class OutputAnalysisCore {
                 throw new IOException("Excel file doesn't contain sheet: " + UTIL_RES_REP);
             }
             TreeMap<String, Double> treeMapOfAverageUtilizationRates = OutputAnalysisCalculation.calculateAverageIbisOvenUtilRate(utilSheet);
-            mapOfSummaryStatistics.putAll(treeMapOfAverageUtilizationRates);
+            mapOfUtilizationRates.putAll(treeMapOfAverageUtilizationRates);
             // =========================== End of section on IBIS Oven utilization rates ===================================
 
             // ====================== Get cycle time data  ============================================================
@@ -252,10 +252,10 @@ public class OutputAnalysisCore {
             // =========================== Extract file name ie run specs ==============================================
             String runType = OutputAnalysisUtil.fileStringToFileName(originalInputFile.toString());
 
-            // Saves all the extracted information to a new sheet.
-            OutputAnalysisUtil.saveOverallOutputDataToNewSheet("OVERALL_SUMMARY", runType, mapOfSummaryStatistics, workbook);
+            // Saves the simulation run type and utilization rate to a new sheet
+            OutputAnalysisUtil.saveRunTypeAndUtilizationRatesTONewSheet("RUN_TYPE_AND_IBIS_UTILIZATION", runType, mapOfUtilizationRates, workbook);
 
-            // Saves the product cycle time to a enw sheet
+            // Saves the product cycle time to a new sheet
             OutputAnalysisUtil.saveProductCycleTimeToNewSheet("PRODUCT_STAY_TIME", treeMapOfProductToAverageCycleTimesFromThroughputProduct, workbook);
 
             // Saves the product throughput to a new sheet
