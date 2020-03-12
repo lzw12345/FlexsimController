@@ -25,15 +25,11 @@ public class OutputAnalysisCore {
         File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
 
         // Generate output statistics for all excel files in a folder
-        //appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+        appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
         // Generate the tableau excel file from the folder of excel files (with output data appended)
         generateExcelTableauFile(folderDirectory);
 
-
-        // ======= Tests on a single excel file ========================================================================
-        //File excelFile = new File("C:\\Users\\Ahmad\\Documents\\Workspace\\flexsim-controller\\src\\main\\resources\\sample-output-files\\output-files-with-summary-data\\output_min_size_20.xlsx");
-        //appendSummaryStatisticsOfSingleOutputExcelFile(excelFile);
     }
 
     /**
@@ -273,11 +269,80 @@ public class OutputAnalysisCore {
         }
         // End of writing product THROUGHPUT section
 
+        // Create daily throughput sheet ===============================================================================
+        Sheet destinationDailyThroughputSheet = destinationWorkbook.createSheet("THROUGHPUT_DAILY");
+        final String DAILY_THROUGHPUT_SOURCE_SHEET = "DAILY_OUTPUT";
+        final int DAY_COLUMN_INDEX = 0;
+        final int DAILY_THROUGHPUT_INDEX = 1;
+
+        // Write column headers
+        final String[] DAILY_THROUGHPUT_COLUMN_HEADERS = {"Day"};
+        headerRow = destinationDailyThroughputSheet.createRow(0);
+        for (int i = 0; i < DAILY_THROUGHPUT_COLUMN_HEADERS.length; i++) {
+            Cell cell = headerRow.createCell(i, CellType.STRING);
+            cell.setCellValue(DAILY_THROUGHPUT_COLUMN_HEADERS[i]);
+        }
+
+        // Obtain the run types, which are used as column headers
+        int columnIndex = 1;
+        for (int i = 0; i < excelFiles.size(); i++) {
+            File excelFile = excelFiles.get(i);
+            String runType = OutputAnalysisUtil.fileStringToFileName(excelFile.toString());
+            Cell cell = headerRow.createCell(columnIndex, CellType.STRING);
+            cell.setCellValue(runType);
+            columnIndex = columnIndex + 1;
+        }
+
+        // Populate day index based on the first excel file. Assumes all runs have the same run length
+        File firstExcelFile = excelFiles.get(0);
+        Workbook sourceWorkbook = WorkbookFactory.create(firstExcelFile);
+        Sheet firstSheet = sourceWorkbook.getSheet(DAILY_THROUGHPUT_SOURCE_SHEET);
+
+        destinationRowCount = 1;
+        for (int i = 1; i < firstSheet.getPhysicalNumberOfRows(); i++) {
+            Row currentRow = firstSheet.getRow(i);
+            Cell dayCell = currentRow.getCell(DAY_COLUMN_INDEX);
+            if (dayCell != null) {
+                Double day = dayCell.getNumericCellValue();
+                Row newDailyThroughputRow = destinationDailyThroughputSheet.createRow(destinationRowCount);
+                Cell newDayCelL = newDailyThroughputRow.createCell(DAY_COLUMN_INDEX, CellType.NUMERIC);
+                newDayCelL.setCellValue(day);
+                destinationRowCount ++;
+            }
+        }
+        sourceWorkbook.close();
+
+        // Write the daily throughput values from each excel file
+        for (int  i = 0; i < excelFiles.size(); i++) {
+            File excelFile = excelFiles.get(i);
+            sourceWorkbook = WorkbookFactory.create(excelFile);
+            Sheet dailyThroughputSheet = sourceWorkbook.getSheet(DAILY_THROUGHPUT_SOURCE_SHEET);
+
+            destinationRowCount = 1;
+            for (int j = 1; j < dailyThroughputSheet.getPhysicalNumberOfRows(); j++) {
+                Row currentRow = dailyThroughputSheet.getRow(j);
+                Cell dailyThroughputCell = currentRow.getCell(DAILY_THROUGHPUT_INDEX);
+                if (dailyThroughputCell != null) {
+                    Double dailyThroughput = dailyThroughputCell.getNumericCellValue();
+
+                    // Assumes row has already been created
+                    // Write the data to destination sheet
+                    Row destinationRow = destinationDailyThroughputSheet.getRow(destinationRowCount);
+                    if (destinationRow == null) {
+                        destinationRow = destinationDailyThroughputSheet.createRow(destinationRowCount);
+                    }
+
+                    Cell destinationThroughputCell = destinationRow.createCell(i + 1, CellType.NUMERIC);
+                    destinationThroughputCell.setCellValue(dailyThroughput);
 
 
+                    destinationRowCount ++;
+                }
+            }
 
-
-
+            sourceWorkbook.close();
+        }
+        // End of writing daily product THROUGHPUT section
 
         // Saves the workbook ==========================================================================================
 
@@ -286,84 +351,6 @@ public class OutputAnalysisCore {
         outputStream.close();
         destinationWorkbook.close();
         LOGGER.info("SUCCESSFULLY generated Tableau Excel file at: " + destinationFile.toString());
-
-        /*
-        // Start of old method
-        // Get the column header definitions from the first file
-        ArrayList<String> columnHeaders = new ArrayList<String>();
-        File firstFile = excelFiles.get(0);
-        Workbook firstWorkbook = WorkbookFactory.create(firstFile);
-        Sheet firstSummarySheet = firstWorkbook.getSheet("OVERALL_SUMMARY");
-        Row headerRow = firstSummarySheet.getRow(0);
-
-        for (int i = 0; i < headerRow.getPhysicalNumberOfCells(); i++) {
-            Cell cell = headerRow.getCell(i);
-            if (cell != null) {
-                String headerString = cell.getStringCellValue();
-                columnHeaders.add(headerString);
-            }
-        }
-
-        firstWorkbook.close();
-
-        // Initialize arraylist and map to store column values
-        TreeMap<String, ArrayList<Double>> mapOfRunTypesToValues = new TreeMap<String, ArrayList<Double>>();
-        ArrayList<String> listOfRunTypes = new ArrayList<String>();
-
-        // Get numbers from all excel files
-        for (File file: excelFiles) {
-            Workbook workbook = WorkbookFactory.create(file);
-            Sheet summarySheet = workbook.getSheet("OVERALL_SUMMARY");
-            Row summaryRow = summarySheet.getRow(1);
-
-            // Populate the entries from each sheet
-            String runName = summaryRow.getCell(0).getStringCellValue();
-            listOfRunTypes.add(runName);
-            ArrayList<Double> singleRowValues = new ArrayList<Double>();
-            for (int i = 1; i <= 22; i++) { // Hardcode the number of values at 22
-                Cell cell = summaryRow.getCell(i);
-                Double value = cell.getNumericCellValue();
-                singleRowValues.add(value);
-            }
-            mapOfRunTypesToValues.put(runName, singleRowValues);
-            workbook.close();
-        }
-
-        // Append the data to a new workbook ===========================================================================
-        Sheet destinationSheet = destinationWorkbook.createSheet("OUTPUT_SUMMARY");
-
-        // Append column headers
-        headerRow = destinationSheet.createRow(0);
-        for (int i = 0; i < columnHeaders.size(); i++) {
-            Cell cell = headerRow.createCell(i, CellType.STRING);
-            cell.setCellValue(columnHeaders.get(i));
-        }
-
-
-
-        // Append each row data
-        for (int i = 0; i < listOfRunTypes.size(); i++) {
-            String runType = listOfRunTypes.get(i);
-            ArrayList<Double> runTypeValues = mapOfRunTypesToValues.get(runType);
-            Row row = destinationSheet.createRow(i + 1);
-            Cell cell = row.createCell(0, CellType.STRING);
-            cell.setCellValue(runType);
-
-            for (int j = 0; j < runTypeValues.size(); j++) {
-                Double value = runTypeValues.get(j);
-                cell = row.createCell(j + 1, CellType.NUMERIC);
-                cell.setCellValue(value);
-            }
-        }
-
-
-        // Close the destination workbook.
-        FileOutputStream outputStream = new FileOutputStream(destinationFile);
-        destinationWorkbook.write(outputStream);
-        outputStream.close();
-        destinationWorkbook.close();
-        LOGGER.info("SUCCESSFULLY generated Tableau Excel file at: " + destinationFile.toString());
-        */
     }
 
     /**
