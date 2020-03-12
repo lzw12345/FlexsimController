@@ -120,8 +120,8 @@ public class OutputAnalysisCore {
 
         // Iterate through the excel files and write the stay time data
         final String SOURCE_STAYTIME_SHEET = "PRODUCT_STAY_TIME";
-        final int PRODUCT_ID_COLUMN_INDEX = 0;
-        final int PRODUCT_STAYIME_INDEX = 1;
+        final int STAY_TIME_PRODUCT_ID_COLUMN_INDEX = 0;
+        final int STAY_TIME_PRODUCT_STAYIME_INDEX = 1;
 
         destinationRowCount = 1;
         for (File excelFile: excelFiles) {
@@ -133,8 +133,8 @@ public class OutputAnalysisCore {
             for (int i = 1; i < sourceStaytimeSheet.getPhysicalNumberOfRows(); i++) {
                 Row sourceRow = sourceStaytimeSheet.getRow(i);
 
-                Cell productCell = sourceRow.getCell(PRODUCT_ID_COLUMN_INDEX);
-                Cell staytimeCell = sourceRow.getCell(PRODUCT_STAYIME_INDEX);
+                Cell productCell = sourceRow.getCell(STAY_TIME_PRODUCT_ID_COLUMN_INDEX);
+                Cell staytimeCell = sourceRow.getCell(STAY_TIME_PRODUCT_STAYIME_INDEX);
 
                 if (productCell != null) {
                     // Extract values
@@ -164,6 +164,59 @@ public class OutputAnalysisCore {
         // End of writing stay time to sheet
 
         // Create the Time in System Sheet ==================================================================================
+        Sheet destinationTimeInSystemSheet = destinationWorkbook.createSheet("TIME_IN_SYSTEM");
+
+        // Write column headers
+        final String[] TIME_IN_SYSTEM_COLUMN_HEADERS = {"Run Type", "Stay Time", "Product ID"};
+        headerRow = destinationTimeInSystemSheet.createRow(0);
+        for (int i = 0; i < TIME_IN_SYSTEM_COLUMN_HEADERS.length; i++) {
+            Cell cell = headerRow.createCell(i, CellType.STRING);
+            cell.setCellValue(TIME_IN_SYSTEM_COLUMN_HEADERS[i]);
+        }
+
+        // Iterate through the excel files and write the stay time data
+        final String SOURCE_TIME_IN_SYSTEM_SHEET = "PRODUCT_TIME_IN_SYSTEM";
+        final int TIME_IN_SYSTEM_PRODUCT_ID_COLUMN_INDEX = 0;
+        final int TIME_IN_SYSTEM_PRODUCT_STAYIME_INDEX = 1;
+
+        destinationRowCount = 1;
+        for (File excelFile: excelFiles) {
+            Workbook sourceWorkbook = WorkbookFactory.create(excelFile);
+            Sheet sourceTimeInSystemSheet = sourceWorkbook.getSheet(SOURCE_TIME_IN_SYSTEM_SHEET);
+            String runType = OutputAnalysisUtil.fileStringToFileName(excelFile.toString());
+
+            // Iterate through all rows and insert to the new sheet
+            for (int i = 1; i < sourceTimeInSystemSheet.getPhysicalNumberOfRows(); i++) {
+                Row sourceRow = sourceTimeInSystemSheet.getRow(i);
+
+                Cell productCell = sourceRow.getCell(TIME_IN_SYSTEM_PRODUCT_ID_COLUMN_INDEX);
+                Cell staytimeCell = sourceRow.getCell(TIME_IN_SYSTEM_PRODUCT_STAYIME_INDEX);
+
+                if (productCell != null) {
+                    // Extract values
+                    String productId = productCell.getStringCellValue();
+                    Double productStayTime = staytimeCell.getNumericCellValue();
+
+                    // Write to the destination sheet
+                    Row newTimeInSystemRow = destinationTimeInSystemSheet.createRow(destinationRowCount);
+
+                    Cell destinationRuntypeCell = newTimeInSystemRow.createCell(0, CellType.STRING);
+                    destinationRuntypeCell.setCellValue(runType);
+
+                    Cell destinationStayTimeCell = newTimeInSystemRow.createCell(1, CellType.NUMERIC);
+                    destinationStayTimeCell.setCellValue(productStayTime);
+
+                    Cell destinationProductCell = newTimeInSystemRow.createCell(2, CellType.STRING);
+                    destinationProductCell.setCellValue(productId);
+
+                    destinationRowCount = destinationRowCount + 1;
+                }
+
+            }
+
+            sourceWorkbook.close();
+        }
+        // End of writing product stay times section
 
 
 
