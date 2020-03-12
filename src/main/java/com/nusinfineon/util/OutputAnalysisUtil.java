@@ -420,6 +420,47 @@ public class OutputAnalysisUtil {
         return median;
     }
 
+    public static HashMap<String, Integer> getMappingOfHeadersToIndex(Row headerRow, ArrayList<String> headers) {
+        HashMap<String, Integer> mapOfColumns = new HashMap<>();
+
+        for (int i = 0; i < headerRow.getPhysicalNumberOfCells(); i++) {
+            Cell cell = headerRow.getCell(i);
+
+            if (cell != null) {
+                String headerString = cell.getStringCellValue();
+                if (headers.contains(headerString)) {
+                    mapOfColumns.put(headerString, i);
+                }
+            }
+        }
+
+        return mapOfColumns;
+    }
+
+    public static void writeUtilizationRate(Sheet destinationUtilizationSheet, Row sourceRow, HashMap<String, Integer> mapOfUtilColumnHeaders, int destinationRowIndex) {
+        // Create new row
+        Row newRow = destinationUtilizationSheet.createRow(destinationRowIndex);
+
+        // Add the row content. Obtain the index from the hash map and write data to a new cell
+        Cell cell = newRow.createCell(0, CellType.STRING);
+        cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("RUN_TYPE")).getStringCellValue());
+
+        cell = newRow.createCell(1, CellType.NUMERIC);
+        cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("UTILIZATION_RATE_IDLE")).getNumericCellValue());
+
+        cell = newRow.createCell(2, CellType.NUMERIC);
+        cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("UTILIZATION_RATE_PROCESSING")).getNumericCellValue());
+
+        cell = newRow.createCell(3, CellType.NUMERIC);
+        cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("UTILIZATION_RATE_SETUP")).getNumericCellValue());
+
+        cell = newRow.createCell(4, CellType.NUMERIC);
+        cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("UTILIZATION_RATE_WAITING FOR OPERATOR")).getNumericCellValue());
+
+        cell = newRow.createCell(5, CellType.NUMERIC);
+        cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("UTILIZATION_RATE_WAITING FOR TRANSPORTER")).getNumericCellValue());
+    }
+
 }
 
 
