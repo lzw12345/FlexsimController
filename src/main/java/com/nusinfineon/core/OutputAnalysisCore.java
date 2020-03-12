@@ -218,6 +218,65 @@ public class OutputAnalysisCore {
         }
         // End of writing product stay times section
 
+        // Create Product throughput Sheet =============================================================================
+        Sheet destinationThroughputSheet = destinationWorkbook.createSheet("THROUGHPUT");
+
+        // Write column headers
+        final String[] THROUGHPUT_COLUMN_HEADERS = {"Run Type", "Throughput", "Product ID"};
+        headerRow = destinationThroughputSheet.createRow(0);
+        for (int i = 0; i < THROUGHPUT_COLUMN_HEADERS.length; i++) {
+            Cell cell = headerRow.createCell(i, CellType.STRING);
+            cell.setCellValue(THROUGHPUT_COLUMN_HEADERS[i]);
+        }
+
+        // Iterate through the excel files and write the throughput data
+        final String SOURCE_THROUGHPUT_SHEET = "PRODUCT_THROUGHPUT";
+        final int THROUHGPUT_PRODUCT_ID_COLUMN_INDEX = 0;
+        final int THROUGHPUT_PRODUCT_THROUGHPUT_INDEX = 1;
+
+        destinationRowCount = 1;
+        for (File excelFile: excelFiles) {
+            Workbook sourceWorkbook = WorkbookFactory.create(excelFile);
+            Sheet sourceThroughputSheet = sourceWorkbook.getSheet(SOURCE_THROUGHPUT_SHEET);
+            String runType = OutputAnalysisUtil.fileStringToFileName(excelFile.toString());
+
+            // Iterate through all rows and insert to the new sheet
+            for (int i = 1; i < sourceThroughputSheet.getPhysicalNumberOfRows(); i++) {
+                Row sourceRow = sourceThroughputSheet.getRow(i);
+
+                Cell productCell = sourceRow.getCell(THROUHGPUT_PRODUCT_ID_COLUMN_INDEX);
+                Cell throughputCell = sourceRow.getCell(THROUGHPUT_PRODUCT_THROUGHPUT_INDEX);
+
+                if (productCell != null) {
+                    // Extract values
+                    String productId = productCell.getStringCellValue();
+                    Double productThroughput = throughputCell.getNumericCellValue();
+
+                    // Write to the destination sheet
+                    Row newThroughputRow = destinationThroughputSheet.createRow(destinationRowCount);
+
+                    Cell destinationRuntypeCell = newThroughputRow.createCell(0, CellType.STRING);
+                    destinationRuntypeCell.setCellValue(runType);
+
+                    Cell destinationSThroughputCell = newThroughputRow.createCell(1, CellType.NUMERIC);
+                    destinationSThroughputCell.setCellValue(productThroughput);
+
+                    Cell destinationProductCell = newThroughputRow.createCell(2, CellType.STRING);
+                    destinationProductCell.setCellValue(productId);
+
+                    destinationRowCount = destinationRowCount + 1;
+                }
+
+            }
+
+            sourceWorkbook.close();
+        }
+        // End of writing product THROUGHPUT section
+
+
+
+
+
 
 
         // Saves the workbook ==========================================================================================
