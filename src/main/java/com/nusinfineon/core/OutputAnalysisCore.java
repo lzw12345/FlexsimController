@@ -84,8 +84,10 @@ public class OutputAnalysisCore {
         ArrayList<String> SOURCE_UTILIZATION_COLUMN_HEADERS = new ArrayList<>(Arrays.asList("RUN_TYPE", "UTILIZATION_RATE_IDLE",
                 "UTILIZATION_RATE_PROCESSING", "UTILIZATION_RATE_SETUP", "UTILIZATION_RATE_WAITING FOR OPERATOR",
                 "UTILIZATION_RATE_WAITING FOR TRANSPORTER"));
-        final String SOURCE_UTILIZATION_SHEET = "RUN_TYPE_AND_IBIS_UTILIZATION";
 
+
+        // Iterate through each excel file and write the utilization data
+        final String SOURCE_UTILIZATION_SHEET = "RUN_TYPE_AND_IBIS_UTILIZATION";
         int destinationRowCount = 1;
         for (File excelFile: excelFiles) {
             Workbook sourceWorkbook = WorkbookFactory.create(excelFile);
@@ -105,7 +107,67 @@ public class OutputAnalysisCore {
 
         // End of writing utilization rates to summary workbook
 
-        // Saves the workbook
+        // Create the Stay Time Sheet ==================================================================================
+        Sheet destinationStayTimeSheet = destinationWorkbook.createSheet("STAY_TIME");
+
+        // Write column headers
+        final String[] STAY_TIME_COLUMN_HEADERS = {"Run Type", "Stay Time", "Product ID"};
+        headerRow = destinationStayTimeSheet.createRow(0);
+        for (int i = 0; i < STAY_TIME_COLUMN_HEADERS.length; i++) {
+            Cell cell = headerRow.createCell(i, CellType.STRING);
+            cell.setCellValue(STAY_TIME_COLUMN_HEADERS[i]);
+        }
+
+        // Iterate through the excel files and write the stay time data
+        final String SOURCE_STAYTIME_SHEET = "PRODUCT_STAY_TIME";
+        final int PRODUCT_ID_COLUMN_INDEX = 0;
+        final int PRODUCT_STAYIME_INDEX = 1;
+
+        destinationRowCount = 1;
+        for (File excelFile: excelFiles) {
+            Workbook sourceWorkbook = WorkbookFactory.create(excelFile);
+            Sheet sourceStaytimeSheet = sourceWorkbook.getSheet(SOURCE_STAYTIME_SHEET);
+            String runType = OutputAnalysisUtil.fileStringToFileName(excelFile.toString());
+
+            // Iterate through all rows and insert to the new sheet
+            for (int i = 1; i < sourceStaytimeSheet.getPhysicalNumberOfRows(); i++) {
+                Row sourceRow = sourceStaytimeSheet.getRow(i);
+
+                Cell productCell = sourceRow.getCell(PRODUCT_ID_COLUMN_INDEX);
+                Cell staytimeCell = sourceRow.getCell(PRODUCT_STAYIME_INDEX);
+
+                if (productCell != null) {
+                    // Extract values
+                    String productId = productCell.getStringCellValue();
+                    Double productStayTime = staytimeCell.getNumericCellValue();
+
+                    // Write to the destination sheet
+                    Row newStaytimeRow = destinationStayTimeSheet.createRow(destinationRowCount);
+
+                    Cell destinationRuntypeCell = newStaytimeRow.createCell(0, CellType.STRING);
+                    destinationRuntypeCell.setCellValue(runType);
+
+                    Cell destinationStayTimeCell = newStaytimeRow.createCell(1, CellType.NUMERIC);
+                    destinationStayTimeCell.setCellValue(productStayTime);
+
+                    Cell destinationProductCell = newStaytimeRow.createCell(2, CellType.STRING);
+                    destinationProductCell.setCellValue(productId);
+
+                    destinationRowCount = destinationRowCount + 1;
+                }
+
+            }
+
+            sourceWorkbook.close();
+        }
+
+        // End of writing stay time to sheet
+
+        // Create the Time in System Sheet ==================================================================================
+
+
+
+        // Saves the workbook ==========================================================================================
 
         FileOutputStream outputStream = new FileOutputStream(destinationFile);
         destinationWorkbook.write(outputStream);
