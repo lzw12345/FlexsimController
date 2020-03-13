@@ -344,6 +344,64 @@ public class OutputAnalysisCore {
         }
         // End of writing daily product THROUGHPUT section
 
+        // Create product output and worth sheet ===============================================================================
+        Sheet destinationProductWorthSheet = destinationWorkbook.createSheet("PRODUCT_OUTPUT_WORTH");
+        final String PRODUCT_WORTH_SOURCE_SHEET = "PRODUCT_OUTPUT_WORTH";
+        final int PRODUCT_INDEX = 0;
+        final int OUTPUT_INDEX = 1;
+        final int WORTH_INDEX = 2;
+
+        // Write column headers
+        final String[] PRODUCT_WORTH_COLUMN_HEADERS = {"Run Type", "Product", "Output", "Worth"};
+        headerRow = destinationProductWorthSheet.createRow(0);
+        for (int i = 0; i < PRODUCT_WORTH_COLUMN_HEADERS.length; i++) {
+            Cell cell = headerRow.createCell(i, CellType.STRING);
+            cell.setCellValue(PRODUCT_WORTH_COLUMN_HEADERS[i]);
+        }
+
+        destinationRowCount = 1;
+        for (File excelFile: excelFiles) {
+            sourceWorkbook = WorkbookFactory.create(excelFile);
+            Sheet productWorthSheet = sourceWorkbook.getSheet(PRODUCT_WORTH_SOURCE_SHEET);
+            String runType = OutputAnalysisUtil.fileStringToFileName(excelFile.toString());
+
+            for (int i = 1; i < productWorthSheet.getPhysicalNumberOfRows(); i++) {
+                Row currentRow = productWorthSheet.getRow(i);
+                Cell productCell = currentRow.getCell(PRODUCT_INDEX);
+                Cell outputCell = currentRow.getCell(OUTPUT_INDEX);
+                Cell worthCell = currentRow.getCell(WORTH_INDEX);
+
+                if (productCell != null) {
+                    String product = productCell.getStringCellValue();
+                    Double output = outputCell.getNumericCellValue();
+                    Double worth = worthCell.getNumericCellValue();
+
+                    // Write to the destination sheet
+                    Row newWorthRow = destinationProductWorthSheet.createRow(destinationRowCount);
+
+                    Cell destinationRuntypeCell = newWorthRow.createCell(0, CellType.STRING);
+                    destinationRuntypeCell.setCellValue(runType);
+
+                    Cell destinationSProductCell = newWorthRow.createCell(1, CellType.STRING);
+                    destinationSProductCell.setCellValue(product);
+
+                    Cell destinationOutputCell = newWorthRow.createCell(2, CellType.NUMERIC);
+                    destinationOutputCell.setCellValue(output);
+
+                    Cell destinationWorthCell = newWorthRow.createCell(3, CellType.NUMERIC);
+                    destinationWorthCell.setCellValue(worth);
+
+                    destinationRowCount = destinationRowCount + 1;
+                }
+            }
+
+
+            sourceWorkbook.close();
+        }
+
+
+
+
         // Saves the workbook ==========================================================================================
 
         FileOutputStream outputStream = new FileOutputStream(destinationFile);
@@ -453,7 +511,7 @@ public class OutputAnalysisCore {
 
             // Save the product output and worth to a new sheet
             OutputAnalysisUtil.saveProductOutputAndWorth("PRODUCT_OUTPUT_WORTH", treeMapOfProductToOutputAndCost, workbook);
-            
+
             // Saves the current edited workbook by overwriting the original file
             FileOutputStream outputStream = new FileOutputStream(originalInputFile.toString());
             workbook.write(outputStream);
