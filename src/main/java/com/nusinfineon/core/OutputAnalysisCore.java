@@ -399,7 +399,6 @@ public class OutputAnalysisCore {
         }
 
         // Saves the workbook ==========================================================================================
-
         FileOutputStream outputStream = new FileOutputStream(destinationFile);
         destinationWorkbook.write(outputStream);
         outputStream.close();
