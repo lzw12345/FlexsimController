@@ -15,3 +15,4 @@ src/main/resources/docs/
 # Test directories for run output excel files
 src/main/resources/sample-output-files/output-files-clean/
 src/main/resources/sample-output-files/output-files-with-summary-data/
+src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx
