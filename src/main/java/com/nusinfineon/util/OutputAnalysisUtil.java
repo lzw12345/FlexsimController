@@ -128,9 +128,9 @@ public class OutputAnalysisUtil {
 
     }
 
-    public static void saveOverallOutputDataToNewSheet(String sheetName, String runtype,
-                                                       TreeMap<String, Double> mapOfSummaryStatistics,
-                                                       Workbook excelWorkbook) {
+    public static void saveRunTypeAndUtilizationRatesTONewSheet(String sheetName, String runtype,
+                                                                TreeMap<String, Double> mapOfSummaryStatistics,
+                                                                Workbook excelWorkbook) {
         final int HEADER_ROW_INDEX = 0;
         final int SUMMARY_ROW_INDEX = 1;
 
@@ -418,6 +418,95 @@ public class OutputAnalysisUtil {
             median = doubleValues.get(middleRank - 1);
         }
         return median;
+    }
+
+    public static HashMap<String, Integer> getMappingOfHeadersToIndex(Row headerRow, ArrayList<String> headers) {
+        HashMap<String, Integer> mapOfColumns = new HashMap<>();
+
+        for (int i = 0; i < headerRow.getPhysicalNumberOfCells(); i++) {
+            Cell cell = headerRow.getCell(i);
+
+            if (cell != null) {
+                String headerString = cell.getStringCellValue();
+                if (headers.contains(headerString)) {
+                    mapOfColumns.put(headerString, i);
+                }
+            }
+        }
+
+        return mapOfColumns;
+    }
+
+    public static void writeUtilizationRate(Sheet destinationUtilizationSheet, Row sourceRow, HashMap<String, Integer> mapOfUtilColumnHeaders, int destinationRowIndex) {
+        // Create new row
+        Row newRow = destinationUtilizationSheet.createRow(destinationRowIndex);
+
+        // Add the row content. Obtain the index from the hash map and write data to a new cell
+        Cell cell = newRow.createCell(0, CellType.STRING);
+        cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("RUN_TYPE")).getStringCellValue());
+
+        cell = newRow.createCell(1, CellType.NUMERIC);
+        cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("UTILIZATION_RATE_IDLE")).getNumericCellValue());
+
+        cell = newRow.createCell(2, CellType.NUMERIC);
+        cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("UTILIZATION_RATE_PROCESSING")).getNumericCellValue());
+
+        cell = newRow.createCell(3, CellType.NUMERIC);
+        cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("UTILIZATION_RATE_SETUP")).getNumericCellValue());
+
+        cell = newRow.createCell(4, CellType.NUMERIC);
+        cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("UTILIZATION_RATE_WAITING FOR OPERATOR")).getNumericCellValue());
+
+        cell = newRow.createCell(5, CellType.NUMERIC);
+        cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("UTILIZATION_RATE_WAITING FOR TRANSPORTER")).getNumericCellValue());
+    }
+
+    public static void saveProductOutputAndWorth(String sheetName, TreeMap<String, ArrayList<Double>> productToOutputAndWorth,
+                                                 Workbook destinationWorkbook) {
+        final int PRODUCT_COLUMN = 0;
+        final int OUTPUT_COLUMN = 1;
+        final int WORTH_COLUMN = 2;
+        int rowIndex = 0;
+
+        // Deletes sheet if it already exists
+        if (destinationWorkbook.getSheet(sheetName) != null) {
+            destinationWorkbook.removeSheetAt(destinationWorkbook.getSheetIndex(sheetName));
+        }
+
+        // Write the headers
+        // Create sheet and rows of headers
+        Sheet sheetToWrite = destinationWorkbook.createSheet(sheetName);
+        Row headerRow = sheetToWrite.createRow(rowIndex);
+
+        Cell productCell = headerRow.createCell(PRODUCT_COLUMN, CellType.STRING);
+        productCell.setCellValue("Product");
+
+        Cell outputCell = headerRow.createCell(OUTPUT_COLUMN, CellType.STRING);
+        outputCell.setCellValue("Output");
+
+        Cell worthCell = headerRow.createCell(WORTH_COLUMN, CellType.STRING);
+        worthCell.setCellValue("Worth");
+
+        rowIndex = rowIndex + 1;
+        for (String product: productToOutputAndWorth.keySet()) {
+            ArrayList<Double> outputAndWorth = productToOutputAndWorth.get(product);
+            Double output = outputAndWorth.get(0);
+            Double worth = outputAndWorth.get(1);
+
+            Row newRow = sheetToWrite.createRow(rowIndex);
+
+            productCell = newRow.createCell(PRODUCT_COLUMN, CellType.STRING);
+            productCell.setCellValue(product);
+
+            outputCell = newRow.createCell(OUTPUT_COLUMN, CellType.NUMERIC);
+            outputCell.setCellValue(output);
+
+            worthCell = newRow.createCell(WORTH_COLUMN, CellType.NUMERIC);
+            worthCell.setCellValue(worth);
+
+            rowIndex = rowIndex + 1;
+        }
+
     }
 
 }
