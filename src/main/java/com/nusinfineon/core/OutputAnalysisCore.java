@@ -2,7 +2,6 @@ package com.nusinfineon.core;
 
 import com.nusinfineon.exceptions.CustomException;
 import com.nusinfineon.util.OutputAnalysisCalculation;
-import jdk.javadoc.internal.doclets.toolkit.util.DocFinder;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.*;
@@ -163,7 +162,7 @@ public class OutputAnalysisCore {
         Sheet destinationTimeInSystemSheet = destinationWorkbook.createSheet("TIME_IN_SYSTEM");
 
         // Write column headers
-        final String[] TIME_IN_SYSTEM_COLUMN_HEADERS = {"Run Type", "Stay Time", "Product ID"};
+        final String[] TIME_IN_SYSTEM_COLUMN_HEADERS = {"Run Type", "Time In System", "Product ID"};
         headerRow = destinationTimeInSystemSheet.createRow(0);
         for (int i = 0; i < TIME_IN_SYSTEM_COLUMN_HEADERS.length; i++) {
             Cell cell = headerRow.createCell(i, CellType.STRING);
@@ -398,9 +397,6 @@ public class OutputAnalysisCore {
 
             sourceWorkbook.close();
         }
-
-
-
 
         // Saves the workbook ==========================================================================================
 
