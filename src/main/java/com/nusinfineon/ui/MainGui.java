@@ -1,11 +1,8 @@
 package com.nusinfineon.ui;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
-
+import com.pretty_tools.dde.DDEException;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,6 +24,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Represent the whole window of the user interface, it should contain all units in the user interface.
@@ -150,6 +150,7 @@ public class MainGui extends UiPart<Stage> {
         bibLoadOnLotCriteria1.setToggleGroup(bibLoadOnLotCriteria);
         bibLoadOnLotCriteria2.setToggleGroup(bibLoadOnLotCriteria);
         bibLoadOnLotCriteria.selectToggle(getBibLoadOnLotCriteria());
+
     }
 
     /** Gets the saved radio button for Resource Select Criteria
@@ -397,6 +398,8 @@ public class MainGui extends UiPart<Stage> {
                 showErrorBox("An IO Exception has occurred.");
             } catch (CustomException e) {
                 showErrorBox(e.getMessage());
+            } catch (InterruptedException | DDEException e) {
+                e.printStackTrace();
             }
         }
     }
