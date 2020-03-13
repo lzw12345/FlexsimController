@@ -313,7 +313,7 @@ public class OutputAnalysisCalculation {
      * @param productCostSheet Product cost sheet.
      * @return
      */
-    public static TreeMap<String, Double> calculateTotalProductWorth(Sheet dailyThroughputSheet, Sheet productCostSheet)
+    public static TreeMap<String, ArrayList<Double>> calculateTotalProductWorth(Sheet dailyThroughputSheet, Sheet productCostSheet)
             throws CustomException {
 
         try {
@@ -369,7 +369,7 @@ public class OutputAnalysisCalculation {
             } // End of fot loop
 
             // Get the total worth of products outputted.
-            Double totalWorth = 0.0;
+            HashMap<String, Double> mapOfProductToWorth = new HashMap<>();
             for (String productKey : mapOfProductOutCounts.keySet()) {
                 Double productCost = 0.0;
                 // If an associated cost exists
@@ -380,13 +380,25 @@ public class OutputAnalysisCalculation {
                 }
 
                 Double productWorth = productCost * mapOfProductOutCounts.get(productKey);
-                totalWorth += productWorth;
+                mapOfProductToWorth.put(productKey, productWorth);
+
             }
 
-            TreeMap<String, Double> totalWorthMap = new TreeMap<String, Double>();
-            totalWorthMap.put("THROUGHPUT_WORTH", totalWorth);
+            // Return a hashmap of the product id to an array of 2 items: {product output count & total worth}
+            TreeMap<String, ArrayList<Double>> mapOfProductToOutputAndWorth = new TreeMap<String, ArrayList<Double>>();
 
-           return totalWorthMap;
+            for (String product: mapOfProductOutCounts.keySet()) {
+                Double productOutput = mapOfProductOutCounts.get(product);
+                Double productWorth = mapOfProductToWorth.get(product);
+
+                ArrayList<Double> productOutputAndWorth = new ArrayList<>();
+                productOutputAndWorth.add(productOutput);
+                productOutputAndWorth.add(productWorth);
+
+                mapOfProductToOutputAndWorth.put(product, productOutputAndWorth);
+            }
+
+            return mapOfProductToOutputAndWorth;
 
         } catch (Exception e) {
             throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));

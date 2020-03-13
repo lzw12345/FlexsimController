@@ -421,6 +421,18 @@ public class OutputAnalysisCore {
             TreeMap<String, Double> treeMapOfProductToAverageCycleTimesFromDailyThroughput = OutputAnalysisCalculation.calculateProductCycleTimeFromDailyThroughput(throughputSheet);
             // ======================== End of cycle time section ==============================================================
 
+            // Get product worth. Total worth = Output x Associated Cost
+            File productCostFile = OutputAnalysisUtil.getProductKeyCostExcelFileFromRelativeDirectory();
+            Workbook productCostWorkbook = WorkbookFactory.create(productCostFile);
+            Sheet productCostSheet = productCostWorkbook.getSheetAt(0);
+            //Sheet dailyProductThroughputSheet = workbook.getSheet(DAILY_THROUGHPUT_PRODUCT_REP);
+            TreeMap<String, ArrayList<Double>> treeMapOfProductToOutputAndCost = OutputAnalysisCalculation.calculateTotalProductWorth(throughputSheet, productCostSheet);
+            productCostWorkbook.close();
+            productCostFile.delete();
+            // End of section on calculating product throughput worth
+
+            // Save all the data to their respective sheets =============================================================
+
             // =========================== Extract file name ie run specs ==============================================
             String runType = OutputAnalysisUtil.fileStringToFileName(originalInputFile.toString());
 
@@ -439,6 +451,9 @@ public class OutputAnalysisCore {
             // Save the product cycle time (from daily product throughput) to a new sheet
             OutputAnalysisUtil.saveProductCycleTimeFromDailyThroughputToNewSheet("PRODUCT_TIME_IN_SYSTEM", treeMapOfProductToAverageCycleTimesFromDailyThroughput, workbook );
 
+            // Save the product output and worth to a new sheet
+            OutputAnalysisUtil.saveProductOutputAndWorth("PRODUCT_OUTPUT_WORTH", treeMapOfProductToOutputAndCost, workbook);
+            
             // Saves the current edited workbook by overwriting the original file
             FileOutputStream outputStream = new FileOutputStream(originalInputFile.toString());
             workbook.write(outputStream);

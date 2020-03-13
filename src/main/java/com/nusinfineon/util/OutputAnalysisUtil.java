@@ -461,7 +461,53 @@ public class OutputAnalysisUtil {
         cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("UTILIZATION_RATE_WAITING FOR TRANSPORTER")).getNumericCellValue());
     }
 
+    public static void saveProductOutputAndWorth(String sheetName, TreeMap<String, ArrayList<Double>> productToOutputAndWorth,
+                                                 Workbook destinationWorkbook) {
+        final int PRODUCT_COLUMN = 0;
+        final int OUTPUT_COLUMN = 1;
+        final int WORTH_COLUMN = 2;
+        int rowIndex = 0;
 
+        // Deletes sheet if it already exists
+        if (destinationWorkbook.getSheet(sheetName) != null) {
+            destinationWorkbook.removeSheetAt(destinationWorkbook.getSheetIndex(sheetName));
+        }
+
+        // Write the headers
+        // Create sheet and rows of headers
+        Sheet sheetToWrite = destinationWorkbook.createSheet(sheetName);
+        Row headerRow = sheetToWrite.createRow(rowIndex);
+
+        Cell productCell = headerRow.createCell(PRODUCT_COLUMN, CellType.STRING);
+        productCell.setCellValue("Product");
+
+        Cell outputCell = headerRow.createCell(OUTPUT_COLUMN, CellType.STRING);
+        outputCell.setCellValue("Output");
+
+        Cell worthCell = headerRow.createCell(WORTH_COLUMN, CellType.STRING);
+        worthCell.setCellValue("Worth");
+
+        rowIndex = rowIndex + 1;
+        for (String product: productToOutputAndWorth.keySet()) {
+            ArrayList<Double> outputAndWorth = productToOutputAndWorth.get(product);
+            Double output = outputAndWorth.get(0);
+            Double worth = outputAndWorth.get(1);
+
+            Row newRow = sheetToWrite.createRow(rowIndex);
+
+            productCell = newRow.createCell(PRODUCT_COLUMN, CellType.STRING);
+            productCell.setCellValue(product);
+
+            outputCell = newRow.createCell(OUTPUT_COLUMN, CellType.NUMERIC);
+            outputCell.setCellValue(output);
+
+            worthCell = newRow.createCell(WORTH_COLUMN, CellType.NUMERIC);
+            worthCell.setCellValue(worth);
+
+            rowIndex = rowIndex + 1;
+        }
+
+    }
 
 }
 
