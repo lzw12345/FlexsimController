@@ -21,13 +21,20 @@ public class OutputAnalysisCore {
     public static void main(String[] args) throws IOException, CustomException {
 
         // =============== Tests on the whole folder ===================================================================
-        File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
+        //File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
+        File folderDirectory = new File("C:\\Users\\hatzi\\Google Drive\\Academics\\NUS\\Sem 7\\IE 3100M - Systems Design Project\\output-files\\19 column");
+
+        System.out.println("Starting main of Output Analysis Core "  + folderDirectory.isDirectory());
+
+
 
         // Generate output statistics for all excel files in a folder
         appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
         // Generate the tableau excel file from the folder of excel files (with output data appended)
         generateExcelTableauFile(folderDirectory);
+
+
 
     }
 

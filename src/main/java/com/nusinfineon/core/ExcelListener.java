@@ -265,16 +265,17 @@ public class ExcelListener {
      * @throws IOException
      */
     public void scriptCreator() throws IOException {
+        String statusFlepath = statusFile.getAbsolutePath().replace("\\", "\\\\\\\\\\");
         scriptFile = new File(scriptFilepath);
         scriptFile.createNewFile();
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
                 + stopTime + "showprogressbar(\"\");\n"
-                + "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
+                //+ "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
                 + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
                 + ",\"MAIN15WriteReports(true, \\\""
                 + outputLocation + "\", " + "\\\"" + outputFile
-                + "\\\" , \\\"" + excelOutputFileName + "\\\");\\n hideprogressbar();\\n\\texcelopen(\\\"C:\\\\\\\\Users\\\\\\\\lingz\\\\\\\\Documents\\\\\\\\y4 sem1\\\\\\\\SDP\\\\\\\\onelevel IBIS\\\\\\\\FlexsimControllerStatus.xlsx\\\");\\n\\texcelsetsheet(\\\"sheet1\\\");\\n\\texcelwritestr(1,1,\\\"finished\\\");\\ncmdexit ();\\n}\")")
+                + "\\\" , \\\"" + excelOutputFileName + "\\\");\\n hideprogressbar();\\n\\texcelopen(\\\"" + statusFlepath + "\\\");\\n\\texcelsetsheet(\\\"sheet1\\\");\\n\\texcelwritestr(1,1,\\\"finished\\\");\\ncmdexit ();\\n}\")")
                 + editNodeCode("ProcessTime", "MODEL:/Tools/UserCommands/ProcessTimeGetTotal/code", GETPROCESSTIMECODE)
                 + editNodeCode("MAIN15", "MODEL://Tools/UserCommands//MAIN15WriteReports//code", MAIN15CODE)
                 + "MAINBuldAndRun ();\nresetmodel();\ngo();");
