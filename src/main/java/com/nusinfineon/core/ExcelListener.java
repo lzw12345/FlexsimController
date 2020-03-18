@@ -252,7 +252,7 @@ public class ExcelListener {
 
         try {
             scriptCreator();
-            Process a = Runtime.getRuntime().exec(commandLineGenerator(isModelShown));
+            Runtime.getRuntime().exec(commandLineGenerator(isModelShown));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -328,10 +328,12 @@ public class ExcelListener {
      * @throws IOException
      */
     public String commandLineGenerator(boolean isModelShown) throws IOException {
+
+
         String command = '"' + flexsimLocation + '"' +
                 '"' + modelLocation + '"' + " /maintenance " + (isModelShown ? "" : "nogui_") + "runscript " +
-                "/scriptpath" + scriptFile.getAbsolutePath();
-
+                "/scriptpath "  + '"' + scriptFile.getAbsolutePath() + '"' ;
+        //String[] commands = { "cmd" , "/c", "start", command };
         return command;
     }
 
