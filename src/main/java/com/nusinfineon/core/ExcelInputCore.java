@@ -1,12 +1,5 @@
 package com.nusinfineon.core;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,6 +11,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Logger;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import com.nusinfineon.exceptions.CustomException;
 import com.nusinfineon.util.GenericLotEntry;
@@ -42,10 +42,10 @@ public class ExcelInputCore {
     private static final int LOT_INFO_PERIOD_COLUMN = 4;
     private static final int LOT_INFO_NEW_COLUMN = 5;
 
-    private final static String LOT_SEQUENCE_FCFS = "First-Come-First-Served (Default)";
+    private static final String LOT_SEQUENCE_FCFS = "First-Come-First-Served (Default)";
     private static final String LOT_SEQUENCE_SPT = "Shortest Processing Time";
-    private final static String LOT_SEQUENCE_MJ = "Most Jobs";
-    private final static String LOT_SEQUENCE_RAND = "Random";
+    private static final String LOT_SEQUENCE_MJ = "Most Jobs";
+    private static final String LOT_SEQUENCE_RAND = "Random";
 
     private static final String PROCESS_TIME_SHEET_NAME = "Process Time";
     private static final int PROCESS_TIME_PRODUCT_KEY_COLUMN = 0;
@@ -61,6 +61,9 @@ public class ExcelInputCore {
     private static final String LOT_SELECTION_CRITERIA_PARAMETER = "Lot Selection Criteria for Loading";
     private static final String TROLLEY_LOCATION_SELECT_CRITERIA_PARAMETER = "Trolley Location Select Criteria";
     private static final String BIB_LOAD_ON_LOT_CRITERIA_PARAMETER = "BIB Load on Lot Criteria";
+
+    private static final int MAX_ALLOWABLE_BATCH_SIZE = 24;
+    private static final int MIN_ALLOWABLE_BATCH_SIZE = 1;
 
     private final static Logger LOGGER = Logger.getLogger(ExcelInputCore.class.getName());
 
@@ -406,7 +409,7 @@ public class ExcelInputCore {
             String parameter = cell.getStringCellValue().trim();
             switch (parameter) {
                 case BATCH_SIZE_PARAMETER:
-                    row.getCell(SETTINGS_VALUE_COLUMN).setCellValue(batchNumber);
+                    row.getCell(SETTINGS_VALUE_COLUMN).setCellValue(MAX_ALLOWABLE_BATCH_SIZE);
                     break;
                 case RESOURCE_SELECT_CRITERIA_PARAMETER:
                     row.getCell(SETTINGS_VALUE_COLUMN).setCellValue(

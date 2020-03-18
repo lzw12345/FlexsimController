@@ -1,13 +1,12 @@
 package com.nusinfineon.core;
 
-
-import com.nusinfineon.exceptions.CustomException;
-import com.pretty_tools.dde.DDEException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+
+import com.nusinfineon.exceptions.CustomException;
+import com.pretty_tools.dde.DDEException;
 
 
 public class Core {
@@ -41,8 +40,8 @@ public class Core {
     private final static String INIT_MIN_BATCH_SIZE = "1";
     private final static String INIT_STEP_SIZE = "1";
     private final static String INIT_RESOURCE_SELECT_CRITERIA = "4";
-    private final static String INIT_LOT_SELECTION_CRITERIA = "2";
-    private final static String INIT_TROLLEY_LOCATION_SELECT_CRITERIA = "0";
+    private final static String INIT_LOT_SELECTION_CRITERIA = "3";
+    private final static String INIT_TROLLEY_LOCATION_SELECT_CRITERIA = "2";
     private final static String INIT_BIB_LOAD_ON_LOT_CRITERIA = "2";
 
     /**
@@ -85,11 +84,8 @@ public class Core {
         ArrayList<Integer> batchSizes = excelInputCore.getListOfBatchSizes();
         excelOutputFiles = new ArrayList<File>();
 
-
         ExcelListener excelListener = new ExcelListener(excelInputFiles, batchSizes, flexsimLocation, modelLocation,
                  outputLocation, runSpeed, warmUpPeriod, stopTime, isModelShown,excelOutputFiles);
-        
-
     }
 
     /**
@@ -132,15 +128,6 @@ public class Core {
         this.trolleyLocationSelectCriteria = trolleyLocationSelectCriteria;
         this.bibLoadOnLotCriteria = bibLoadOnLotCriteria;
     }
-
-
-
-
-
-
-
-
-
 
     public String getFlexsimLocation() {
         return flexsimLocation;
@@ -248,8 +235,4 @@ public class Core {
             return bibLoadOnLotCriteria;
         }
     }
-
-
-
 }
-

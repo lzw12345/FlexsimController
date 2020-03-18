@@ -1,8 +1,12 @@
 package com.nusinfineon.ui;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
 import com.pretty_tools.dde.DDEException;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,9 +28,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Represent the whole window of the user interface, it should contain all units in the user interface.
@@ -90,6 +91,8 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private RadioButton trolleyLocationSelectCriteria1;
     @FXML
+    private RadioButton trolleyLocationSelectCriteria2;
+    @FXML
     private RadioButton bibLoadOnLotCriteria1;
     @FXML
     private RadioButton bibLoadOnLotCriteria2;
@@ -144,6 +147,7 @@ public class MainGui extends UiPart<Stage> {
         trolleyLocationSelectCriteria = new ToggleGroup();
         trolleyLocationSelectCriteria0.setToggleGroup(trolleyLocationSelectCriteria);
         trolleyLocationSelectCriteria1.setToggleGroup(trolleyLocationSelectCriteria);
+        trolleyLocationSelectCriteria2.setToggleGroup(trolleyLocationSelectCriteria);
         trolleyLocationSelectCriteria.selectToggle(getTrolleyLocationSelectCriteria());
 
         bibLoadOnLotCriteria = new ToggleGroup();
@@ -188,10 +192,12 @@ public class MainGui extends UiPart<Stage> {
     private RadioButton getTrolleyLocationSelectCriteria() {
         String selection = core.getTrolleyLocationSelectCriteria();
         switch (selection) {
+        case "0":
+            return trolleyLocationSelectCriteria0;
         case "1":
             return trolleyLocationSelectCriteria1;
         default:
-            return trolleyLocationSelectCriteria0;
+            return trolleyLocationSelectCriteria2;
         }
     }
 
@@ -439,10 +445,12 @@ public class MainGui extends UiPart<Stage> {
      */
     private String getSelectedTrolleyLocationSelectCriteria(ToggleGroup trolleyLocationSelectCriteria) {
         Toggle selection = trolleyLocationSelectCriteria.getSelectedToggle();
-        if (selection == trolleyLocationSelectCriteria1) {
+        if (selection == trolleyLocationSelectCriteria0) {
+            return "0";
+        } else if (selection == trolleyLocationSelectCriteria1) {
             return "1";
         } else {
-            return "0";
+            return "2";
         }
     }
 
