@@ -64,8 +64,6 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private TextField runSpeed;
     @FXML
-    private TextField warmUpPeriod;
-    @FXML
     private TextField stopTime;
     @FXML
     private Spinner<Integer> batchSizeMin;
@@ -123,7 +121,6 @@ public class MainGui extends UiPart<Stage> {
         inputFileLocation.setText(core.getInputLocation());
         outputFileLocation.setText(core.getOutputLocation());
         runSpeed.setText(core.getRunSpeed());
-        warmUpPeriod.setText(core.getWarmUpPeriod());
         stopTime.setText(core.getStopTime());
         showModel.setSelected(core.getIsModelShown());
 
@@ -397,9 +394,9 @@ public class MainGui extends UiPart<Stage> {
                     core.execute();
                     showCompletedBox();
                 } catch (IOException e) {
-                    showErrorBox("An IO Exception has occurred.");
+                    showExceptionBox("An IO Exception has occurred.\n" + e.getMessage());
                 } catch (CustomException e) {
-                    showErrorBox(e.getMessage());
+                    showExceptionBox(e.getMessage());
                 } catch (InterruptedException | DDEException e) {
                     e.printStackTrace();
                 }
@@ -412,7 +409,7 @@ public class MainGui extends UiPart<Stage> {
      */
     private void saveInputDataToCore() {
         core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
+                outputFileLocation.getText(), runSpeed.getText(), stopTime.getText(),
                 showModel.isSelected(), lotSequencingRule.getValue(),
                 Integer.toString(batchSizeMin.getValueFactory().getValue()),
                 Integer.toString(batchSizeMax.getValueFactory().getValue()),
@@ -526,6 +523,27 @@ public class MainGui extends UiPart<Stage> {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Helper function to raise alert box with a supplied alert text for Errors.
+     * @param alertText Alert text string to be displayed to the user.
+     */
+    private void showExceptionBox(String alertText) {
+        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+
+        // Text
+        errorAlert.setTitle("Exception Error!");
+        errorAlert.setHeaderText(null);
+        errorAlert.setContentText(alertText);
+
+        // Properties
+        errorAlert.setResizable(true);
+        errorAlert.getDialogPane().setPrefSize(480, 240);
+        Stage stage = (Stage) errorAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        errorAlert.showAndWait();
     }
 
     /**
@@ -772,7 +790,7 @@ public class MainGui extends UiPart<Stage> {
      */
     @FXML
     private void handleDefault() {
-        core.inputData(null, null, null, null, null, null, null, false, null, null, null, null, null, null, null, null);
+        core.inputData(null, null, null, null, null, null, false, null, null, null, null, null, null, null, null);
         configureUi();
     }
 

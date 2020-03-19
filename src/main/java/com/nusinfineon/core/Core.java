@@ -2,6 +2,9 @@ package com.nusinfineon.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -13,11 +16,8 @@ public class Core {
     private String flexsimLocation;
     private String modelLocation;
     private String inputLocation;
-    private String inputFile;
     private String outputLocation;
-    private String outputFile;
     private String runSpeed;
-    private String warmUpPeriod;
     private String stopTime;
     private String lotSequencingRuleString;
     private String batchSizeMinString;
@@ -45,15 +45,18 @@ public class Core {
     private final static String INIT_TROLLEY_LOCATION_SELECT_CRITERIA = "2";
     private final static String INIT_BIB_LOAD_ON_LOT_CRITERIA = "2";
 
+    private final static String OUTPUT_FOLDER_NAME = "Output";
+    private final static String RAW_OUTPUT_FOLDER_NAME = "Raw Output Excel Files";
+
     /**
      * Main execute function to generate input files. run model and generate output file
      * @throws IOException, CustomException, InterruptedException, DDEException
      */
     public void execute() throws IOException, CustomException, InterruptedException, DDEException {
         // Code block handling creation of excel file for min batch size iterating
-        ExcelInputCore excelInputCore = new ExcelInputCore(this.inputLocation, this.lotSequencingRuleString,
-                this.batchSizeMinString, this.batchSizeMaxString, this.batchSizeStepString, this.resourceSelectCriteria,
-                this.lotSelectionCriteria, this.trolleyLocationSelectCriteria, this.bibLoadOnLotCriteria);
+        ExcelInputCore excelInputCore = new ExcelInputCore(inputLocation, lotSequencingRuleString, batchSizeMinString,
+                batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria,
+                trolleyLocationSelectCriteria, bibLoadOnLotCriteria);
 
         try {
             excelInputCore.execute();
@@ -68,12 +71,45 @@ public class Core {
         // Extract the array of files and sizes from ExcelInputCore
         ArrayList<File> excelInputFiles = excelInputCore.getExcelFiles();
         ArrayList<Integer> batchSizes = excelInputCore.getListOfMinBatchSizes();
-        excelOutputFiles = new ArrayList<File>();
+        this.excelOutputFiles = new ArrayList<File>();
 
         // Running of simulation runs
-        ExcelListener excelListener = new ExcelListener(excelInputFiles, batchSizes, this.flexsimLocation,
-                this.modelLocation, this.outputLocation, this.runSpeed, this.warmUpPeriod, this.stopTime,
-                this.isModelShown, excelOutputFiles);
+        ExcelListener excelListener = new ExcelListener(excelInputFiles, batchSizes, flexsimLocation, modelLocation,
+                outputLocation, runSpeed, stopTime, isModelShown, excelOutputFiles);
+
+        handleOutput();
+    }
+
+    /**
+     * Used to handle processing and analysis of output
+     * @throws IOException
+     */
+    private void handleOutput() throws IOException {
+        File outputFile = new File(outputLocation);
+        String outputPathName = outputFile.getParent();
+        Path outputDir = Paths.get(outputPathName, OUTPUT_FOLDER_NAME);
+        Path rawOutputDir = Paths.get(outputPathName, OUTPUT_FOLDER_NAME, RAW_OUTPUT_FOLDER_NAME);
+
+        if (!Files.exists(outputDir)) {
+            Files.createDirectory(outputDir);
+            LOGGER.info("Output directory created");
+        } else {
+            LOGGER.info("Output directory already exists");
+        }
+
+        if (!Files.exists(rawOutputDir)) {
+            Files.createDirectory(rawOutputDir);
+            LOGGER.info("Raw output directory created");
+        } else {
+            LOGGER.info("Raw output directory already exists");
+        }
+
+        /* TODO: Problem with this block
+        for (File file : excelOutputFiles) {
+            String fileName = file.getName();
+            Files.move(Paths.get(String.valueOf(file)), Paths.get(String.valueOf(rawOutputDir), fileName));
+        }
+        */
     }
 
     /**
@@ -84,24 +120,21 @@ public class Core {
      * @param inputLocation
      * @param outputLocation
      * @param runSpeed
-     * @param warmUpPeriod
      * @param stopTime
      * @param batchSizeMinString
      * @param batchSizeMaxString
      * @param batchSizeStepString
      */
     public void inputData(String flexsimLocation, String modelLocation, String inputLocation,
-                          String outputLocation, String runSpeed, String warmUpPeriod, String stopTime,
-                          boolean isModelShown, String lotSequencingRuleString, String batchSizeMinString,
-                          String batchSizeMaxString, String batchSizeStepString, String resourceSelectCriteria,
-                          String lotSelectionCriteria, String trolleyLocationSelectCriteria,
-                          String bibLoadOnLotCriteria) {
+                          String outputLocation, String runSpeed, String stopTime, boolean isModelShown,
+                          String lotSequencingRuleString, String batchSizeMinString, String batchSizeMaxString,
+                          String batchSizeStepString, String resourceSelectCriteria, String lotSelectionCriteria,
+                          String trolleyLocationSelectCriteria, String bibLoadOnLotCriteria) {
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
         this.inputLocation = inputLocation;
         this.outputLocation = outputLocation;
         this.runSpeed = runSpeed;
-        this.warmUpPeriod = warmUpPeriod;
         this.stopTime = stopTime;
         this.isModelShown = isModelShown;
 
@@ -139,10 +172,6 @@ public class Core {
         } else {
             return runSpeed;
         }
-    }
-
-    public String getWarmUpPeriod() {
-        return warmUpPeriod;
     }
 
     public String getStopTime() {

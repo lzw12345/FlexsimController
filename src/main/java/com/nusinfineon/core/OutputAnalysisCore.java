@@ -30,20 +30,21 @@ public class OutputAnalysisCore {
 
         // =============== Tests on the whole folder ===================================================================
         File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
+        File destinationDirectory = new File("src/main/resources/sample-output-files/tableau-excel-file");
 
         // Generate output statistics for all excel files in a folder
         appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
         // Generate the tableau excel file from the folder of excel files (with output data appended)
-        generateExcelTableauFile(folderDirectory);
-
+        generateExcelTableauFile(folderDirectory, destinationDirectory);
     }
 
     /**
      * Generates a single excel file to be used with Tableau. Summarizes the output file data for each excel file.
      * Saves the file into "src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx"
      */
-    public static void generateExcelTableauFile(File folderOfExcelFiles) throws IOException, CustomException {
+    public static void generateExcelTableauFile(File folderOfExcelFiles, File destinationDirectory)
+            throws IOException, CustomException {
         LOGGER.info("Starting generateExcelTableauFile method");
 
         // Generate a list of excel files from the folder
@@ -60,7 +61,7 @@ public class OutputAnalysisCore {
         LOGGER.info("No. of excel files to process: " + excelFiles.size());
 
         // Create the destination excel file
-        final File destinationFile = new File("src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx");
+        final File destinationFile = new File( destinationDirectory + "/tableau-excel-file.xlsx");
         if (!destinationFile.exists()) {
             // Delete if there is a file present
             destinationFile.createNewFile();
