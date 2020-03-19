@@ -324,4 +324,11 @@ public class ExcelListener {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Getter method for conversation.
+     */
+    public DDEClientConversation getConversation() {
+        return conversation;
+    }
 }

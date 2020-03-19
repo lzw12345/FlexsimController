@@ -392,11 +392,12 @@ public class MainGui extends UiPart<Stage> {
                 try {
                     saveInputDataToCore();
                     core.execute();
+                    core.handleOutput();
                     showCompletedBox();
                 } catch (IOException e) {
                     showExceptionBox("An IO Exception has occurred.\n" + e.getMessage());
                 } catch (CustomException e) {
-                    showExceptionBox(e.getMessage());
+                    showExceptionBox("A Custom Exception has occurred.\n" + e.getMessage());
                 } catch (InterruptedException | DDEException e) {
                     e.printStackTrace();
                 }

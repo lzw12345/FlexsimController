@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+
+import org.apache.commons.io.FileUtils;
 
 import com.nusinfineon.exceptions.CustomException;
 import com.pretty_tools.dde.DDEException;
@@ -47,6 +50,7 @@ public class Core {
 
     private final static String OUTPUT_FOLDER_NAME = "Output";
     private final static String RAW_OUTPUT_FOLDER_NAME = "Raw Output Excel Files";
+    private final static String TABLEAU_FILES_DIR = "/sample-output-files/tableau-excel-file";
 
     /**
      * Main execute function to generate input files. run model and generate output file
@@ -77,19 +81,20 @@ public class Core {
         ExcelListener excelListener = new ExcelListener(excelInputFiles, batchSizes, flexsimLocation, modelLocation,
                 outputLocation, runSpeed, stopTime, isModelShown, excelOutputFiles);
 
-        handleOutput();
+        excelListener.getConversation().disconnect();
     }
 
     /**
      * Used to handle processing and analysis of output
      * @throws IOException
      */
-    private void handleOutput() throws IOException {
+    public void handleOutput() throws IOException {
         File outputFile = new File(outputLocation);
         String outputPathName = outputFile.getParent();
         Path outputDir = Paths.get(outputPathName, OUTPUT_FOLDER_NAME);
         Path rawOutputDir = Paths.get(outputPathName, OUTPUT_FOLDER_NAME, RAW_OUTPUT_FOLDER_NAME);
 
+        // Create folder directories
         if (!Files.exists(outputDir)) {
             Files.createDirectory(outputDir);
             LOGGER.info("Output directory created");
@@ -104,12 +109,32 @@ public class Core {
             LOGGER.info("Raw output directory already exists");
         }
 
-        /* TODO: Problem with this block
+        // Move raw output files into Raw Output folder
         for (File file : excelOutputFiles) {
             String fileName = file.getName();
-            Files.move(Paths.get(String.valueOf(file)), Paths.get(String.valueOf(rawOutputDir), fileName));
+            Files.move(Paths.get(String.valueOf(file)), Paths.get(String.valueOf(rawOutputDir), fileName),
+                    StandardCopyOption.REPLACE_EXISTING);
         }
+
+        // =============== Tests on the whole folder ===================================================================
+        File folderDirectory = new File(String.valueOf(rawOutputDir));
+        File destinationDirectory = new File(String.valueOf(outputDir));
+        File tableauSourceDirectory = new File(this.getClass().getResource(TABLEAU_FILES_DIR).getFile().substring(1));
+
+        /* TODO: Need to fix OutputAnalysisCore
+        // Generate output statistics for all excel files in a folder
+        appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+
+        // Generate the tableau excel file from the folder of excel files (with output data appended)
+        generateExcelTableauFile(folderDirectory, destinationDirectory);
         */
+
+        // Copy Tableau files from resources to output folder
+        try {
+            FileUtils.copyDirectory(tableauSourceDirectory, destinationDirectory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
