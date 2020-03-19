@@ -69,7 +69,7 @@ public class ExcelInputCore {
 
     private File originalInputExcelFile;
     private File tempCopyOriginalInputExcelFile;
-    private ArrayList<Integer> listOfBatchSizes;
+    private ArrayList<Integer> listOfMinBatchSizes;
     private ArrayList<File> excelFiles;
     private String lotSequencingRule;
     private String resourceSelectCriteria;
@@ -93,9 +93,9 @@ public class ExcelInputCore {
         this.lotSequencingRule = lotSequencingRule;
 
         // Calculates the exact batch size needed and adds to an array.
-        this.listOfBatchSizes = new ArrayList<Integer>();
+        this.listOfMinBatchSizes = new ArrayList<Integer>();
         for (int i = minBatchSize; i <= maxBatchSize; i = batchStep + i) {
-            listOfBatchSizes.add(i);
+            listOfMinBatchSizes.add(i);
         }
 
         this.resourceSelectCriteria = resourceSelectCriteria;
@@ -112,14 +112,14 @@ public class ExcelInputCore {
         createCopyOfInputFile(); // Uses the copy of the input file as a reference
         LOGGER.info("Successfully created a copy of main Input excel file");
 
-        for (int batchNumber : listOfBatchSizes) {
+        for (int batchNumber : listOfMinBatchSizes) {
             LOGGER.info("Writing temp Input excel file for batch size " + batchNumber);
 
             // Create the workbook from a copy of the original excel file
             Workbook workbook = WorkbookFactory.create(this.tempCopyOriginalInputExcelFile);
 
             // Edit batch size
-            editBatchSize(workbook, batchNumber);
+            editMinBatchSize(workbook, batchNumber);
 
             // Lot sequencing on Actual Lot Info
             processLotSequencing(workbook);
@@ -168,12 +168,12 @@ public class ExcelInputCore {
     }
 
     /**
-     * Edits batch size in Input excel file based on given batch size
+     * Edits min batch size in Input excel file based on given batch size
      * @param workbook Workbook to edit
      * @param batchNumber Batch size
      * @throws CustomException
      */
-    private void editBatchSize(Workbook workbook, int batchNumber) throws CustomException {
+    private void editMinBatchSize(Workbook workbook, int batchNumber) throws CustomException {
         // Access Product Info & Eqpt Matrix sheet
         Sheet productInfoSheet = workbook.getSheet(PRODUCT_INFO_SHEET_NAME);
 
@@ -472,8 +472,8 @@ public class ExcelInputCore {
      * Returns an arrayList of batch sizes
      * @return Array List of batch sizes
      */
-    public ArrayList<Integer> getListOfBatchSizes() {
-        return listOfBatchSizes;
+    public ArrayList<Integer> getListOfMinBatchSizes() {
+        return listOfMinBatchSizes;
     }
 
     /**
@@ -481,7 +481,7 @@ public class ExcelInputCore {
      * @return String.
      */
     public String printBatchesToRun() {
-        return this.listOfBatchSizes.toString();
+        return this.listOfMinBatchSizes.toString();
     }
 
     public File getOriginalInputExcelFile() {

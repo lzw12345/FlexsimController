@@ -469,14 +469,10 @@
             <top>
                <MenuBar BorderPane.alignment="CENTER">
                  <menus>
-                   <Menu mnemonicParsing="false" text="File">
+                   <Menu mnemonicParsing="false" text="Options">
                      <items>
+                       <MenuItem mnemonicParsing="false" onAction="#handleDefault" text="Reset to Default" />
                        <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Close" />
-                     </items>
-                   </Menu>
-                   <Menu mnemonicParsing="false" text="Edit">
-                     <items>
-                       <MenuItem mnemonicParsing="false" text="Delete" />
                      </items>
                    </Menu>
                    <Menu mnemonicParsing="false" text="Help">

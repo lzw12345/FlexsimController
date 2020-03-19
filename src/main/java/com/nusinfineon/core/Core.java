@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import com.nusinfineon.exceptions.CustomException;
 import com.pretty_tools.dde.DDEException;
 
-
 public class Core {
 
     private String flexsimLocation;
@@ -36,6 +35,8 @@ public class Core {
     private final static String LOT_SEQUENCE_SPT = "Shortest Processing Time";
     private final static String LOT_SEQUENCE_MJ = "Most Jobs";
     private final static String LOT_SEQUENCE_RAND = "Random";
+    private final static String INIT_RUN_SPEED = "4";
+    private final static String INIT_STOP_TIME = "1140";
     private final static String INIT_MAX_BATCH_SIZE = "24";
     private final static String INIT_MIN_BATCH_SIZE = "1";
     private final static String INIT_STEP_SIZE = "1";
@@ -45,30 +46,15 @@ public class Core {
     private final static String INIT_BIB_LOAD_ON_LOT_CRITERIA = "2";
 
     /**
-     * main execute function, generates script and runs model
-     *
-     * @param flexsimLocation
-     * @param modelLocation
-     * @param inputLocation
-     * @param outputLocation
-     * @param runSpeed
-     * @param warmUpPeriod
-     * @param stopTime
-     * @param isModelShown
-     * @throws IOException
+     * Main execute function to generate input files. run model and generate output file
+     * @throws IOException, CustomException, InterruptedException, DDEException
      */
-    public void execute(String flexsimLocation, String modelLocation, String inputLocation, String outputLocation,
-                        String runSpeed, String warmUpPeriod, String stopTime, boolean isModelShown,
-                        String lotSequencingRuleString, String batchSizeMinString, String batchSizeMaxString,
-                        String batchSizeStepString, String resourceSelectCriteria, String lotSelectionCriteria,
-                        String trolleyLocationSelectCriteria,
-                        String bibLoadOnLotCriteria) throws IOException, CustomException, InterruptedException, DDEException {
+    public void execute() throws IOException, CustomException, InterruptedException, DDEException {
+        // Code block handling creation of excel file for min batch size iterating
+        ExcelInputCore excelInputCore = new ExcelInputCore(this.inputLocation, this.lotSequencingRuleString,
+                this.batchSizeMinString, this.batchSizeMaxString, this.batchSizeStepString, this.resourceSelectCriteria,
+                this.lotSelectionCriteria, this.trolleyLocationSelectCriteria, this.bibLoadOnLotCriteria);
 
-
-        // Code block handling creation of excel file for batch iterating
-        ExcelInputCore excelInputCore = new ExcelInputCore(inputLocation, lotSequencingRuleString, batchSizeMinString,
-                batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria,
-                trolleyLocationSelectCriteria, bibLoadOnLotCriteria);
         try {
             excelInputCore.execute();
         } catch (IOException e) {
@@ -79,17 +65,19 @@ public class Core {
             throw e;
         }
 
-        // Extract the array of files and sizes from batchSizeCore
+        // Extract the array of files and sizes from ExcelInputCore
         ArrayList<File> excelInputFiles = excelInputCore.getExcelFiles();
-        ArrayList<Integer> batchSizes = excelInputCore.getListOfBatchSizes();
+        ArrayList<Integer> batchSizes = excelInputCore.getListOfMinBatchSizes();
         excelOutputFiles = new ArrayList<File>();
 
-        ExcelListener excelListener = new ExcelListener(excelInputFiles, batchSizes, flexsimLocation, modelLocation,
-                 outputLocation, runSpeed, warmUpPeriod, stopTime, isModelShown,excelOutputFiles);
+        // Running of simulation runs
+        ExcelListener excelListener = new ExcelListener(excelInputFiles, batchSizes, this.flexsimLocation,
+                this.modelLocation, this.outputLocation, this.runSpeed, this.warmUpPeriod, this.stopTime,
+                this.isModelShown, excelOutputFiles);
     }
 
     /**
-     * Used to store data into core before the json parser serializes it
+     * Used to store data into core before execute and save (the json parser serializes it)
      *
      * @param flexsimLocation
      * @param modelLocation
@@ -146,7 +134,11 @@ public class Core {
     }
 
     public String getRunSpeed() {
-        return runSpeed;
+        if (runSpeed == null) {
+            return INIT_RUN_SPEED;
+        } else {
+            return runSpeed;
+        }
     }
 
     public String getWarmUpPeriod() {
@@ -154,7 +146,11 @@ public class Core {
     }
 
     public String getStopTime() {
-        return stopTime;
+        if (stopTime == null) {
+            return INIT_STOP_TIME;
+        } else {
+            return stopTime;
+        }
     }
 
     public boolean getIsModelShown() {
