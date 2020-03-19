@@ -1,13 +1,14 @@
 package com.nusinfineon;
 
-import com.nusinfineon.ui.UiManager;
+import java.io.IOException;
+
 import com.nusinfineon.core.Core;
-import javafx.application.Application;
-import javafx.stage.Stage;
 import com.nusinfineon.storage.JsonParser;
 import com.nusinfineon.ui.Ui;
+import com.nusinfineon.ui.UiManager;
 
-import java.io.IOException;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 public class Main extends Application {
     private Core core;

@@ -1,18 +1,26 @@
 package com.nusinfineon.core;
 
-import com.nusinfineon.exceptions.CustomException;
-import com.nusinfineon.util.OutputAnalysisCalculation;
-import org.apache.poi.ss.usermodel.*;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import com.nusinfineon.util.OutputAnalysisUtil;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.nusinfineon.exceptions.CustomException;
+import com.nusinfineon.util.OutputAnalysisCalculation;
+import com.nusinfineon.util.OutputAnalysisUtil;
+
 
 public class OutputAnalysisCore {
 
@@ -168,6 +176,7 @@ public class OutputAnalysisCore {
             Cell cell = headerRow.createCell(i, CellType.STRING);
             cell.setCellValue(TIME_IN_SYSTEM_COLUMN_HEADERS[i]);
         }
+
 
         // Iterate through the excel files and write the stay time data
         final String SOURCE_TIME_IN_SYSTEM_SHEET = "PRODUCT_TIME_IN_SYSTEM";
@@ -384,6 +393,7 @@ public class OutputAnalysisCore {
                     Cell destinationSProductCell = newWorthRow.createCell(1, CellType.STRING);
                     destinationSProductCell.setCellValue(product);
 
+
                     Cell destinationOutputCell = newWorthRow.createCell(2, CellType.NUMERIC);
                     destinationOutputCell.setCellValue(output);
 
@@ -393,8 +403,6 @@ public class OutputAnalysisCore {
                     destinationRowCount = destinationRowCount + 1;
                 }
             }
-
-
             sourceWorkbook.close();
         }
 
