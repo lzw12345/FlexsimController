@@ -1,12 +1,13 @@
 package com.nusinfineon.ui;
 
-import com.nusinfineon.Main;
-import javafx.fxml.FXMLLoader;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.net.URL;
 
-import static java.util.Objects.requireNonNull;
+import com.nusinfineon.Main;
+
+import javafx.fxml.FXMLLoader;
 
 /**
  * Represent each part in the user interface, like the card unit, text boc etc.
