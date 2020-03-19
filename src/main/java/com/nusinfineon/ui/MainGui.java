@@ -1,12 +1,17 @@
 package com.nusinfineon.ui;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
 import com.pretty_tools.dde.DDEException;
+
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuItem;
@@ -17,6 +22,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.KeyCombination;
@@ -24,9 +30,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Represent the whole window of the user interface, it should contain all units in the user interface.
@@ -37,6 +40,7 @@ public class MainGui extends UiPart<Stage> {
     private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - MIN_ALLOWABLE_BATCH_SIZE;
     private static final int MIN_ALLOWABLE_STEP_SIZE = 1;
     private static final String FXML = "MainGui.fxml";
+    private static final String ICON_APPLICATION = "/images/infineon-technologies-squarelogo.png";
 
     private Stage primaryStage;
     private Core core;
@@ -90,6 +94,8 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private RadioButton trolleyLocationSelectCriteria1;
     @FXML
+    private RadioButton trolleyLocationSelectCriteria2;
+    @FXML
     private RadioButton bibLoadOnLotCriteria1;
     @FXML
     private RadioButton bibLoadOnLotCriteria2;
@@ -108,7 +114,10 @@ public class MainGui extends UiPart<Stage> {
         this.primaryStage = primaryStage;
         this.core = core;
 
-        // Configure the UI
+        configureUi();
+    }
+
+    private void configureUi() {
         exeLocation.setText(core.getFlexsimLocation());
         modelFileLocation.setText(core.getModelLocation());
         inputFileLocation.setText(core.getInputLocation());
@@ -144,13 +153,13 @@ public class MainGui extends UiPart<Stage> {
         trolleyLocationSelectCriteria = new ToggleGroup();
         trolleyLocationSelectCriteria0.setToggleGroup(trolleyLocationSelectCriteria);
         trolleyLocationSelectCriteria1.setToggleGroup(trolleyLocationSelectCriteria);
+        trolleyLocationSelectCriteria2.setToggleGroup(trolleyLocationSelectCriteria);
         trolleyLocationSelectCriteria.selectToggle(getTrolleyLocationSelectCriteria());
 
         bibLoadOnLotCriteria = new ToggleGroup();
         bibLoadOnLotCriteria1.setToggleGroup(bibLoadOnLotCriteria);
         bibLoadOnLotCriteria2.setToggleGroup(bibLoadOnLotCriteria);
         bibLoadOnLotCriteria.selectToggle(getBibLoadOnLotCriteria());
-
     }
 
     /** Gets the saved radio button for Resource Select Criteria
@@ -188,10 +197,12 @@ public class MainGui extends UiPart<Stage> {
     private RadioButton getTrolleyLocationSelectCriteria() {
         String selection = core.getTrolleyLocationSelectCriteria();
         switch (selection) {
+        case "0":
+            return trolleyLocationSelectCriteria0;
         case "1":
             return trolleyLocationSelectCriteria1;
         default:
-            return trolleyLocationSelectCriteria0;
+            return trolleyLocationSelectCriteria2;
         }
     }
 
@@ -243,7 +254,6 @@ public class MainGui extends UiPart<Stage> {
         /* let the source know whether the string was successfully
          * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
     }
 
@@ -275,7 +285,6 @@ public class MainGui extends UiPart<Stage> {
         /* let the source know whether the string was successfully
          * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
     }
 
@@ -307,7 +316,6 @@ public class MainGui extends UiPart<Stage> {
         /* let the source know whether the string was successfully
          * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
     }
 
@@ -339,7 +347,6 @@ public class MainGui extends UiPart<Stage> {
         /* let the source know whether the string was successfully
          * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
     }
 
@@ -383,25 +390,37 @@ public class MainGui extends UiPart<Stage> {
                     Math.max(1, (batchSizeMax.getValueFactory().getValue() - batchSizeMin.getValueFactory().getValue()))
                     + "!");
         } else {
-            try {
-                core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                        outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                        showModel.isSelected(), lotSequencingRule.getValue(),
-                        Integer.toString(batchSizeMin.getValueFactory().getValue()),
-                        Integer.toString(batchSizeMax.getValueFactory().getValue()),
-                        Integer.toString(batchSizeStep.getValueFactory().getValue()),
-                        getSelectedResourceSelectCriteria(resourceSelectCriteria),
-                        getSelectedLotSelectionCriteria(lotSelectionCriteria),
-                        getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
-                        getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
-            } catch (IOException e) {
-                showErrorBox("An IO Exception has occurred.");
-            } catch (CustomException e) {
-                showErrorBox(e.getMessage());
-            } catch (InterruptedException | DDEException e) {
-                e.printStackTrace();
+            if (confirmRunModel(batchSizeMin.getValueFactory().getValue(), batchSizeMax.getValueFactory().getValue(),
+                    batchSizeStep.getValueFactory().getValue())) {
+                try {
+                    saveInputDataToCore();
+                    core.execute();
+                    showCompletedBox();
+                } catch (IOException e) {
+                    showErrorBox("An IO Exception has occurred.");
+                } catch (CustomException e) {
+                    showErrorBox(e.getMessage());
+                } catch (InterruptedException | DDEException e) {
+                    e.printStackTrace();
+                }
             }
         }
+    }
+
+    /**
+     * Saves input data to core.
+     */
+    private void saveInputDataToCore() {
+        core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
+                outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
+                showModel.isSelected(), lotSequencingRule.getValue(),
+                Integer.toString(batchSizeMin.getValueFactory().getValue()),
+                Integer.toString(batchSizeMax.getValueFactory().getValue()),
+                Integer.toString(batchSizeStep.getValueFactory().getValue()),
+                getSelectedResourceSelectCriteria(resourceSelectCriteria),
+                getSelectedLotSelectionCriteria(lotSelectionCriteria),
+                getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
+                getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
     }
 
     /** Get the selected radio button for Resource Select Criteria from user input
@@ -439,10 +458,12 @@ public class MainGui extends UiPart<Stage> {
      */
     private String getSelectedTrolleyLocationSelectCriteria(ToggleGroup trolleyLocationSelectCriteria) {
         Toggle selection = trolleyLocationSelectCriteria.getSelectedToggle();
-        if (selection == trolleyLocationSelectCriteria1) {
+        if (selection == trolleyLocationSelectCriteria0) {
+            return "0";
+        } else if (selection == trolleyLocationSelectCriteria1) {
             return "1";
         } else {
-            return "0";
+            return "2";
         }
     }
 
@@ -459,16 +480,73 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Helper function to raise alert box with a supplied alert text.
+     * Helper function to raise alert box with a supplied alert text for Errors.
      * @param alertText Alert text string to be displayed to the user.
      */
     private void showErrorBox(String alertText) {
         Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+
+        // Text
+        errorAlert.setTitle("Invalid Input");
         errorAlert.setHeaderText("Invalid Input");
         errorAlert.setContentText(alertText);
+
+        // Properties
         errorAlert.setResizable(true);
         errorAlert.getDialogPane().setPrefSize(480, 240);
+        Stage stage = (Stage) errorAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
         errorAlert.showAndWait();
+    }
+
+    /**
+     * Helper function to raise alert box with a supplied alert text for Confirmation.
+     * @return true when user clicks OK to confirm
+     */
+    private boolean confirmRunModel(int batchSizeMin, int batchSizeMax, int batchSizeStep) {
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+
+        // Text
+        confirmationAlert.setTitle("Confirm to run simulation?");
+        confirmationAlert.setHeaderText("Confirm to run simulation?");
+        String alertText = "There will be " + ((batchSizeMax - batchSizeMin) / batchSizeStep + 1) + " simulation runs."
+                + "\nWarning: The more runs there are, the longer it will take until completion.";
+        confirmationAlert.setContentText(alertText);
+
+        // Properties
+        confirmationAlert.setResizable(true);
+        confirmationAlert.getDialogPane().setPrefSize(480, 240);
+        Stage stage = (Stage) confirmationAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        confirmationAlert.showAndWait();
+        if (confirmationAlert.getResult() == ButtonType.OK) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Helper function to raise alert box with a supplied alert text for Completion.
+     */
+    private void showCompletedBox() {
+        Alert completeAlert = new Alert(Alert.AlertType.INFORMATION);
+
+        // Text
+        completeAlert.setTitle("Simulation completed!");
+        completeAlert.setHeaderText("Simulation completed!");
+        String alertText = "You may run another simulation again or close the program.";
+        completeAlert.setContentText(alertText);
+
+        // Properties
+        completeAlert.setResizable(true);
+        completeAlert.getDialogPane().setPrefSize(480, 240);
+        Stage stage = (Stage) completeAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        completeAlert.showAndWait();
     }
 
     /**
@@ -689,6 +767,15 @@ public class MainGui extends UiPart<Stage> {
         }
     }*/
 
+    /**
+     * Resets input fields to default.
+     */
+    @FXML
+    private void handleDefault() {
+        core.inputData(null, null, null, null, null, null, null, false, null, null, null, null, null, null, null, null);
+        configureUi();
+    }
+
     void show() {
         primaryStage.show();
     }
@@ -698,16 +785,7 @@ public class MainGui extends UiPart<Stage> {
      */
     @FXML
     private void handleExit() {
-        core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                showModel.isSelected(), lotSequencingRule.getValue(),
-                Integer.toString(batchSizeMin.getValueFactory().getValue()),
-                Integer.toString(batchSizeMax.getValueFactory().getValue()),
-                Integer.toString(batchSizeStep.getValueFactory().getValue()),
-                getSelectedResourceSelectCriteria(resourceSelectCriteria),
-                getSelectedLotSelectionCriteria(lotSelectionCriteria),
-                getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
-                getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
+        saveInputDataToCore();
         primaryStage.hide();
     }
 }
