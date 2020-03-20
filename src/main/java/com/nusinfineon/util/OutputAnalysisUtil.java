@@ -1,14 +1,27 @@
 package com.nusinfineon.util;
 
-import org.apache.poi.ss.usermodel.*;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.TreeMap;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+
 public class OutputAnalysisUtil {
+
+    private final static String PRODUCT_KEY_COST_FILE = "/output/product_key_cost.xlsx";
 
     public static void saveDailyOutputSheet(String sheetName, TreeMap<Double, Double> treeMapOfDayToOutput,
                                             Workbook excelWorkbook) {
@@ -201,8 +214,7 @@ public class OutputAnalysisUtil {
     }
 
     public static File getProductKeyCostExcelFileFromRelativeDirectory() throws IOException {
-        final String relativeFilePath = "src/main/resources/sample-output-files/product-key-cost-file/product_key_cost.xlsx";
-        File productCostFile = new File(relativeFilePath);
+        File productCostFile = new File(OutputAnalysisUtil.class.getResource(PRODUCT_KEY_COST_FILE).getFile().substring(1));
         File tempOutputFile = new File(productCostFile.toString() + "temp.xlsx");
         copyFileUsingStream(productCostFile, tempOutputFile);
         return tempOutputFile;

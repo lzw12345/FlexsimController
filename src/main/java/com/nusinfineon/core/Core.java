@@ -50,7 +50,7 @@ public class Core {
 
     private final static String OUTPUT_FOLDER_NAME = "Output";
     private final static String RAW_OUTPUT_FOLDER_NAME = "Raw Output Excel Files";
-    private final static String TABLEAU_FILES_DIR = "/sample-output-files/tableau-excel-file";
+    private final static String TABLEAU_FILES_DIR = "/output/tableau_workbooks";
 
     /**
      * Main execute function to generate input files. run model and generate output file

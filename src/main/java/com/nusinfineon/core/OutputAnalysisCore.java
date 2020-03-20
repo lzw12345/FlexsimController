@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -29,14 +30,22 @@ public class OutputAnalysisCore {
     public static void main(String[] args) throws IOException, CustomException {
 
         // =============== Tests on the whole folder ===================================================================
-        File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
-        File destinationDirectory = new File("src/main/resources/sample-output-files/tableau-excel-file");
+        File folderDirectory = new File("sample-output-files/output-files-with-summary-data");
+        File destinationDirectory = new File("sample-output-files");
 
         // Generate output statistics for all excel files in a folder
         appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
         // Generate the tableau excel file from the folder of excel files (with output data appended)
         generateExcelTableauFile(folderDirectory, destinationDirectory);
+
+        // Copy Tableau files from resources to output folder
+        File tableauSourceDirectory = new File("build/resources/main/output/tableau_workbooks");
+        try {
+            FileUtils.copyDirectory(tableauSourceDirectory, destinationDirectory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
