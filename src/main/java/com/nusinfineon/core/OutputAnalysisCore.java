@@ -177,6 +177,7 @@ public class OutputAnalysisCore {
             cell.setCellValue(TIME_IN_SYSTEM_COLUMN_HEADERS[i]);
         }
 
+
         // Iterate through the excel files and write the stay time data
         final String SOURCE_TIME_IN_SYSTEM_SHEET = "PRODUCT_TIME_IN_SYSTEM";
         final int TIME_IN_SYSTEM_PRODUCT_ID_COLUMN_INDEX = 0;
@@ -392,6 +393,7 @@ public class OutputAnalysisCore {
                     Cell destinationSProductCell = newWorthRow.createCell(1, CellType.STRING);
                     destinationSProductCell.setCellValue(product);
 
+
                     Cell destinationOutputCell = newWorthRow.createCell(2, CellType.NUMERIC);
                     destinationOutputCell.setCellValue(output);
 
@@ -401,8 +403,6 @@ public class OutputAnalysisCore {
                     destinationRowCount = destinationRowCount + 1;
                 }
             }
-
-
             sourceWorkbook.close();
         }
 
