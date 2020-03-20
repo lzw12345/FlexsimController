@@ -112,9 +112,13 @@ public class OutputAnalysisCore {
             headerRow = sourceUtilizationSheet.getRow(0);
             HashMap<String, Integer> mapOfUtilColumnHeaders = OutputAnalysisUtil.getMappingOfHeadersToIndex(headerRow, SOURCE_UTILIZATION_COLUMN_HEADERS);
 
-            // Write the data to a new row
-            OutputAnalysisUtil.writeUtilizationRate(destinationUtilizationSheet, sourceRow, mapOfUtilColumnHeaders, destinationRowCount);
-
+            // Write the data to a new row if there are valid headers
+            if (mapOfUtilColumnHeaders.size() == 6) {
+                OutputAnalysisUtil.writeUtilizationRate(destinationUtilizationSheet, sourceRow, mapOfUtilColumnHeaders, destinationRowCount);
+            } else {
+                String fileName = OutputAnalysisUtil.fileStringToFileName(excelFile.toString());
+                LOGGER.info(fileName + " doesn't contain entries for " + SOURCE_UTILIZATION_SHEET);
+            }
             sourceWorkbook.close();
             destinationRowCount = destinationRowCount + 1;
         }
@@ -466,9 +470,9 @@ public class OutputAnalysisCore {
 
             TreeMap<String, Double> treeMapOfAverageUtilizationRates = null;
             if (utilSheet == null) {
-                //throw new IOException("Excel file doesn't contain sheet: " + UTIL_RES_REP);
                 String fileName = OutputAnalysisUtil.fileStringToFileName(tempOutputFile.toString());
                 LOGGER.info(fileName + " doesn't contain sheet " + UTIL_RES_REP);
+                treeMapOfAverageUtilizationRates = new TreeMap<String, Double>();
             } else {
                 treeMapOfAverageUtilizationRates = OutputAnalysisCalculation.calculateAverageIbisOvenUtilRate(utilSheet);
             }
