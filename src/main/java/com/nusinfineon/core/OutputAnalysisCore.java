@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -29,22 +30,31 @@ public class OutputAnalysisCore {
     public static void main(String[] args) throws IOException, CustomException {
 
         // =============== Tests on the whole folder ===================================================================
-        //File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
-        File folderDirectory = new File("C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Simulation\\onelevel IBIS\\input_files\\16 March - Change Upperbound - Both Column Max and Setting\\output-change-max");
+        File folderDirectory = new File("sample-output-files/output-files-with-summary-data");
+        File destinationDirectory = new File("sample-output-files");
+
 
         // Generate output statistics for all excel files in a folder
         appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
         // Generate the tableau excel file from the folder of excel files (with output data appended)
-        generateExcelTableauFile(folderDirectory);
+        generateExcelTableauFile(folderDirectory, destinationDirectory);
 
+        // Copy Tableau files from resources to output folder
+        File tableauSourceDirectory = new File("build/resources/main/output/tableau_workbooks");
+        try {
+            FileUtils.copyDirectory(tableauSourceDirectory, destinationDirectory);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Generates a single excel file to be used with Tableau. Summarizes the output file data for each excel file.
      * Saves the file into "src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx"
      */
-    public static void generateExcelTableauFile(File folderOfExcelFiles) throws IOException, CustomException {
+    public static void generateExcelTableauFile(File folderOfExcelFiles, File destinationDirectory)
+            throws IOException, CustomException {
         LOGGER.info("Starting generateExcelTableauFile method");
 
         // Generate a list of excel files from the folder
@@ -61,7 +71,7 @@ public class OutputAnalysisCore {
         LOGGER.info("No. of excel files to process: " + excelFiles.size());
 
         // Create the destination excel file
-        final File destinationFile = new File("src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx");
+        final File destinationFile = new File( destinationDirectory + "/tableau-excel-file.xlsx");
         if (!destinationFile.exists()) {
             // Delete if there is a file present
             destinationFile.createNewFile();

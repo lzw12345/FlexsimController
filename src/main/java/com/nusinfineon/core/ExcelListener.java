@@ -36,7 +36,6 @@ public class ExcelListener {
     private String outputLocation;
     private String outputFile;
     private String runSpeed;
-    private String warmUpPeriod;
     private boolean isModelShown;
     private String stopTime;
     private File statusFile;
@@ -52,8 +51,8 @@ public class ExcelListener {
     private final String DEFAULT_STATUS_SHEET = "#()STATUS#()#";
 
     public ExcelListener(ArrayList<File> excelInputFiles, ArrayList<Integer> batchSizes, String flexsimLocation,
-                         String modelLocation, String outputLocation, String runSpeed, String warmUpPeriod,
-                         String stopTime, boolean isModelShown, ArrayList<File> excelOutputFiles) throws IOException {
+                         String modelLocation, String outputLocation, String runSpeed, String stopTime,
+                         boolean isModelShown, ArrayList<File> excelOutputFiles) throws IOException {
 
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
@@ -61,7 +60,6 @@ public class ExcelListener {
         outputFile = getBaseName(outputLocation) + "." + getExtension(outputLocation);
         this.outputLocation = getFullPath(outputLocation).replace("\\", "\\\\\\\\\\");
         this.runSpeed = "runspeed(" + runSpeed + ");";
-        this.warmUpPeriod = warmUpPeriod;
         this.stopTime = "stoptime(" + stopTime + ");";
         this.isModelShown = isModelShown;
         this.excelOutputFiles = excelOutputFiles;
@@ -190,7 +188,6 @@ public class ExcelListener {
             System.out.println("Connecting...");
             conversation.connect("Excel", DEFAULT_STATUS_SHEET);
             try {
-
                 conversation.startAdvice("R1C1");
                 System.out.println("Connected!!");
                 //TimeUnit.SECONDS.sleep(20);
@@ -212,7 +209,7 @@ public class ExcelListener {
      * Terminates runs
      * @throws DDEException
      */
-    public void endRuns () throws DDEException {
+    public void endRuns() throws DDEException {
         System.out.println("Runs terminated early!");
         conversation.stopAdvice("R1C1");
     }
@@ -220,12 +217,12 @@ public class ExcelListener {
     /**
      * Main code the runs the program
      */
-    public void runModel (){
+    public void runModel() {
         System.out.println("Batch size: " + batchSizes.get(currentRunNum) + ". File path: " + excelInputFiles.get(currentRunNum).toString());
         String tempInputFile = excelInputFiles.get(currentRunNum).toString();
         inputFile = '"' + getBaseName(tempInputFile) + "." + getExtension(tempInputFile);
         inputLocation = getFullPath(tempInputFile).replace("\\", "\\\\");
-        excelOutputFileName = "outputFileForBatchofSize " + batchSizes.get(currentRunNum);
+        excelOutputFileName = "outputFileForBatchofSize" + batchSizes.get(currentRunNum);
         deleteExistingFile(getFullPath(outputLocation) + excelOutputFileName + ".xlsx");
         //generate status file and make sure its open
 
@@ -270,7 +267,7 @@ public class ExcelListener {
             Workbook wb = new XSSFWorkbook();
             OutputStream fileOut = new FileOutputStream(excel);
             wb.createSheet("#()STATUS#()#");
-            System.out.println("Sheets Has been Created successfully");
+            System.out.println("Sheets Has been created successfully");
             wb.write(fileOut);
             fileOut.close();
         }
@@ -326,5 +323,12 @@ public class ExcelListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Getter method for conversation.
+     */
+    public DDEClientConversation getConversation() {
+        return conversation;
     }
 }
