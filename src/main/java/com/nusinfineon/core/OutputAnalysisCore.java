@@ -33,6 +33,7 @@ public class OutputAnalysisCore {
         File folderDirectory = new File("sample-output-files/output-files-with-summary-data");
         File destinationDirectory = new File("sample-output-files");
 
+
         // Generate output statistics for all excel files in a folder
         appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
@@ -111,9 +112,13 @@ public class OutputAnalysisCore {
             headerRow = sourceUtilizationSheet.getRow(0);
             HashMap<String, Integer> mapOfUtilColumnHeaders = OutputAnalysisUtil.getMappingOfHeadersToIndex(headerRow, SOURCE_UTILIZATION_COLUMN_HEADERS);
 
-            // Write the data to a new row
-            OutputAnalysisUtil.writeUtilizationRate(destinationUtilizationSheet, sourceRow, mapOfUtilColumnHeaders, destinationRowCount);
-
+            // Write the data to a new row if there are valid headers
+            if (mapOfUtilColumnHeaders.size() == 6) {
+                OutputAnalysisUtil.writeUtilizationRate(destinationUtilizationSheet, sourceRow, mapOfUtilColumnHeaders, destinationRowCount);
+            } else {
+                String fileName = OutputAnalysisUtil.fileStringToFileName(excelFile.toString());
+                LOGGER.info(fileName + " doesn't contain entries for " + SOURCE_UTILIZATION_SHEET);
+            }
             sourceWorkbook.close();
             destinationRowCount = destinationRowCount + 1;
         }
@@ -142,31 +147,35 @@ public class OutputAnalysisCore {
             Sheet sourceStaytimeSheet = sourceWorkbook.getSheet(SOURCE_STAYTIME_SHEET);
             String runType = OutputAnalysisUtil.fileStringToFileName(excelFile.toString());
 
-            // Iterate through all rows and insert to the new sheet
-            for (int i = 1; i < sourceStaytimeSheet.getPhysicalNumberOfRows(); i++) {
-                Row sourceRow = sourceStaytimeSheet.getRow(i);
+            if (sourceStaytimeSheet != null) {
 
-                Cell productCell = sourceRow.getCell(STAY_TIME_PRODUCT_ID_COLUMN_INDEX);
-                Cell staytimeCell = sourceRow.getCell(STAY_TIME_PRODUCT_STAYIME_INDEX);
+                // Iterate through all rows and insert to the new sheet
+                for (int i = 1; i < sourceStaytimeSheet.getPhysicalNumberOfRows(); i++) {
+                    Row sourceRow = sourceStaytimeSheet.getRow(i);
 
-                if (productCell != null) {
-                    // Extract values
-                    String productId = productCell.getStringCellValue();
-                    Double productStayTime = staytimeCell.getNumericCellValue();
+                    Cell productCell = sourceRow.getCell(STAY_TIME_PRODUCT_ID_COLUMN_INDEX);
+                    Cell staytimeCell = sourceRow.getCell(STAY_TIME_PRODUCT_STAYIME_INDEX);
 
-                    // Write to the destination sheet
-                    Row newStaytimeRow = destinationStayTimeSheet.createRow(destinationRowCount);
+                    if (productCell != null) {
+                        // Extract values
+                        String productId = productCell.getStringCellValue();
+                        Double productStayTime = staytimeCell.getNumericCellValue();
 
-                    Cell destinationRuntypeCell = newStaytimeRow.createCell(0, CellType.STRING);
-                    destinationRuntypeCell.setCellValue(runType);
+                        // Write to the destination sheet
+                        Row newStaytimeRow = destinationStayTimeSheet.createRow(destinationRowCount);
 
-                    Cell destinationStayTimeCell = newStaytimeRow.createCell(1, CellType.NUMERIC);
-                    destinationStayTimeCell.setCellValue(productStayTime);
+                        Cell destinationRuntypeCell = newStaytimeRow.createCell(0, CellType.STRING);
+                        destinationRuntypeCell.setCellValue(runType);
 
-                    Cell destinationProductCell = newStaytimeRow.createCell(2, CellType.STRING);
-                    destinationProductCell.setCellValue(productId);
+                        Cell destinationStayTimeCell = newStaytimeRow.createCell(1, CellType.NUMERIC);
+                        destinationStayTimeCell.setCellValue(productStayTime);
 
-                    destinationRowCount = destinationRowCount + 1;
+                        Cell destinationProductCell = newStaytimeRow.createCell(2, CellType.STRING);
+                        destinationProductCell.setCellValue(productId);
+
+                        destinationRowCount = destinationRowCount + 1;
+                    }
+
                 }
 
             }
@@ -458,27 +467,43 @@ public class OutputAnalysisCore {
             // ==================   Get average utilization rates of IBIS Ovens ============================================
             final String UTIL_RES_REP = "Util Res Rep";
             Sheet utilSheet = workbook.getSheet(UTIL_RES_REP);
+
+            TreeMap<String, Double> treeMapOfAverageUtilizationRates = null;
             if (utilSheet == null) {
-                throw new IOException("Excel file doesn't contain sheet: " + UTIL_RES_REP);
+                String fileName = OutputAnalysisUtil.fileStringToFileName(tempOutputFile.toString());
+                LOGGER.info(fileName + " doesn't contain sheet " + UTIL_RES_REP);
+                treeMapOfAverageUtilizationRates = new TreeMap<String, Double>();
+            } else {
+                treeMapOfAverageUtilizationRates = OutputAnalysisCalculation.calculateAverageIbisOvenUtilRate(utilSheet);
             }
-            TreeMap<String, Double> treeMapOfAverageUtilizationRates = OutputAnalysisCalculation.calculateAverageIbisOvenUtilRate(utilSheet);
+
             mapOfUtilizationRates.putAll(treeMapOfAverageUtilizationRates);
             // =========================== End of section on IBIS Oven utilization rates ===================================
 
             // ====================== Get cycle time data  ============================================================
             final String THROUGHPUT_PRODUCT_REP = "Throughput Product Rep";
             Sheet cycleTimeSheet = workbook.getSheet(THROUGHPUT_PRODUCT_REP);
+
+            TreeMap<String, Double> treeMapOfProductToAverageCycleTimesFromThroughputProduct = null;
+
             if (cycleTimeSheet == null) {
-                throw new IOException("Excel file doesn't contain sheet: " + THROUGHPUT_PRODUCT_REP);
+                // throw new IOException("Excel file doesn't contain sheet: " + THROUGHPUT_PRODUCT_REP);
+                String fileName = OutputAnalysisUtil.fileStringToFileName(tempOutputFile.toString());
+                LOGGER.info(fileName + " doesn't contain sheet " + THROUGHPUT_PRODUCT_REP);
+            } else {
+                treeMapOfProductToAverageCycleTimesFromThroughputProduct = OutputAnalysisCalculation.calculateProductCycleTimeFromThroughputProduct(cycleTimeSheet);
             }
-            TreeMap<String, Double> treeMapOfProductToAverageCycleTimesFromThroughputProduct = OutputAnalysisCalculation.calculateProductCycleTimeFromThroughputProduct(cycleTimeSheet);
             // ====================== End of section on cycle time summary statistics =====================================
 
             // ===============================  Get throughput data ====================================================
             final String DAILY_THROUGHPUT_PRODUCT_REP = "Daily Throughput Product Rep";
             Sheet throughputSheet = workbook.getSheet(DAILY_THROUGHPUT_PRODUCT_REP);
+
+
             if (throughputSheet == null) {
-                throw new IOException("Excel file doesn't contain sheet: " + DAILY_THROUGHPUT_PRODUCT_REP);
+                // throw new IOException("Excel file doesn't contain sheet: " + DAILY_THROUGHPUT_PRODUCT_REP);
+                String fileName = OutputAnalysisUtil.fileStringToFileName(tempOutputFile.toString());
+                LOGGER.info(fileName + " doesn't contain sheet " + DAILY_THROUGHPUT_PRODUCT_REP);
             }
             TreeMap<String, Double> treeMapOfProductToAverageThroughput = OutputAnalysisCalculation.calculateProductThroughput(throughputSheet);
             // ====================== End of section on throughput data ================================================
