@@ -13,4 +13,4 @@ src/main/resources/docs/
 *.txt
 
 # Test directories for run output excel files
-sample-output-files
+sample-output-files/
