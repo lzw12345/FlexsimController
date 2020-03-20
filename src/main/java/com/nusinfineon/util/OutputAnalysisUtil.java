@@ -196,6 +196,7 @@ public class OutputAnalysisUtil {
         Cell cycleTimeCell = headerRow.createCell(CYCLE_TIME_COLUMN, CellType.STRING);
         cycleTimeCell.setCellValue("Cycle Time");
 
+        // Exit out if null. Null as sheet doesn't exist in the original excel run. Only exit after writing blank columns.
         if (treeMapOfAverageCycleTimes == null) {
             return;
         }
