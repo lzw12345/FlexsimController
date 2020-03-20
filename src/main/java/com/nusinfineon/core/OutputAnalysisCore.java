@@ -29,7 +29,8 @@ public class OutputAnalysisCore {
     public static void main(String[] args) throws IOException, CustomException {
 
         // =============== Tests on the whole folder ===================================================================
-        File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
+        //File folderDirectory = new File("src/main/resources/sample-output-files/output-files-with-summary-data");
+        File folderDirectory = new File("C:\\Users\\Ahmad\\Documents\\NUS\\IE 3100M\\Simulation\\onelevel IBIS\\input_files\\16 March - Change Upperbound - Both Column Max and Setting\\output-change-max");
 
         // Generate output statistics for all excel files in a folder
         appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
@@ -132,31 +133,35 @@ public class OutputAnalysisCore {
             Sheet sourceStaytimeSheet = sourceWorkbook.getSheet(SOURCE_STAYTIME_SHEET);
             String runType = OutputAnalysisUtil.fileStringToFileName(excelFile.toString());
 
-            // Iterate through all rows and insert to the new sheet
-            for (int i = 1; i < sourceStaytimeSheet.getPhysicalNumberOfRows(); i++) {
-                Row sourceRow = sourceStaytimeSheet.getRow(i);
+            if (sourceStaytimeSheet != null) {
 
-                Cell productCell = sourceRow.getCell(STAY_TIME_PRODUCT_ID_COLUMN_INDEX);
-                Cell staytimeCell = sourceRow.getCell(STAY_TIME_PRODUCT_STAYIME_INDEX);
+                // Iterate through all rows and insert to the new sheet
+                for (int i = 1; i < sourceStaytimeSheet.getPhysicalNumberOfRows(); i++) {
+                    Row sourceRow = sourceStaytimeSheet.getRow(i);
 
-                if (productCell != null) {
-                    // Extract values
-                    String productId = productCell.getStringCellValue();
-                    Double productStayTime = staytimeCell.getNumericCellValue();
+                    Cell productCell = sourceRow.getCell(STAY_TIME_PRODUCT_ID_COLUMN_INDEX);
+                    Cell staytimeCell = sourceRow.getCell(STAY_TIME_PRODUCT_STAYIME_INDEX);
 
-                    // Write to the destination sheet
-                    Row newStaytimeRow = destinationStayTimeSheet.createRow(destinationRowCount);
+                    if (productCell != null) {
+                        // Extract values
+                        String productId = productCell.getStringCellValue();
+                        Double productStayTime = staytimeCell.getNumericCellValue();
 
-                    Cell destinationRuntypeCell = newStaytimeRow.createCell(0, CellType.STRING);
-                    destinationRuntypeCell.setCellValue(runType);
+                        // Write to the destination sheet
+                        Row newStaytimeRow = destinationStayTimeSheet.createRow(destinationRowCount);
 
-                    Cell destinationStayTimeCell = newStaytimeRow.createCell(1, CellType.NUMERIC);
-                    destinationStayTimeCell.setCellValue(productStayTime);
+                        Cell destinationRuntypeCell = newStaytimeRow.createCell(0, CellType.STRING);
+                        destinationRuntypeCell.setCellValue(runType);
 
-                    Cell destinationProductCell = newStaytimeRow.createCell(2, CellType.STRING);
-                    destinationProductCell.setCellValue(productId);
+                        Cell destinationStayTimeCell = newStaytimeRow.createCell(1, CellType.NUMERIC);
+                        destinationStayTimeCell.setCellValue(productStayTime);
 
-                    destinationRowCount = destinationRowCount + 1;
+                        Cell destinationProductCell = newStaytimeRow.createCell(2, CellType.STRING);
+                        destinationProductCell.setCellValue(productId);
+
+                        destinationRowCount = destinationRowCount + 1;
+                    }
+
                 }
 
             }
@@ -448,20 +453,32 @@ public class OutputAnalysisCore {
             // ==================   Get average utilization rates of IBIS Ovens ============================================
             final String UTIL_RES_REP = "Util Res Rep";
             Sheet utilSheet = workbook.getSheet(UTIL_RES_REP);
+
+            TreeMap<String, Double> treeMapOfAverageUtilizationRates = null;
             if (utilSheet == null) {
-                throw new IOException("Excel file doesn't contain sheet: " + UTIL_RES_REP);
+                //throw new IOException("Excel file doesn't contain sheet: " + UTIL_RES_REP);
+                String fileName = OutputAnalysisUtil.fileStringToFileName(tempOutputFile.toString());
+                LOGGER.info(fileName + " doesn't contain sheet " + UTIL_RES_REP);
+            } else {
+                treeMapOfAverageUtilizationRates = OutputAnalysisCalculation.calculateAverageIbisOvenUtilRate(utilSheet);
             }
-            TreeMap<String, Double> treeMapOfAverageUtilizationRates = OutputAnalysisCalculation.calculateAverageIbisOvenUtilRate(utilSheet);
+
             mapOfUtilizationRates.putAll(treeMapOfAverageUtilizationRates);
             // =========================== End of section on IBIS Oven utilization rates ===================================
 
             // ====================== Get cycle time data  ============================================================
             final String THROUGHPUT_PRODUCT_REP = "Throughput Product Rep";
             Sheet cycleTimeSheet = workbook.getSheet(THROUGHPUT_PRODUCT_REP);
+
+            TreeMap<String, Double> treeMapOfProductToAverageCycleTimesFromThroughputProduct = null;
+
             if (cycleTimeSheet == null) {
-                throw new IOException("Excel file doesn't contain sheet: " + THROUGHPUT_PRODUCT_REP);
+                // throw new IOException("Excel file doesn't contain sheet: " + THROUGHPUT_PRODUCT_REP);
+                String fileName = OutputAnalysisUtil.fileStringToFileName(tempOutputFile.toString());
+                LOGGER.info(fileName + " doesn't contain sheet " + UTIL_RES_REP);
+            } else {
+                treeMapOfProductToAverageCycleTimesFromThroughputProduct = OutputAnalysisCalculation.calculateProductCycleTimeFromThroughputProduct(cycleTimeSheet);
             }
-            TreeMap<String, Double> treeMapOfProductToAverageCycleTimesFromThroughputProduct = OutputAnalysisCalculation.calculateProductCycleTimeFromThroughputProduct(cycleTimeSheet);
             // ====================== End of section on cycle time summary statistics =====================================
 
             // ===============================  Get throughput data ====================================================

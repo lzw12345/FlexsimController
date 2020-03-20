@@ -183,6 +183,10 @@ public class OutputAnalysisUtil {
         Cell cycleTimeCell = headerRow.createCell(CYCLE_TIME_COLUMN, CellType.STRING);
         cycleTimeCell.setCellValue("Cycle Time");
 
+        if (treeMapOfAverageCycleTimes == null) {
+            return;
+        }
+
         rowIndex = rowIndex + 1;
         for (String productID: treeMapOfAverageCycleTimes.keySet()) {
             Double cycleTime = treeMapOfAverageCycleTimes.get(productID);
