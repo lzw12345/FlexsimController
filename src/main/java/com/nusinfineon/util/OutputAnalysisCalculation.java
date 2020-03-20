@@ -21,6 +21,11 @@ public class OutputAnalysisCalculation {
 
     public static TreeMap<String, Double> calculateProductThroughput(Sheet throughputSheet) throws CustomException {
         try {
+            // Exits if the sheet is null
+            if (throughputSheet == null) {
+                return new TreeMap<String, Double>();
+            }
+
             // Declare column names used
             final String PRODUCT_ID = "Product";
             final String QTY_OUT = "Qty Out";
@@ -99,6 +104,11 @@ public class OutputAnalysisCalculation {
     public static TreeMap<String, Double> calculateProductCycleTimeFromDailyThroughput(Sheet throughputSheet)
         throws CustomException {
         try {
+            // Returns if the throughput sheet does not exist and is null
+            if (throughputSheet == null) {
+                return new TreeMap<String, Double>();
+            }
+
             final String PRODUCT_ID = "Product";
             final String TIME_IN_SYSTEM = "Time In System";
 
@@ -168,6 +178,11 @@ public class OutputAnalysisCalculation {
     public static TreeMap<Double, Double> calculateDailyThroughput(Sheet throughputSheet)
         throws CustomException {
         try {
+            // Returns if throughput sheet is null ie does not exist
+            if (throughputSheet == null) {
+                return new TreeMap<Double, Double>();
+            }
+
             final String PRODUCT_ID = "Product";
             final String QTY_OUT = "Qty Out";
             final String DAY = "Day";
@@ -334,6 +349,11 @@ public class OutputAnalysisCalculation {
             throws CustomException {
 
         try {
+
+            // Returns an empty map if throughput sheet does not exist
+            if (dailyThroughputSheet == null) {
+                return new TreeMap<String, ArrayList<Double>>();
+            }
 
             // Read from product-key-cost table and store data
             HashMap<String, Double> mapOfProductToCost = new HashMap<String, Double>();

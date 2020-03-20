@@ -489,7 +489,7 @@ public class OutputAnalysisCore {
             if (cycleTimeSheet == null) {
                 // throw new IOException("Excel file doesn't contain sheet: " + THROUGHPUT_PRODUCT_REP);
                 String fileName = OutputAnalysisUtil.fileStringToFileName(tempOutputFile.toString());
-                LOGGER.info(fileName + " doesn't contain sheet " + UTIL_RES_REP);
+                LOGGER.info(fileName + " doesn't contain sheet " + THROUGHPUT_PRODUCT_REP);
             } else {
                 treeMapOfProductToAverageCycleTimesFromThroughputProduct = OutputAnalysisCalculation.calculateProductCycleTimeFromThroughputProduct(cycleTimeSheet);
             }
@@ -498,8 +498,12 @@ public class OutputAnalysisCore {
             // ===============================  Get throughput data ====================================================
             final String DAILY_THROUGHPUT_PRODUCT_REP = "Daily Throughput Product Rep";
             Sheet throughputSheet = workbook.getSheet(DAILY_THROUGHPUT_PRODUCT_REP);
+
+
             if (throughputSheet == null) {
-                throw new IOException("Excel file doesn't contain sheet: " + DAILY_THROUGHPUT_PRODUCT_REP);
+                // throw new IOException("Excel file doesn't contain sheet: " + DAILY_THROUGHPUT_PRODUCT_REP);
+                String fileName = OutputAnalysisUtil.fileStringToFileName(tempOutputFile.toString());
+                LOGGER.info(fileName + " doesn't contain sheet " + DAILY_THROUGHPUT_PRODUCT_REP);
             }
             TreeMap<String, Double> treeMapOfProductToAverageThroughput = OutputAnalysisCalculation.calculateProductThroughput(throughputSheet);
             // ====================== End of section on throughput data ================================================
