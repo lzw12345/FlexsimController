@@ -246,8 +246,7 @@ public class ExcelListener {
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
                 + stopTime + "showprogressbar(\"\");\n"
-                // TODO: Uncomment this line to run with inputs.
-                //+ "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
+                + "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
                 + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
                 + ",\"MAIN15WriteReports(true, \\\""
                 + outputLocation + "\", " + "\\\"" + outputFile

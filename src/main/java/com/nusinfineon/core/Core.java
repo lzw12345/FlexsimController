@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import com.nusinfineon.Main;
 import com.nusinfineon.exceptions.CustomException;
 import com.pretty_tools.dde.DDEException;
+import com.pretty_tools.dde.DDEMLException;
 
 public class Core {
 
@@ -62,7 +63,7 @@ public class Core {
      * Main execute function to generate input files. run model and generate output file
      * @throws IOException, CustomException, InterruptedException, DDEException
      */
-    public void execute() throws IOException, CustomException, InterruptedException, DDEException {
+    public void execute() throws IOException, CustomException, InterruptedException, DDEException, DDEMLException {
         // Code block handling creation of excel file for min batch size iterating
         ExcelInputCore excelInputCore = new ExcelInputCore(inputLocation, lotSequencingRuleString, batchSizeMinString,
                 batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria,
@@ -81,9 +82,19 @@ public class Core {
         // Extract the array of files and sizes from ExcelInputCore
         ArrayList<File> excelInputFiles = excelInputCore.getExcelFiles();
         ArrayList<Integer> batchSizes = excelInputCore.getListOfMinBatchSizes();
-        this.excelOutputFiles = new ArrayList<File>();
+        excelOutputFiles = new ArrayList<File>();
 
-        // Running of simulation runs
+        runModel(excelInputFiles, batchSizes);
+
+        handleOutput();
+    }
+
+    /**
+     * Used to run the simulation
+     * @throws IOException
+     */
+    private void runModel(ArrayList<File> excelInputFiles, ArrayList<Integer> batchSizes)
+            throws IOException, InterruptedException, DDEException, DDEMLException {
         ExcelListener excelListener = new ExcelListener(excelInputFiles, batchSizes, flexsimLocation, modelLocation,
                 outputLocation, runSpeed, stopTime, isModelShown, excelOutputFiles);
 
@@ -94,7 +105,7 @@ public class Core {
      * Used to handle processing and analysis of output
      * @throws IOException
      */
-    public void handleOutput() throws IOException {
+    private void handleOutput() throws IOException, CustomException {
         File outputFile = new File(outputLocation);
         String outputPathName = outputFile.getParent();
         Path outputDir = Paths.get(outputPathName, OUTPUT_FOLDER_NAME);
@@ -108,11 +119,14 @@ public class Core {
             LOGGER.info("Output directory already exists");
         }
 
+        // Delete and recreate raw output folder if exists
         if (!Files.exists(rawOutputDir)) {
             Files.createDirectory(rawOutputDir);
             LOGGER.info("Raw output directory created");
         } else {
             LOGGER.info("Raw output directory already exists");
+            FileUtils.deleteDirectory(new File(rawOutputDir.toString()));
+            Files.createDirectory(rawOutputDir);
         }
 
         // Move raw output files into Raw Output folder
@@ -120,30 +134,37 @@ public class Core {
             String fileName = file.getName();
             Files.move(Paths.get(String.valueOf(file)), Paths.get(String.valueOf(rawOutputDir), fileName),
                     StandardCopyOption.REPLACE_EXISTING);
+            LOGGER.info(fileName + " moved into Raw Output folder");
         }
 
         // Output Analysis
         File folderDirectory = new File(String.valueOf(rawOutputDir));
         File destinationDirectory = new File(String.valueOf(outputDir));
 
-        /* TODO: Need to fix OutputAnalysisCore
-        // Generate output statistics for all excel files in a folder
-        appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+        if (folderDirectory.list().length > 0) {
+            // Generate output statistics for all excel files in a folder
+            OutputAnalysisCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
-        // Generate the tableau excel file from the folder of excel files (with output data appended)
-        generateExcelTableauFile(folderDirectory, destinationDirectory);
-        */
+            // Generate the tableau excel file from the folder of excel files (with output data appended)
+            OutputAnalysisCore.generateExcelTableauFile(folderDirectory, destinationDirectory);
 
-        // Copy Tableau files from resources to output folder
-        for (String name : TABLEAU_FILE_NAMES) {
-            try {
-                URL file = Main.class.getResource(TABLEAU_FILES_DIR + "/" + name);
-                File newFile = new File(destinationDirectory + "/" + name);
-                FileUtils.copyURLToFile(file, newFile);
-            } catch (IOException e) {
-                e.printStackTrace();
+            // Copy Tableau files from resources to output folder
+            for (String fileName : TABLEAU_FILE_NAMES) {
+                try {
+                    URL file = Main.class.getResource(TABLEAU_FILES_DIR + "/" + fileName);
+                    File newFile = new File(destinationDirectory + "/" + fileName);
+                    FileUtils.copyURLToFile(file, newFile);
+                    LOGGER.info(fileName + " moved into Output folder");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+        } else {
+            throw new CustomException("Raw Output Excel Files folder is empty!");
         }
+
+        // Close all open Excel files
+        Runtime.getRuntime().exec("cmd /c taskkill /f /im excel.exe");
     }
 
     /**

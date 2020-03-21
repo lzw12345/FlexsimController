@@ -477,7 +477,7 @@
                            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
                         </VBox.margin>
                      </CheckBox>
-                     <Button mnemonicParsing="false" onAction="#handleModelExecution" text="Run Model">
+                     <Button mnemonicParsing="false" onAction="#handleModelExecution" text="Run Simulation">
                         <VBox.margin>
                            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
                         </VBox.margin>

@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
 import com.pretty_tools.dde.DDEException;
+import com.pretty_tools.dde.DDEMLException;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -349,7 +350,6 @@ public class MainGui extends UiPart<Stage> {
 
     @FXML
     public void handleModelExecution() throws IOException {
-
         if (isBlankFiles()) {
             showErrorBox("File directories cannot be blank!");
         } else if (!isFoundFiles(exeLocation.getText())) {
@@ -392,14 +392,15 @@ public class MainGui extends UiPart<Stage> {
                 try {
                     saveInputDataToCore();
                     core.execute();
-                    core.handleOutput();
                     showCompletedBox();
                 } catch (IOException e) {
-                    showExceptionBox("An IO Exception has occurred.\n" + e.getMessage());
+                    showExceptionBox("An IO Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
                 } catch (CustomException e) {
-                    showExceptionBox("A Custom Exception has occurred.\n" + e.getMessage());
+                    showExceptionBox("A Custom Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                } catch (DDEMLException e) {
+                    showExceptionBox("A DDEMLException has occurred.\n" + e.getMessage() + "\nPlease try again.");
                 } catch (InterruptedException | DDEException e) {
-                    e.printStackTrace();
+                    showExceptionBox("A DDEException has occurred.\n" + e.getMessage() + "\nPlease try again.");
                 }
             }
         }
@@ -509,7 +510,9 @@ public class MainGui extends UiPart<Stage> {
         confirmationAlert.setTitle("Confirm to run simulation?");
         confirmationAlert.setHeaderText("Confirm to run simulation?");
         String alertText = "There will be " + ((batchSizeMax - batchSizeMin) / batchSizeStep + 1) + " simulation runs."
-                + "\nWarning: The more runs there are, the longer it will take until completion.";
+                + "\nWarning: The more runs there are, the longer it will take until completion."
+                + "\nPreviously generated output files in the Output folder will be replaced."
+                + "\nPlease save and close all opened files on Excel before you click OK.";
         confirmationAlert.setContentText(alertText);
 
         // Properties
