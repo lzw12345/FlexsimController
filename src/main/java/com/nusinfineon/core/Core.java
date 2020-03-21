@@ -2,15 +2,18 @@ package com.nusinfineon.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 
+import com.nusinfineon.Main;
 import com.nusinfineon.exceptions.CustomException;
 import com.pretty_tools.dde.DDEException;
 
@@ -51,6 +54,9 @@ public class Core {
     private final static String OUTPUT_FOLDER_NAME = "Output";
     private final static String RAW_OUTPUT_FOLDER_NAME = "Raw Output Excel Files";
     private final static String TABLEAU_FILES_DIR = "/output/tableau_workbooks";
+    private final static ArrayList<String> TABLEAU_FILE_NAMES = new ArrayList<>(Arrays.asList(
+            "Daily Throughput.twb", "IBIS Utilization Rates.twb", "Stay Time.twb",
+            "Throughput.twb", "Time in System.twb", "Worth.twb"));
 
     /**
      * Main execute function to generate input files. run model and generate output file
@@ -116,10 +122,9 @@ public class Core {
                     StandardCopyOption.REPLACE_EXISTING);
         }
 
-        // =============== Tests on the whole folder ===================================================================
+        // Output Analysis
         File folderDirectory = new File(String.valueOf(rawOutputDir));
         File destinationDirectory = new File(String.valueOf(outputDir));
-        File tableauSourceDirectory = new File(this.getClass().getResource(TABLEAU_FILES_DIR).getFile().substring(1));
 
         /* TODO: Need to fix OutputAnalysisCore
         // Generate output statistics for all excel files in a folder
@@ -130,10 +135,14 @@ public class Core {
         */
 
         // Copy Tableau files from resources to output folder
-        try {
-            FileUtils.copyDirectory(tableauSourceDirectory, destinationDirectory);
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (String name : TABLEAU_FILE_NAMES) {
+            try {
+                URL file = Main.class.getResource(TABLEAU_FILES_DIR + "/" + name);
+                File newFile = new File(destinationDirectory + "/" + name);
+                FileUtils.copyURLToFile(file, newFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

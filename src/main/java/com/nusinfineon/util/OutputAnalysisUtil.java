@@ -8,10 +8,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -214,9 +217,9 @@ public class OutputAnalysisUtil {
     }
 
     public static File getProductKeyCostExcelFileFromRelativeDirectory() throws IOException {
-        File productCostFile = new File(OutputAnalysisUtil.class.getResource(PRODUCT_KEY_COST_FILE).getFile().substring(1));
-        File tempOutputFile = new File(productCostFile.toString() + "temp.xlsx");
-        copyFileUsingStream(productCostFile, tempOutputFile);
+        URL productCostFile = OutputAnalysisUtil.class.getResource(PRODUCT_KEY_COST_FILE);
+        File tempOutputFile = Files.createTempFile("product_key_cost_temp", ".xlsx").toFile();
+        FileUtils.copyURLToFile(productCostFile, tempOutputFile);
         return tempOutputFile;
     }
 
