@@ -36,7 +36,7 @@ public class MainGui extends UiPart<Stage> {
     private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - MIN_ALLOWABLE_BATCH_SIZE;
     private static final int MIN_ALLOWABLE_STEP_SIZE = 1;
     private static final String FXML = "MainGui.fxml";
-    private static final String ICON_APPLICATION = "/images/infineon-technologies-squarelogo.png";
+    private static final String ICON_APPLICATION = "/images/icon_large.png";
     private static final String ABOUT_MESSAGE = "This application is an optimised interface for the IBIS Flexsim simulation model.\n"
             + "\nYou can try a range of minimum batch sizes to simulate based on the supplied input information.\n"
             + "\nYou can also choose a lot sequencing rule which sorts the supplied lots in the desired sequence, and define a few other settings, for the simulation.\n"
