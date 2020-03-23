@@ -97,8 +97,6 @@ public class Core {
             throws IOException, InterruptedException, DDEException, DDEMLException {
         ExcelListener excelListener = new ExcelListener(excelInputFiles, batchSizes, flexsimLocation, modelLocation,
                 outputLocation, runSpeed, stopTime, isModelShown, excelOutputFiles);
-
-        excelListener.getConversation().disconnect();
     }
 
     /**
@@ -162,9 +160,6 @@ public class Core {
         } else {
             throw new CustomException("Raw Output Excel Files folder is empty!");
         }
-
-        // Close all open Excel files
-        Runtime.getRuntime().exec("cmd /c taskkill /f /im excel.exe");
     }
 
     /**

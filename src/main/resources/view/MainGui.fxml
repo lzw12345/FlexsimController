@@ -32,7 +32,7 @@
             <center>
                <TabPane BorderPane.alignment="CENTER">
                   <tabs>
-                     <Tab closable="false" text="Simulation">
+                     <Tab closable="false" text="Simulation Settings">
                         <content>
                            <VBox prefHeight="200.0" prefWidth="100.0">
                               <children>
@@ -82,7 +82,7 @@
                                  </GridPane>
                                  <VBox>
                                     <children>
-                                       <Label text="BIB Batch Size for Runs">
+                                       <Label text="BIB Batch Size">
                                           <VBox.margin>
                                              <Insets left="20.0" top="10.0" />
                                           </VBox.margin>
@@ -90,7 +90,7 @@
                                              <Font name="System Bold" size="16.0" />
                                           </font>
                                        </Label>
-                                       <Label text="Choose the range of minimum BIB batch size that is allowed per run. Maximum BIB batch size for every run is fixed at 24.">
+                                       <Label text="Choose the allowable minimum BIB batch size to try for each run. A range can be run incrementally based on the step size.  Maximum BIB batch size for every run is fixed at 24.">
                                           <VBox.margin>
                                              <Insets left="20.0" />
                                           </VBox.margin>
@@ -115,7 +115,7 @@
                                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                           </padding>
                                           <tooltip>
-                                             <Tooltip text="Smallest batch size to run" />
+                                             <Tooltip text="Lower bound to run" />
                                           </tooltip>
                                        </Label>
                                        <Spinner fx:id="batchSizeMin" GridPane.columnIndex="1">
@@ -128,7 +128,7 @@
                                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                           </padding>
                                           <tooltip>
-                                             <Tooltip text="Largest batch size to run" />
+                                             <Tooltip text="Upper bound to run" />
                                           </tooltip>
                                        </Label>
                                        <Spinner fx:id="batchSizeMax" GridPane.columnIndex="3">
@@ -141,7 +141,7 @@
                                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                           </padding>
                                           <tooltip>
-                                             <Tooltip text="Batch size after each step will be run until stated max" />
+                                             <Tooltip text="Min. batch size after each step will be run" />
                                           </tooltip>
                                        </Label>
                                        <Spinner fx:id="batchSizeStep" GridPane.columnIndex="5">
@@ -156,7 +156,7 @@
                                  </GridPane>
                                  <VBox>
                                     <children>
-                                       <Label text="Additional Parameters">
+                                       <Label text="Additional Settings">
                                           <VBox.margin>
                                              <Insets left="20.0" top="10.0" />
                                           </VBox.margin>
@@ -297,6 +297,11 @@
                                              <Font name="System Bold" size="16.0" />
                                           </font>
                                        </Label>
+                                       <Label text="Define the parameters for each simulation run. The higher the stop time, the greater the time frame for simulation. Note that total real time required is dependent on system performance.">
+                                          <VBox.margin>
+                                             <Insets left="20.0" />
+                                          </VBox.margin>
+                                       </Label>
                                     </children>
                                  </VBox>
                                  <GridPane>
@@ -357,6 +362,11 @@
                                           <font>
                                              <Font name="System Bold" size="16.0" />
                                           </font>
+                                       </Label>
+                                       <Label text="File locations are required for the simulation model to run. For Output Excel, simply create a new empty Excel file in the desired location for the simulation output to be generated.">
+                                          <VBox.margin>
+                                             <Insets left="20.0" />
+                                          </VBox.margin>
                                        </Label>
                                     </children>
                                  </VBox>
@@ -463,7 +473,7 @@
                    </Menu>
                    <Menu mnemonicParsing="false" text="Help">
                      <items>
-                       <MenuItem mnemonicParsing="false" text="About" />
+                       <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="About" />
                      </items>
                    </Menu>
                  </menus>
@@ -486,6 +496,9 @@
                         </padding>
                      </Button>
                   </children>
+                  <padding>
+                     <Insets top="10.0" />
+                  </padding>
                </VBox>
             </bottom></BorderPane>
       </Scene>

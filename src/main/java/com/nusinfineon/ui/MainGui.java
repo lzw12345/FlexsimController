@@ -9,25 +9,20 @@ import com.pretty_tools.dde.DDEException;
 import com.pretty_tools.dde.DDEMLException;
 
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -42,6 +37,10 @@ public class MainGui extends UiPart<Stage> {
     private static final int MIN_ALLOWABLE_STEP_SIZE = 1;
     private static final String FXML = "MainGui.fxml";
     private static final String ICON_APPLICATION = "/images/infineon-technologies-squarelogo.png";
+    private static final String ABOUT_MESSAGE = "This application is an optimised interface for the IBIS Flexsim simulation model.\n"
+            + "\nYou can try a range of minimum batch sizes to simulate based on the supplied input information.\n"
+            + "\nYou can also choose a lot sequencing rule which sorts the supplied lots in the desired sequence, and define a few other settings, for the simulation.\n"
+            + "\nEnsure all fields are filled in correctly before running the simulation!\n";
 
     private Stage primaryStage;
     private Core core;
@@ -507,7 +506,7 @@ public class MainGui extends UiPart<Stage> {
         Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
 
         // Text
-        confirmationAlert.setTitle("Confirm to run simulation?");
+        confirmationAlert.setTitle("Confirm Simulation");
         confirmationAlert.setHeaderText("Confirm to run simulation?");
         String alertText = "There will be " + ((batchSizeMax - batchSizeMin) / batchSizeStep + 1) + " simulation runs."
                 + "\nWarning: The more runs there are, the longer it will take until completion."
@@ -537,7 +536,7 @@ public class MainGui extends UiPart<Stage> {
         Alert errorAlert = new Alert(Alert.AlertType.ERROR);
 
         // Text
-        errorAlert.setTitle("Exception Error!");
+        errorAlert.setTitle("Exception Error");
         errorAlert.setHeaderText(null);
         errorAlert.setContentText(alertText);
 
@@ -557,8 +556,8 @@ public class MainGui extends UiPart<Stage> {
         Alert completeAlert = new Alert(Alert.AlertType.INFORMATION);
 
         // Text
-        completeAlert.setTitle("Simulation completed!");
-        completeAlert.setHeaderText("Simulation completed!");
+        completeAlert.setTitle("Simulation Complete");
+        completeAlert.setHeaderText("Simulation has completed!");
         String alertText = "You may run another simulation again or close the program.";
         completeAlert.setContentText(alertText);
 
@@ -721,73 +720,26 @@ public class MainGui extends UiPart<Stage> {
         return primaryStage;
     }
 
-    /* TODO: to be added
-    private void setAccelerators() {
-        setAccelerator(helpMenuItem, KeyCombination.valueOf("F1"));
+    /**
+     * Show About box.
+     */
+    @FXML
+    private void handleAbout() {
+        Alert aboutAlert = new Alert(Alert.AlertType.INFORMATION);
+
+        // Text
+        aboutAlert.setTitle("About IBIS Simulation");
+        aboutAlert.setHeaderText(null);
+        aboutAlert.setContentText(ABOUT_MESSAGE);
+
+        // Properties
+        aboutAlert.setResizable(true);
+        aboutAlert.getDialogPane().setPrefSize(480, 280);
+        Stage stage = (Stage) aboutAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        aboutAlert.showAndWait();
     }
-    */
-
-    /**
-     * Sets the accelerator of a MenuItem.
-     * @param keyCombination the KeyCombination value of the accelerator
-     */
-    private void setAccelerator(MenuItem menuItem, KeyCombination keyCombination) {
-        menuItem.setAccelerator(keyCombination);
-
-        /*
-         * TODO: the code below can be removed once the bug reported here
-         * https://bugs.openjdk.java.net/browse/JDK-8131666
-         * is fixed in later version of SDK.
-         *
-         * According to the bug report, TextInputControl (TextField, TextArea) will
-         * consume function-key events. Because CommandBox contains a TextField, and
-         * ResultDisplay contains a TextArea, thus some accelerators (e.g F1) will
-         * not work when the focus is in them because the key event is consumed by
-         * the TextInputControl(s).
-         *
-         * For now, we add following event filter to capture such key events and open
-         * help window purposely so to support accelerators even when focus is
-         * in CommandBox or ResultDisplay.
-         */
-        getRoot().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getTarget() instanceof TextInputControl && keyCombination.match(event)) {
-                menuItem.getOnAction().handle(new ActionEvent());
-                event.consume();
-            }
-        });
-    }
-
-    /**
-     * Fills up all the placeholders of this window.
-     * to be completed
-     */
-/*    void fillInnerParts() {
-        flashcardListPanel = new FlashcardListPanel(logic.getFilteredFlashcardList());
-        flashcardListPanelPlaceholder.getChildren().add(flashcardListPanel.getRoot());
-
-        resultDisplay = new ResultDisplay();
-        resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
-
-        flashcardDisplay = new FlashcardDisplay();
-        flashcardDisplayPlaceholder.getChildren().add(flashcardDisplay.getRoot());
-
-        CommandBox commandBox = new CommandBox(this::executeCommand);
-        commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
-        StatusBarFooter statusBarFooter = new StatusBarFooter(logic.getFlashcardListFilePath());
-        statusbarPlaceholder.getChildren().add(statusBarFooter.getRoot());
-    }*/
-
-    /**
-     * Sets the default size based on {@code guiSettings}. to be added
-     */
-/*    private void setWindowDefaultSize(GuiSettings guiSettings) {
-        primaryStage.setHeight(guiSettings.getWindowHeight());
-        primaryStage.setWidth(guiSettings.getWindowWidth());
-        if (guiSettings.getWindowCoordinates() != null) {
-            primaryStage.setX(guiSettings.getWindowCoordinates().getX());
-            primaryStage.setY(guiSettings.getWindowCoordinates().getY());
-        }
-    }*/
 
     /**
      * Resets input fields to default.
