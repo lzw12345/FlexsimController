@@ -52,12 +52,11 @@ dependencies {
 }
 
 launch4j {
-    outfile = 'TestMain.exe'
+    outfile = 'IBIS_Simulation.exe'
     mainClassName = project.mainClassName
     copyConfigurable = project.tasks.shadowJar.outputs.files
     jar =  "..\\libs\\FlexsimController-0.1.0.jar"
     bundledJrePath = '..\\runtime'
-
     //dontWrapJar="true"
     icon = "${projectDir}/src/main/resources/images/icon.ico"
 }

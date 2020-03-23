@@ -5,8 +5,6 @@ import java.io.IOException;
 
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
-import com.pretty_tools.dde.DDEException;
-import com.pretty_tools.dde.DDEMLException;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -390,16 +388,14 @@ public class MainGui extends UiPart<Stage> {
                     batchSizeStep.getValueFactory().getValue())) {
                 try {
                     saveInputDataToCore();
-                    core.execute();
+                    execute();
                     showCompletedBox();
                 } catch (IOException e) {
                     showExceptionBox("An IO Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
                 } catch (CustomException e) {
                     showExceptionBox("A Custom Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
-                } catch (DDEMLException e) {
-                    showExceptionBox("A DDEMLException has occurred.\n" + e.getMessage() + "\nPlease try again.");
-                } catch (InterruptedException | DDEException e) {
-                    showExceptionBox("A DDEException has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                } catch (InterruptedException e) {
+                    showExceptionBox("A Interrupted Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
                 }
             }
         }
@@ -419,6 +415,28 @@ public class MainGui extends UiPart<Stage> {
                 getSelectedLotSelectionCriteria(lotSelectionCriteria),
                 getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
                 getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
+    }
+
+    /**
+     * Saves input data to core.
+     */
+    private void execute() throws IOException, CustomException, InterruptedException {
+        Alert waitAlert = new Alert(Alert.AlertType.NONE);
+
+        // Text
+        waitAlert.setTitle("Simulation running...");
+        String alertText = "Please wait for the simulation to complete...";
+        waitAlert.setContentText(alertText);
+
+        // Properties
+        waitAlert.setResizable(true);
+        waitAlert.getDialogPane().setPrefSize(480, 60);
+        Stage stage = (Stage) waitAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        waitAlert.show();
+        core.execute();
+        stage.close();
     }
 
     /** Get the selected radio button for Resource Select Criteria from user input
@@ -508,7 +526,7 @@ public class MainGui extends UiPart<Stage> {
         // Text
         confirmationAlert.setTitle("Confirm Simulation");
         confirmationAlert.setHeaderText("Confirm to run simulation?");
-        String alertText = "There will be " + ((batchSizeMax - batchSizeMin) / batchSizeStep + 1) + " simulation runs."
+        String alertText = "There will be " + ((batchSizeMax - batchSizeMin) / batchSizeStep + 1) + " simulation run(s)."
                 + "\nWarning: The more runs there are, the longer it will take until completion."
                 + "\nPreviously generated output files in the Output folder will be replaced."
                 + "\nPlease save and close all opened files on Excel before you click OK.";

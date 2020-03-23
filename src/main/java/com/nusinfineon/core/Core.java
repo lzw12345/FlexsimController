@@ -15,8 +15,6 @@ import org.apache.commons.io.FileUtils;
 
 import com.nusinfineon.Main;
 import com.nusinfineon.exceptions.CustomException;
-import com.pretty_tools.dde.DDEException;
-import com.pretty_tools.dde.DDEMLException;
 
 public class Core {
 
@@ -63,11 +61,15 @@ public class Core {
      * Main execute function to generate input files. run model and generate output file
      * @throws IOException, CustomException, InterruptedException, DDEException
      */
-    public void execute() throws IOException, CustomException, InterruptedException, DDEException, DDEMLException {
+    public void execute() throws IOException, CustomException, InterruptedException {
         // Code block handling creation of excel file for min batch size iterating
         ExcelInputCore excelInputCore = new ExcelInputCore(inputLocation, lotSequencingRuleString, batchSizeMinString,
                 batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria,
                 trolleyLocationSelectCriteria, bibLoadOnLotCriteria);
+
+        // Initialise listener for running of simulation
+        ExcelListener excelListener = new ExcelListener(flexsimLocation, modelLocation, outputLocation,
+                runSpeed, stopTime, isModelShown);
 
         try {
             excelInputCore.execute();
@@ -82,21 +84,13 @@ public class Core {
         // Extract the array of files and sizes from ExcelInputCore
         ArrayList<File> excelInputFiles = excelInputCore.getExcelFiles();
         ArrayList<Integer> batchSizes = excelInputCore.getListOfMinBatchSizes();
-        excelOutputFiles = new ArrayList<File>();
+        excelOutputFiles = new ArrayList<>();
 
-        runModel(excelInputFiles, batchSizes);
+        excelListener.executeRuns(excelInputFiles, batchSizes, lotSequencingRuleString, excelOutputFiles);
 
         handleOutput();
-    }
 
-    /**
-     * Used to run the simulation
-     * @throws IOException
-     */
-    private void runModel(ArrayList<File> excelInputFiles, ArrayList<Integer> batchSizes)
-            throws IOException, InterruptedException, DDEException, DDEMLException {
-        ExcelListener excelListener = new ExcelListener(excelInputFiles, batchSizes, flexsimLocation, modelLocation,
-                outputLocation, runSpeed, stopTime, isModelShown, excelOutputFiles);
+        Runtime.getRuntime().exec("cmd /c taskkill /f /im excel.exe");
     }
 
     /**
