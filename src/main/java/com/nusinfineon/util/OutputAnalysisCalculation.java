@@ -229,8 +229,10 @@ public class OutputAnalysisCalculation {
             // Declare column name required
             final String cycleTimeColumnName = "StayTime Average (hr)";
             final String productColumnName = "Product";
+            final String periodColumnName = "Period";
             int cycleTimeIndex = -1;
             int prooductIndex = -1;
+            int periodIndex = -1;
 
             // Get index which the column belongs to
             Row headerRow = cycleTimeSheet.getRow(0);
@@ -244,6 +246,8 @@ public class OutputAnalysisCalculation {
                             break;
                         case productColumnName:
                             prooductIndex = cellIndex;
+                        case periodColumnName:
+                            periodIndex = cellIndex;
                         default:
                             break;
                     } // End of switch case block
@@ -258,27 +262,36 @@ public class OutputAnalysisCalculation {
             for (int rowIndex = 1; rowIndex < cycleTimeSheet.getPhysicalNumberOfRows(); rowIndex++) {
                 Row currentRow = cycleTimeSheet.getRow(rowIndex);
 
-                // Obtain number of counts for each product ID. End goal is to get the total for each product and get average CT for each product.
-                if (currentRow.getCell(prooductIndex) != null) {
-                    String productID = currentRow.getCell(prooductIndex).getStringCellValue();
-                    if (productIDCounts.containsKey(productID)) {
-                        Integer currentCount = productIDCounts.get(productID);
-                        productIDCounts.put(productID, currentCount + 1);
-                    } else {
-                        productIDCounts.put(productID, 1);
-                    }
-                }
+                Cell periodCell = currentRow.getCell(periodIndex);
+                Double period = periodCell.getNumericCellValue();
 
-                // Obtain the cumulative total for each product ID
-                if (currentRow.getCell(cycleTimeIndex) != null) {
-                    String productID = currentRow.getCell(prooductIndex).getStringCellValue();
-                    Double productCycleTimeAverage = currentRow.getCell(cycleTimeIndex).getNumericCellValue();
-                    if (productIDTotalCycleTime.containsKey(productID)) {
-                        Double currentTotal = productIDTotalCycleTime.get(productID);
-                        productIDTotalCycleTime.put(productID, currentTotal + productCycleTimeAverage);
-                    } else {
-                        productIDTotalCycleTime.put(productID, productCycleTimeAverage);
+                // Skip rows with period 0
+                if (period > 0) {
+
+                    // Obtain number of counts for each product ID. End goal is to get the total for each product and get average CT for each product.
+                    if (currentRow.getCell(prooductIndex) != null) {
+
+                        String productID = currentRow.getCell(prooductIndex).getStringCellValue();
+                        if (productIDCounts.containsKey(productID)) {
+                            Integer currentCount = productIDCounts.get(productID);
+                            productIDCounts.put(productID, currentCount + 1);
+                        } else {
+                            productIDCounts.put(productID, 1);
+                        }
                     }
+
+                    // Obtain the cumulative total for each product ID
+                    if (currentRow.getCell(cycleTimeIndex) != null) {
+                        String productID = currentRow.getCell(prooductIndex).getStringCellValue();
+                        Double productCycleTimeAverage = currentRow.getCell(cycleTimeIndex).getNumericCellValue();
+                        if (productIDTotalCycleTime.containsKey(productID)) {
+                            Double currentTotal = productIDTotalCycleTime.get(productID);
+                            productIDTotalCycleTime.put(productID, currentTotal + productCycleTimeAverage);
+                        } else {
+                            productIDTotalCycleTime.put(productID, productCycleTimeAverage);
+                        }
+                    }
+
                 }
 
             } // End of for loop
