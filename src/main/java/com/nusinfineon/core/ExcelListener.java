@@ -1,11 +1,11 @@
 package com.nusinfineon.core;
 
-import static com.nusinfineon.util.FlexScriptDefaultCodes.GETPROCESSTIMECODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN15CODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.ONRUNSTOPCODE;
-import static org.apache.commons.io.FilenameUtils.getBaseName;
-import static org.apache.commons.io.FilenameUtils.getExtension;
-import static org.apache.commons.io.FilenameUtils.getFullPath;
+import com.pretty_tools.dde.DDEException;
+import com.pretty_tools.dde.DDEMLException;
+import com.pretty_tools.dde.client.DDEClientConversation;
+import com.pretty_tools.dde.client.DDEClientEventListener;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.awt.*;
 import java.io.File;
@@ -16,13 +16,12 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import com.pretty_tools.dde.DDEException;
-import com.pretty_tools.dde.DDEMLException;
-import com.pretty_tools.dde.client.DDEClientConversation;
-import com.pretty_tools.dde.client.DDEClientEventListener;
+import static com.nusinfineon.util.FlexScriptDefaultCodes.GETPROCESSTIMECODE;
+import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN15CODE;
+import static com.nusinfineon.util.FlexScriptDefaultCodes.ONRUNSTOPCODE;
+import static org.apache.commons.io.FilenameUtils.getBaseName;
+import static org.apache.commons.io.FilenameUtils.getExtension;
+import static org.apache.commons.io.FilenameUtils.getFullPath;
 
 /**
  * Class to generate an excel listener using DDE
@@ -97,14 +96,14 @@ public class ExcelListener {
                     } else {
                         System.out.println("onItemChanged(" + topic + "," + item + "," + data.trim() + " i = " + currentRunNum + ")");
                         if (data.trim().equals("finished")) {
-                            runModel();
+                            runModel(currentRunNum == batchSizes.size()-1);
                         }
                     }
                     currentRunNum++;
                 }
             });
 
-            runModel();
+            runModel(currentRunNum == batchSizes.size()-1);
             currentRunNum++;
 
             Desktop.getDesktop().open(statusFile);
@@ -115,6 +114,8 @@ public class ExcelListener {
 
                 fileIsNotLocked = statusFile.renameTo(statusFile);
             }
+
+            TimeUnit.SECONDS.sleep(5);
 
             System.out.println("Connecting...");
             conversation.connect("Excel", DEFAULT_STATUS_SHEET);
@@ -166,14 +167,14 @@ public class ExcelListener {
                     } else {
                         System.out.println("onItemChanged(" + topic + "," + item + "," + data.trim() + " i = " + currentRunNum + ")");
                         if (data.trim().equals("finished")) {
-                            runModel();
+                            runModel(currentRunNum == batchSizes.size()-1);
                             currentRunNum++;
                         }
                     }
                 }
             });
 
-            runModel();
+            runModel(currentRunNum == batchSizes.size());
             currentRunNum++;
 
             Desktop.getDesktop().open(statusFile);
@@ -205,6 +206,10 @@ public class ExcelListener {
         }
     }
 
+    private void connect(){
+
+    }
+
     /**
      * Terminates runs
      * @throws DDEException
@@ -217,7 +222,7 @@ public class ExcelListener {
     /**
      * Main code the runs the program
      */
-    public void runModel() {
+    public void runModel (boolean isLastRun){
         System.out.println("Batch size: " + batchSizes.get(currentRunNum) + ". File path: " + excelInputFiles.get(currentRunNum).toString());
         String tempInputFile = excelInputFiles.get(currentRunNum).toString();
         inputFile = '"' + getBaseName(tempInputFile) + "." + getExtension(tempInputFile);
@@ -227,7 +232,7 @@ public class ExcelListener {
         //generate status file and make sure its open
 
         try {
-            scriptCreator();
+            scriptCreator(isLastRun);
             Runtime.getRuntime().exec(commandLineGenerator(isModelShown));
         } catch (IOException e) {
             e.printStackTrace();
@@ -239,7 +244,7 @@ public class ExcelListener {
      *
      * @throws IOException
      */
-    public void scriptCreator() throws IOException {
+    public void scriptCreator(boolean isLastRun) throws IOException {
         String statusFilepath = statusFile.getAbsolutePath().replace("\\" , "\\\\\\\\");
         scriptFile = new File(scriptFilepath);
         scriptFile.createNewFile();
@@ -250,9 +255,12 @@ public class ExcelListener {
                 + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
                 + ",\"MAIN15WriteReports(true, \\\""
                 + outputLocation + "\", " + "\\\"" + outputFile
-                + "\\\" , \\\"" + excelOutputFileName + "\\\");\\n hideprogressbar();\\n\\texcelopen(\\\""
+                + "\\\" , \\\"" + excelOutputFileName + "\\\");"
+                + "\\n hideprogressbar();\\n\\texcelopen(\\\""
                 + statusFilepath
-                + "\\\");\\n\\texcelsetsheet(\\\"sheet1\\\");\\n\\texcelwritestr(1,1,\\\"finished\\\");\\ncmdexit ();\\n}\")")
+                + "\\\");\\n\\tmaintenance(1000, 1);\\n\\texcelsetsheet(\\\"#()STATUS#()#\\\");\\n\\texcelwritestr(1,1,\\\"finished\\\");"
+                +  (isLastRun ? "\\nexcelclose(0);" : "")
+                +"\\ncmdexit ();\\n}\")")
                 + editNodeCode("ProcessTime", "MODEL:/Tools/UserCommands/ProcessTimeGetTotal/code", GETPROCESSTIMECODE)
                 + editNodeCode("MAIN15", "MODEL://Tools/UserCommands//MAIN15WriteReports//code", MAIN15CODE)
                 + "MAINBuldAndRun ();\nresetmodel();\ngo();");
@@ -260,7 +268,7 @@ public class ExcelListener {
     }
 
     public File generateExcelStatusFile(String outputLocation) throws IOException {
-        File excel = new File(outputLocation + "FlexsimControllerStatus.xlsx");
+        File excel = new File("./FlexsimControllerStatus.xlsx");
 
         if(excel.createNewFile()) {
             Workbook wb = new XSSFWorkbook();
