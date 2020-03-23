@@ -55,8 +55,10 @@ launch4j {
     outfile = 'TestMain.exe'
     mainClassName = project.mainClassName
     copyConfigurable = project.tasks.shadowJar.outputs.files
-    jar = "C:\\Users\\lingz\\Documents\\FlexsimController\\build\\Flexsim Controller-0.1.0.jar"
-    bundledJrePath= '../runtime'
+    jar =  "..\\lib\\FlexsimController-0.1.0.jar"
+    bundledJrePath = '..\\runtime'
+
+    //dontWrapJar="true"
     //icon = "${projectDir}/icons/myApp.ico"
 }
 
@@ -65,7 +67,7 @@ checkstyle {
 }
 
 shadowJar {
-    archiveBaseName = "IBIS_Simulation"
+    archiveBaseName = "FlexsimController"
     archiveVersion = "0.1.0"
     archiveClassifier = null
     archiveAppendix = null
