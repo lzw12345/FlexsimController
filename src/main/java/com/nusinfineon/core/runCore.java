@@ -1,28 +1,19 @@
 package com.nusinfineon.core;
 
+import com.pretty_tools.dde.DDEException;
+import com.pretty_tools.dde.client.DDEClientConversation;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import static com.nusinfineon.util.FlexScriptDefaultCodes.GETPROCESSTIMECODE;
 import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN15CODE;
 import static com.nusinfineon.util.FlexScriptDefaultCodes.ONRUNSTOPCODE;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
-
-import java.awt.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import com.pretty_tools.dde.DDEException;
-import com.pretty_tools.dde.DDEMLException;
-import com.pretty_tools.dde.client.DDEClientConversation;
-import com.pretty_tools.dde.client.DDEClientEventListener;
 
 /**
  * Class to generate an excel listener using DDE
@@ -80,17 +71,15 @@ public class runCore {
         while (currentRunNum <= batchSizes.size()-1) {
             runModel(currentRunNum == batchSizes.size() - 1);
             Server server = new Server(1880);
+            excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
             currentRunNum++;
-
         }
-    }
+        int i = 1;
+        for (File iter : excelOutputFiles) {
+            System.out.println("output file "+  i + ": " + iter.toString());
+            i++;
+        }
 
-    /**
-     * Terminates runs
-     * @throws DDEException
-     */
-    public void endRuns() throws DDEException {
-        System.out.println("Runs terminated!");
     }
 
     /**
@@ -123,9 +112,9 @@ public class runCore {
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
                 + stopTime
-                + "excellaunch();"
                 // TODO: Uncomment:
                 //+ "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
+                + "excellaunch();"
                 + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
                 + ",\"MAIN15WriteReports(true, \\\""
                 + outputLocation + "\", " + "\\\"" + outputFile

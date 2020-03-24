@@ -29,7 +29,7 @@ public class Server
             // close connection
             socket.close();
             server.close();
-            TimeUnit.SECONDS.sleep(10);
+            TimeUnit.SECONDS.sleep(5);
         }
         catch(IOException | InterruptedException i)
         {
