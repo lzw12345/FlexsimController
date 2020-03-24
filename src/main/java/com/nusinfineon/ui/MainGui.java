@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
+import com.pretty_tools.dde.DDEException;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -396,6 +397,8 @@ public class MainGui extends UiPart<Stage> {
                     showExceptionBox("A Custom Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
                 } catch (InterruptedException e) {
                     showExceptionBox("A Interrupted Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                } catch (DDEException e) {
+                    showExceptionBox("A DDEException has occurred.\n" + e.getMessage() + "\nPlease try again.");
                 }
             }
         }
@@ -420,7 +423,7 @@ public class MainGui extends UiPart<Stage> {
     /**
      * Saves input data to core.
      */
-    private void execute() throws IOException, CustomException, InterruptedException {
+    private void execute() throws IOException, CustomException, InterruptedException, DDEException {
         Alert waitAlert = new Alert(Alert.AlertType.NONE);
 
         // Text

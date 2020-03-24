@@ -132,7 +132,7 @@ public class ExcelListener {
      * @throws DDEException
      */
     public void executeRuns(ArrayList<File> excelInputFiles, ArrayList<Integer> batchSizes, String lotSequencingRule,
-                            ArrayList<File> excelOutputFiles) throws InterruptedException {
+                            ArrayList<File> excelOutputFiles) throws InterruptedException, DDEException {
         this.excelOutputFiles = excelOutputFiles;
         this.excelInputFiles = excelInputFiles;
         this.batchSizes = batchSizes;
@@ -145,6 +145,8 @@ public class ExcelListener {
         while (currentRunNum <= batchSizes.size()){
             TimeUnit.SECONDS.sleep(1);
         }
+
+        conversation.disconnect();
     }
 
     /**
@@ -153,7 +155,6 @@ public class ExcelListener {
      */
     public void endRuns() throws DDEException {
         System.out.println("Runs terminated!");
-        conversation.disconnect();
     }
 
     /**
@@ -187,7 +188,8 @@ public class ExcelListener {
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
                 + stopTime + "showprogressbar(\"\");\n"
-                + "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
+                // TODO: Uncomment:
+                //+ "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
                 + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
                 + ",\"MAIN15WriteReports(true, \\\""
                 + outputLocation + "\", " + "\\\"" + outputFile
