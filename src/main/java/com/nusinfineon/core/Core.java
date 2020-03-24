@@ -64,12 +64,15 @@ public class Core {
      */
     public void execute() throws IOException, CustomException, InterruptedException, DDEException {
         // Code block handling creation of excel file for min batch size iterating
+
+
+
         ExcelInputCore excelInputCore = new ExcelInputCore(inputLocation, lotSequencingRuleString, batchSizeMinString,
                 batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria,
                 trolleyLocationSelectCriteria, bibLoadOnLotCriteria);
 
         // Initialise listener for running of simulation
-        ExcelListener excelListener = new ExcelListener(flexsimLocation, modelLocation, outputLocation,
+        runCore runCore = new runCore(flexsimLocation, modelLocation, outputLocation,
                 runSpeed, stopTime, isModelShown);
 
         try {
@@ -87,7 +90,11 @@ public class Core {
         ArrayList<Integer> batchSizes = excelInputCore.getListOfMinBatchSizes();
         excelOutputFiles = new ArrayList<>();
 
-        excelListener.executeRuns(excelInputFiles, batchSizes, lotSequencingRuleString, excelOutputFiles);
+
+
+
+
+        runCore.executeRuns(excelInputFiles, batchSizes, lotSequencingRuleString, excelOutputFiles);
 
         handleOutput();
 
