@@ -1,10 +1,13 @@
 package com.nusinfineon.ui;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
+import com.nusinfineon.storage.JsonParser;
 import com.pretty_tools.dde.DDEException;
 
 import javafx.collections.FXCollections;
@@ -40,9 +43,11 @@ public class MainGui extends UiPart<Stage> {
             + "\nYou can try a range of minimum batch sizes to simulate based on the supplied input information.\n"
             + "\nYou can also choose a lot sequencing rule which sorts the supplied lots in the desired sequence, and define a few other settings, for the simulation.\n"
             + "\nEnsure all fields are filled in correctly before running the simulation!\n";
+    private static final String SAVE_FILE = "saveFile.txt";
 
     private Stage primaryStage;
     private Core core;
+    private JsonParser jsonParser;
 
     @FXML
     private HBox exeDragTarget;
@@ -104,12 +109,13 @@ public class MainGui extends UiPart<Stage> {
     private ToggleGroup trolleyLocationSelectCriteria;
     private ToggleGroup bibLoadOnLotCriteria;
 
-    public MainGui(Stage primaryStage, Core core) {
+    public MainGui(Stage primaryStage, Core core, JsonParser jsonParser) {
         super(FXML, primaryStage);
 
         // Set dependencies
         this.primaryStage = primaryStage;
         this.core = core;
+        this.jsonParser = jsonParser;
 
         configureUi();
     }
@@ -737,8 +743,59 @@ public class MainGui extends UiPart<Stage> {
         }
     }
 
-    public Stage getPrimaryStage() {
-        return primaryStage;
+    /**
+     * Helper function to raise alert box with a supplied alert text for save confirmation.
+     * @return true when user clicks OK to confirm
+     */
+    private boolean confirmSave() {
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+
+        // Text
+        confirmationAlert.setTitle("Confirm Save");
+        confirmationAlert.setHeaderText("Confirm to save input data?");
+        String alertText = "The input data will be saved as " + SAVE_FILE + " in the folder of IBIS_Simulation.exe.";
+        confirmationAlert.setContentText(alertText);
+
+        // Properties
+        confirmationAlert.setResizable(true);
+        confirmationAlert.getDialogPane().setPrefSize(480, 240);
+        Stage stage = (Stage) confirmationAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        confirmationAlert.showAndWait();
+        if (confirmationAlert.getResult() == ButtonType.OK) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Helper function to raise alert box with a supplied alert text for load confirmation.
+     * @return true when user clicks OK to confirm
+     */
+    private boolean confirmLoad() {
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+
+        // Text
+        confirmationAlert.setTitle("Confirm Load");
+        confirmationAlert.setHeaderText("Confirm to load saved input data?");
+        String alertText = "The input data will be loaded from " + SAVE_FILE + " in the folder of IBIS_Simulation.exe."
+                + "\nPlease use a save file saved from the program.";
+        confirmationAlert.setContentText(alertText);
+
+        // Properties
+        confirmationAlert.setResizable(true);
+        confirmationAlert.getDialogPane().setPrefSize(480, 240);
+        Stage stage = (Stage) confirmationAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        confirmationAlert.showAndWait();
+        if (confirmationAlert.getResult() == ButtonType.OK) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -771,8 +828,32 @@ public class MainGui extends UiPart<Stage> {
         configureUi();
     }
 
-    void show() {
-        primaryStage.show();
+    /**
+     * Saves the current input
+     */
+    @FXML
+    private void handleSave() throws IOException {
+        if (confirmSave()) {
+            saveInputDataToCore();
+            jsonParser.storeData(core);
+        }
+    }
+
+    /**
+     * Saves the current input
+     */
+    @FXML
+    private void handleLoad() throws IOException {
+        if (confirmLoad()) {
+            try {
+                core = jsonParser.loadData();
+                configureUi();
+            } catch (UnrecognizedPropertyException e) {
+                showErrorBox(SAVE_FILE + " is of the wrong format!\nPlease place a previously saved data into the IBIS_Simulation.exe folder.");
+            } catch (FileNotFoundException e) {
+                showErrorBox(SAVE_FILE + " cannot be found!\nPlease place a previously saved data into the IBIS_Simulation.exe folder.");
+            }
+        }
     }
 
     /**
@@ -782,5 +863,13 @@ public class MainGui extends UiPart<Stage> {
     private void handleExit() {
         saveInputDataToCore();
         primaryStage.hide();
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
+    void show() {
+        primaryStage.show();
     }
 }

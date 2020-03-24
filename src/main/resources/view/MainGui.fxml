@@ -471,6 +471,8 @@
                  <menus>
                    <Menu mnemonicParsing="false" text="Options">
                      <items>
+                           <MenuItem mnemonicParsing="false" onAction="#handleSave" text="Save Input" />
+                           <MenuItem mnemonicParsing="false" onAction="#handleLoad" text="Load Input" />
                        <MenuItem mnemonicParsing="false" onAction="#handleDefault" text="Reset to Default" />
                        <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Close" />
                      </items>

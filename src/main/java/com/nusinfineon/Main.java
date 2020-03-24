@@ -18,7 +18,7 @@ public class Main extends Application {
     public Main() throws IOException {
         jsonParser = new JsonParser();
         core = jsonParser.loadData();
-        ui = new UiManager(core);
+        ui = new UiManager(core, jsonParser);
     }
 
     @Override

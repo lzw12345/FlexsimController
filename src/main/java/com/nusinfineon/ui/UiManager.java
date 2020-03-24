@@ -2,6 +2,7 @@ package com.nusinfineon.ui;
 
 import com.nusinfineon.Main;
 import com.nusinfineon.core.Core;
+import com.nusinfineon.storage.JsonParser;
 
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -16,12 +17,13 @@ public class UiManager implements Ui {
     public static final String ALERT_DIALOG_PANE_FIELD_ID = "alertDialogPane";
     private static final String ICON_APPLICATION = "/images/icon_large.png";
     private Core core;
-
+    private JsonParser jsonParser;
     private MainGui mainGui;
 
-    public UiManager(Core core) {
+    public UiManager(Core core, JsonParser jsonParser) {
         super();
         this.core = core;
+        this.jsonParser = jsonParser;
     }
 
     @Override
@@ -30,9 +32,8 @@ public class UiManager implements Ui {
         primaryStage.getIcons().add(getImage(ICON_APPLICATION));
 
         try {
-            mainGui = new MainGui(primaryStage, core/*, logic*/);
+            mainGui = new MainGui(primaryStage, core, jsonParser);
             mainGui.show(); //This should be called before creating other UI parts
-
         } catch (Throwable e) {
             showFatalErrorDialogAndShutdown("Fatal error during initializing", e);
         }
@@ -53,7 +54,6 @@ public class UiManager implements Ui {
     private static void showAlertDialogAndWait(Stage owner, Alert.AlertType type, String title, String headerText,
                                                String contentText) {
         final Alert alert = new Alert(type);
-        alert.getDialogPane().getStylesheets().add("view/DarkTheme.css");
         alert.initOwner(owner);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
