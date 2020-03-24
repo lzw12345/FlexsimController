@@ -1,32 +1,29 @@
 package com.nusinfineon.ui;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
-import com.pretty_tools.dde.DDEException;
+
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Represent the whole window of the user interface, it should contain all units in the user interface.
@@ -37,6 +34,11 @@ public class MainGui extends UiPart<Stage> {
     private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - MIN_ALLOWABLE_BATCH_SIZE;
     private static final int MIN_ALLOWABLE_STEP_SIZE = 1;
     private static final String FXML = "MainGui.fxml";
+    private static final String ICON_APPLICATION = "/images/icon_large.png";
+    private static final String ABOUT_MESSAGE = "This application is an optimised interface for the IBIS Flexsim simulation model.\n"
+            + "\nYou can try a range of minimum batch sizes to simulate based on the supplied input information.\n"
+            + "\nYou can also choose a lot sequencing rule which sorts the supplied lots in the desired sequence, and define a few other settings, for the simulation.\n"
+            + "\nEnsure all fields are filled in correctly before running the simulation!\n";
 
     private Stage primaryStage;
     private Core core;
@@ -59,8 +61,6 @@ public class MainGui extends UiPart<Stage> {
     private TextField outputFileLocation;
     @FXML
     private TextField runSpeed;
-    @FXML
-    private TextField warmUpPeriod;
     @FXML
     private TextField stopTime;
     @FXML
@@ -90,6 +90,8 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private RadioButton trolleyLocationSelectCriteria1;
     @FXML
+    private RadioButton trolleyLocationSelectCriteria2;
+    @FXML
     private RadioButton bibLoadOnLotCriteria1;
     @FXML
     private RadioButton bibLoadOnLotCriteria2;
@@ -108,13 +110,15 @@ public class MainGui extends UiPart<Stage> {
         this.primaryStage = primaryStage;
         this.core = core;
 
-        // Configure the UI
+        configureUi();
+    }
+
+    private void configureUi() {
         exeLocation.setText(core.getFlexsimLocation());
         modelFileLocation.setText(core.getModelLocation());
         inputFileLocation.setText(core.getInputLocation());
         outputFileLocation.setText(core.getOutputLocation());
         runSpeed.setText(core.getRunSpeed());
-        warmUpPeriod.setText(core.getWarmUpPeriod());
         stopTime.setText(core.getStopTime());
         showModel.setSelected(core.getIsModelShown());
 
@@ -144,13 +148,13 @@ public class MainGui extends UiPart<Stage> {
         trolleyLocationSelectCriteria = new ToggleGroup();
         trolleyLocationSelectCriteria0.setToggleGroup(trolleyLocationSelectCriteria);
         trolleyLocationSelectCriteria1.setToggleGroup(trolleyLocationSelectCriteria);
+        trolleyLocationSelectCriteria2.setToggleGroup(trolleyLocationSelectCriteria);
         trolleyLocationSelectCriteria.selectToggle(getTrolleyLocationSelectCriteria());
 
         bibLoadOnLotCriteria = new ToggleGroup();
         bibLoadOnLotCriteria1.setToggleGroup(bibLoadOnLotCriteria);
         bibLoadOnLotCriteria2.setToggleGroup(bibLoadOnLotCriteria);
         bibLoadOnLotCriteria.selectToggle(getBibLoadOnLotCriteria());
-
     }
 
     /** Gets the saved radio button for Resource Select Criteria
@@ -188,10 +192,12 @@ public class MainGui extends UiPart<Stage> {
     private RadioButton getTrolleyLocationSelectCriteria() {
         String selection = core.getTrolleyLocationSelectCriteria();
         switch (selection) {
+        case "0":
+            return trolleyLocationSelectCriteria0;
         case "1":
             return trolleyLocationSelectCriteria1;
         default:
-            return trolleyLocationSelectCriteria0;
+            return trolleyLocationSelectCriteria2;
         }
     }
 
@@ -243,7 +249,6 @@ public class MainGui extends UiPart<Stage> {
         /* let the source know whether the string was successfully
          * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
     }
 
@@ -275,7 +280,6 @@ public class MainGui extends UiPart<Stage> {
         /* let the source know whether the string was successfully
          * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
     }
 
@@ -307,7 +311,6 @@ public class MainGui extends UiPart<Stage> {
         /* let the source know whether the string was successfully
          * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
     }
 
@@ -339,13 +342,11 @@ public class MainGui extends UiPart<Stage> {
         /* let the source know whether the string was successfully
          * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
     }
 
     @FXML
     public void handleModelExecution() throws IOException {
-
         if (isBlankFiles()) {
             showErrorBox("File directories cannot be blank!");
         } else if (!isFoundFiles(exeLocation.getText())) {
@@ -383,25 +384,59 @@ public class MainGui extends UiPart<Stage> {
                     Math.max(1, (batchSizeMax.getValueFactory().getValue() - batchSizeMin.getValueFactory().getValue()))
                     + "!");
         } else {
-            try {
-                core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                        outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                        showModel.isSelected(), lotSequencingRule.getValue(),
-                        Integer.toString(batchSizeMin.getValueFactory().getValue()),
-                        Integer.toString(batchSizeMax.getValueFactory().getValue()),
-                        Integer.toString(batchSizeStep.getValueFactory().getValue()),
-                        getSelectedResourceSelectCriteria(resourceSelectCriteria),
-                        getSelectedLotSelectionCriteria(lotSelectionCriteria),
-                        getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
-                        getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
-            } catch (IOException e) {
-                showErrorBox("An IO Exception has occurred.");
-            } catch (CustomException e) {
-                showErrorBox(e.getMessage());
-            } catch (InterruptedException | DDEException e) {
-                e.printStackTrace();
+            if (confirmRunModel(batchSizeMin.getValueFactory().getValue(), batchSizeMax.getValueFactory().getValue(),
+                    batchSizeStep.getValueFactory().getValue())) {
+                try {
+                    saveInputDataToCore();
+                    execute();
+                    showCompletedBox();
+                } catch (IOException e) {
+                    showExceptionBox("An IO Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                } catch (CustomException e) {
+                    showExceptionBox("A Custom Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                } catch (InterruptedException e) {
+                    showExceptionBox("A Interrupted Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                }
             }
         }
+    }
+
+    /**
+     * Saves input data to core.
+     */
+    private void saveInputDataToCore() {
+        core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
+                outputFileLocation.getText(), runSpeed.getText(), stopTime.getText(),
+                showModel.isSelected(), lotSequencingRule.getValue(),
+                Integer.toString(batchSizeMin.getValueFactory().getValue()),
+                Integer.toString(batchSizeMax.getValueFactory().getValue()),
+                Integer.toString(batchSizeStep.getValueFactory().getValue()),
+                getSelectedResourceSelectCriteria(resourceSelectCriteria),
+                getSelectedLotSelectionCriteria(lotSelectionCriteria),
+                getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
+                getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
+    }
+
+    /**
+     * Saves input data to core.
+     */
+    private void execute() throws IOException, CustomException, InterruptedException {
+        Alert waitAlert = new Alert(Alert.AlertType.NONE);
+
+        // Text
+        waitAlert.setTitle("Simulation running...");
+        String alertText = "Please wait for the simulation to complete...";
+        waitAlert.setContentText(alertText);
+
+        // Properties
+        waitAlert.setResizable(true);
+        waitAlert.getDialogPane().setPrefSize(480, 60);
+        Stage stage = (Stage) waitAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        waitAlert.show();
+        core.execute();
+        stage.close();
     }
 
     /** Get the selected radio button for Resource Select Criteria from user input
@@ -439,10 +474,12 @@ public class MainGui extends UiPart<Stage> {
      */
     private String getSelectedTrolleyLocationSelectCriteria(ToggleGroup trolleyLocationSelectCriteria) {
         Toggle selection = trolleyLocationSelectCriteria.getSelectedToggle();
-        if (selection == trolleyLocationSelectCriteria1) {
+        if (selection == trolleyLocationSelectCriteria0) {
+            return "0";
+        } else if (selection == trolleyLocationSelectCriteria1) {
             return "1";
         } else {
-            return "0";
+            return "2";
         }
     }
 
@@ -459,16 +496,96 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Helper function to raise alert box with a supplied alert text.
+     * Helper function to raise alert box with a supplied alert text for Errors.
      * @param alertText Alert text string to be displayed to the user.
      */
     private void showErrorBox(String alertText) {
         Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+
+        // Text
+        errorAlert.setTitle("Invalid Input");
         errorAlert.setHeaderText("Invalid Input");
         errorAlert.setContentText(alertText);
+
+        // Properties
         errorAlert.setResizable(true);
         errorAlert.getDialogPane().setPrefSize(480, 240);
+        Stage stage = (Stage) errorAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
         errorAlert.showAndWait();
+    }
+
+    /**
+     * Helper function to raise alert box with a supplied alert text for Confirmation.
+     * @return true when user clicks OK to confirm
+     */
+    private boolean confirmRunModel(int batchSizeMin, int batchSizeMax, int batchSizeStep) {
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+
+        // Text
+        confirmationAlert.setTitle("Confirm Simulation");
+        confirmationAlert.setHeaderText("Confirm to run simulation?");
+        String alertText = "There will be " + ((batchSizeMax - batchSizeMin) / batchSizeStep + 1) + " simulation run(s)."
+                + "\nWarning: The more runs there are, the longer it will take until completion."
+                + "\nPreviously generated output files in the Output folder will be replaced."
+                + "\nPlease save and close all opened files on Excel before you click OK.";
+        confirmationAlert.setContentText(alertText);
+
+        // Properties
+        confirmationAlert.setResizable(true);
+        confirmationAlert.getDialogPane().setPrefSize(480, 240);
+        Stage stage = (Stage) confirmationAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        confirmationAlert.showAndWait();
+        if (confirmationAlert.getResult() == ButtonType.OK) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Helper function to raise alert box with a supplied alert text for Errors.
+     * @param alertText Alert text string to be displayed to the user.
+     */
+    private void showExceptionBox(String alertText) {
+        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+
+        // Text
+        errorAlert.setTitle("Exception Error");
+        errorAlert.setHeaderText(null);
+        errorAlert.setContentText(alertText);
+
+        // Properties
+        errorAlert.setResizable(true);
+        errorAlert.getDialogPane().setPrefSize(480, 240);
+        Stage stage = (Stage) errorAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        errorAlert.showAndWait();
+    }
+
+    /**
+     * Helper function to raise alert box with a supplied alert text for Completion.
+     */
+    private void showCompletedBox() {
+        Alert completeAlert = new Alert(Alert.AlertType.INFORMATION);
+
+        // Text
+        completeAlert.setTitle("Simulation Complete");
+        completeAlert.setHeaderText("Simulation has completed!");
+        String alertText = "You may run another simulation again or close the program.";
+        completeAlert.setContentText(alertText);
+
+        // Properties
+        completeAlert.setResizable(true);
+        completeAlert.getDialogPane().setPrefSize(480, 240);
+        Stage stage = (Stage) completeAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        completeAlert.showAndWait();
     }
 
     /**
@@ -621,73 +738,35 @@ public class MainGui extends UiPart<Stage> {
         return primaryStage;
     }
 
-    /* TODO: to be added
-    private void setAccelerators() {
-        setAccelerator(helpMenuItem, KeyCombination.valueOf("F1"));
-    }
-    */
-
     /**
-     * Sets the accelerator of a MenuItem.
-     * @param keyCombination the KeyCombination value of the accelerator
+     * Show About box.
      */
-    private void setAccelerator(MenuItem menuItem, KeyCombination keyCombination) {
-        menuItem.setAccelerator(keyCombination);
+    @FXML
+    private void handleAbout() {
+        Alert aboutAlert = new Alert(Alert.AlertType.INFORMATION);
 
-        /*
-         * TODO: the code below can be removed once the bug reported here
-         * https://bugs.openjdk.java.net/browse/JDK-8131666
-         * is fixed in later version of SDK.
-         *
-         * According to the bug report, TextInputControl (TextField, TextArea) will
-         * consume function-key events. Because CommandBox contains a TextField, and
-         * ResultDisplay contains a TextArea, thus some accelerators (e.g F1) will
-         * not work when the focus is in them because the key event is consumed by
-         * the TextInputControl(s).
-         *
-         * For now, we add following event filter to capture such key events and open
-         * help window purposely so to support accelerators even when focus is
-         * in CommandBox or ResultDisplay.
-         */
-        getRoot().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getTarget() instanceof TextInputControl && keyCombination.match(event)) {
-                menuItem.getOnAction().handle(new ActionEvent());
-                event.consume();
-            }
-        });
+        // Text
+        aboutAlert.setTitle("About IBIS Simulation");
+        aboutAlert.setHeaderText(null);
+        aboutAlert.setContentText(ABOUT_MESSAGE);
+
+        // Properties
+        aboutAlert.setResizable(true);
+        aboutAlert.getDialogPane().setPrefSize(480, 280);
+        Stage stage = (Stage) aboutAlert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        aboutAlert.showAndWait();
     }
 
     /**
-     * Fills up all the placeholders of this window.
-     * to be completed
+     * Resets input fields to default.
      */
-/*    void fillInnerParts() {
-        flashcardListPanel = new FlashcardListPanel(logic.getFilteredFlashcardList());
-        flashcardListPanelPlaceholder.getChildren().add(flashcardListPanel.getRoot());
-
-        resultDisplay = new ResultDisplay();
-        resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
-
-        flashcardDisplay = new FlashcardDisplay();
-        flashcardDisplayPlaceholder.getChildren().add(flashcardDisplay.getRoot());
-
-        CommandBox commandBox = new CommandBox(this::executeCommand);
-        commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
-        StatusBarFooter statusBarFooter = new StatusBarFooter(logic.getFlashcardListFilePath());
-        statusbarPlaceholder.getChildren().add(statusBarFooter.getRoot());
-    }*/
-
-    /**
-     * Sets the default size based on {@code guiSettings}. to be added
-     */
-/*    private void setWindowDefaultSize(GuiSettings guiSettings) {
-        primaryStage.setHeight(guiSettings.getWindowHeight());
-        primaryStage.setWidth(guiSettings.getWindowWidth());
-        if (guiSettings.getWindowCoordinates() != null) {
-            primaryStage.setX(guiSettings.getWindowCoordinates().getX());
-            primaryStage.setY(guiSettings.getWindowCoordinates().getY());
-        }
-    }*/
+    @FXML
+    private void handleDefault() {
+        core.inputData(null, null, null, null, null, null, false, null, null, null, null, null, null, null, null);
+        configureUi();
+    }
 
     void show() {
         primaryStage.show();
@@ -698,16 +777,7 @@ public class MainGui extends UiPart<Stage> {
      */
     @FXML
     private void handleExit() {
-        core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                showModel.isSelected(), lotSequencingRule.getValue(),
-                Integer.toString(batchSizeMin.getValueFactory().getValue()),
-                Integer.toString(batchSizeMax.getValueFactory().getValue()),
-                Integer.toString(batchSizeStep.getValueFactory().getValue()),
-                getSelectedResourceSelectCriteria(resourceSelectCriteria),
-                getSelectedLotSelectionCriteria(lotSelectionCriteria),
-                getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
-                getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
+        saveInputDataToCore();
         primaryStage.hide();
     }
 }

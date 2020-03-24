@@ -1,14 +1,30 @@
 package com.nusinfineon.util;
 
-import org.apache.poi.ss.usermodel.*;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.TreeMap;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+
 public class OutputAnalysisUtil {
+
+    private final static String PRODUCT_KEY_COST_FILE = "/output/product_key_cost.xlsx";
 
     public static void saveDailyOutputSheet(String sheetName, TreeMap<Double, Double> treeMapOfDayToOutput,
                                             Workbook excelWorkbook) {
@@ -183,6 +199,11 @@ public class OutputAnalysisUtil {
         Cell cycleTimeCell = headerRow.createCell(CYCLE_TIME_COLUMN, CellType.STRING);
         cycleTimeCell.setCellValue("Cycle Time");
 
+        // Exit out if null. Null as sheet doesn't exist in the original excel run. Only exit after writing blank columns.
+        if (treeMapOfAverageCycleTimes == null) {
+            return;
+        }
+
         rowIndex = rowIndex + 1;
         for (String productID: treeMapOfAverageCycleTimes.keySet()) {
             Double cycleTime = treeMapOfAverageCycleTimes.get(productID);
@@ -201,10 +222,9 @@ public class OutputAnalysisUtil {
     }
 
     public static File getProductKeyCostExcelFileFromRelativeDirectory() throws IOException {
-        final String relativeFilePath = "src/main/resources/sample-output-files/product-key-cost-file/product_key_cost.xlsx";
-        File productCostFile = new File(relativeFilePath);
-        File tempOutputFile = new File(productCostFile.toString() + "temp.xlsx");
-        copyFileUsingStream(productCostFile, tempOutputFile);
+        URL productCostFile = OutputAnalysisUtil.class.getResource(PRODUCT_KEY_COST_FILE);
+        File tempOutputFile = Files.createTempFile("product_key_cost_temp", ".xlsx").toFile();
+        FileUtils.copyURLToFile(productCostFile, tempOutputFile);
         return tempOutputFile;
     }
 

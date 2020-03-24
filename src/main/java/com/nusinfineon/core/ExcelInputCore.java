@@ -1,12 +1,5 @@
 package com.nusinfineon.core;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,6 +11,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.logging.Logger;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import com.nusinfineon.exceptions.CustomException;
 import com.nusinfineon.util.GenericLotEntry;
@@ -42,10 +42,10 @@ public class ExcelInputCore {
     private static final int LOT_INFO_PERIOD_COLUMN = 4;
     private static final int LOT_INFO_NEW_COLUMN = 5;
 
-    private final static String LOT_SEQUENCE_FCFS = "First-Come-First-Served (Default)";
+    private static final String LOT_SEQUENCE_FCFS = "First-Come-First-Served (Default)";
     private static final String LOT_SEQUENCE_SPT = "Shortest Processing Time";
-    private final static String LOT_SEQUENCE_MJ = "Most Jobs";
-    private final static String LOT_SEQUENCE_RAND = "Random";
+    private static final String LOT_SEQUENCE_MJ = "Most Jobs";
+    private static final String LOT_SEQUENCE_RAND = "Random";
 
     private static final String PROCESS_TIME_SHEET_NAME = "Process Time";
     private static final int PROCESS_TIME_PRODUCT_KEY_COLUMN = 0;
@@ -62,11 +62,14 @@ public class ExcelInputCore {
     private static final String TROLLEY_LOCATION_SELECT_CRITERIA_PARAMETER = "Trolley Location Select Criteria";
     private static final String BIB_LOAD_ON_LOT_CRITERIA_PARAMETER = "BIB Load on Lot Criteria";
 
+    private static final int MAX_ALLOWABLE_BATCH_SIZE = 24;
+    private static final int MIN_ALLOWABLE_BATCH_SIZE = 1;
+
     private final static Logger LOGGER = Logger.getLogger(ExcelInputCore.class.getName());
 
     private File originalInputExcelFile;
     private File tempCopyOriginalInputExcelFile;
-    private ArrayList<Integer> listOfBatchSizes;
+    private ArrayList<Integer> listOfMinBatchSizes;
     private ArrayList<File> excelFiles;
     private String lotSequencingRule;
     private String resourceSelectCriteria;
@@ -90,9 +93,9 @@ public class ExcelInputCore {
         this.lotSequencingRule = lotSequencingRule;
 
         // Calculates the exact batch size needed and adds to an array.
-        this.listOfBatchSizes = new ArrayList<Integer>();
+        this.listOfMinBatchSizes = new ArrayList<Integer>();
         for (int i = minBatchSize; i <= maxBatchSize; i = batchStep + i) {
-            listOfBatchSizes.add(i);
+            listOfMinBatchSizes.add(i);
         }
 
         this.resourceSelectCriteria = resourceSelectCriteria;
@@ -109,14 +112,14 @@ public class ExcelInputCore {
         createCopyOfInputFile(); // Uses the copy of the input file as a reference
         LOGGER.info("Successfully created a copy of main Input excel file");
 
-        for (int batchNumber : listOfBatchSizes) {
+        for (int batchNumber : listOfMinBatchSizes) {
             LOGGER.info("Writing temp Input excel file for batch size " + batchNumber);
 
             // Create the workbook from a copy of the original excel file
             Workbook workbook = WorkbookFactory.create(this.tempCopyOriginalInputExcelFile);
 
             // Edit batch size
-            editBatchSize(workbook, batchNumber);
+            editMinBatchSize(workbook, batchNumber);
 
             // Lot sequencing on Actual Lot Info
             processLotSequencing(workbook);
@@ -165,12 +168,12 @@ public class ExcelInputCore {
     }
 
     /**
-     * Edits batch size in Input excel file based on given batch size
+     * Edits min batch size in Input excel file based on given batch size
      * @param workbook Workbook to edit
      * @param batchNumber Batch size
      * @throws CustomException
      */
-    private void editBatchSize(Workbook workbook, int batchNumber) throws CustomException {
+    private void editMinBatchSize(Workbook workbook, int batchNumber) throws CustomException {
         // Access Product Info & Eqpt Matrix sheet
         Sheet productInfoSheet = workbook.getSheet(PRODUCT_INFO_SHEET_NAME);
 
@@ -406,7 +409,7 @@ public class ExcelInputCore {
             String parameter = cell.getStringCellValue().trim();
             switch (parameter) {
                 case BATCH_SIZE_PARAMETER:
-                    row.getCell(SETTINGS_VALUE_COLUMN).setCellValue(batchNumber);
+                    row.getCell(SETTINGS_VALUE_COLUMN).setCellValue(MAX_ALLOWABLE_BATCH_SIZE);
                     break;
                 case RESOURCE_SELECT_CRITERIA_PARAMETER:
                     row.getCell(SETTINGS_VALUE_COLUMN).setCellValue(
@@ -469,8 +472,8 @@ public class ExcelInputCore {
      * Returns an arrayList of batch sizes
      * @return Array List of batch sizes
      */
-    public ArrayList<Integer> getListOfBatchSizes() {
-        return listOfBatchSizes;
+    public ArrayList<Integer> getListOfMinBatchSizes() {
+        return listOfMinBatchSizes;
     }
 
     /**
@@ -478,7 +481,7 @@ public class ExcelInputCore {
      * @return String.
      */
     public String printBatchesToRun() {
-        return this.listOfBatchSizes.toString();
+        return this.listOfMinBatchSizes.toString();
     }
 
     public File getOriginalInputExcelFile() {

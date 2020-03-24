@@ -1,11 +1,12 @@
 package com.nusinfineon.ui;
 
+import com.nusinfineon.Main;
+import com.nusinfineon.core.Core;
+
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import com.nusinfineon.Main;
-import com.nusinfineon.core.Core;
 
 /**
  * The manager that operates the whole nus.infineon.ui running logic.
@@ -13,7 +14,7 @@ import com.nusinfineon.core.Core;
 public class UiManager implements Ui {
 
     public static final String ALERT_DIALOG_PANE_FIELD_ID = "alertDialogPane";
-    private static final String ICON_APPLICATION = "/images/infineon-technologies-squarelogo.png";
+    private static final String ICON_APPLICATION = "/images/icon_large.png";
     private Core core;
 
     private MainGui mainGui;
@@ -21,7 +22,6 @@ public class UiManager implements Ui {
     public UiManager(Core core) {
         super();
         this.core = core;
-
     }
 
     @Override
