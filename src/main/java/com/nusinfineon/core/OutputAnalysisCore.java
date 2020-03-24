@@ -99,7 +99,6 @@ public class OutputAnalysisCore {
                 "UTILIZATION_RATE_PROCESSING", "UTILIZATION_RATE_SETUP", "UTILIZATION_RATE_WAITING FOR OPERATOR",
                 "UTILIZATION_RATE_WAITING FOR TRANSPORTER"));
 
-
         // Iterate through each excel file and write the utilization data
         final String SOURCE_UTILIZATION_SHEET = "RUN_TYPE_AND_IBIS_UTILIZATION";
         int destinationRowCount = 1;
@@ -175,11 +174,8 @@ public class OutputAnalysisCore {
 
                         destinationRowCount = destinationRowCount + 1;
                     }
-
                 }
-
             }
-
             sourceWorkbook.close();
         }
 
@@ -195,7 +191,6 @@ public class OutputAnalysisCore {
             Cell cell = headerRow.createCell(i, CellType.STRING);
             cell.setCellValue(TIME_IN_SYSTEM_COLUMN_HEADERS[i]);
         }
-
 
         // Iterate through the excel files and write the stay time data
         final String SOURCE_TIME_IN_SYSTEM_SHEET = "PRODUCT_TIME_IN_SYSTEM";
@@ -234,9 +229,7 @@ public class OutputAnalysisCore {
 
                     destinationRowCount = destinationRowCount + 1;
                 }
-
             }
-
             sourceWorkbook.close();
         }
         // End of writing product stay times section
@@ -289,9 +282,7 @@ public class OutputAnalysisCore {
 
                     destinationRowCount = destinationRowCount + 1;
                 }
-
             }
-
             sourceWorkbook.close();
         }
         // End of writing product THROUGHPUT section
@@ -362,11 +353,9 @@ public class OutputAnalysisCore {
                     Cell destinationThroughputCell = destinationRow.createCell(i + 1, CellType.NUMERIC);
                     destinationThroughputCell.setCellValue(dailyThroughput);
 
-
                     destinationRowCount ++;
                 }
             }
-
             sourceWorkbook.close();
         }
         // End of writing daily product THROUGHPUT section
@@ -411,7 +400,6 @@ public class OutputAnalysisCore {
 
                     Cell destinationSProductCell = newWorthRow.createCell(1, CellType.STRING);
                     destinationSProductCell.setCellValue(product);
-
 
                     Cell destinationOutputCell = newWorthRow.createCell(2, CellType.NUMERIC);
                     destinationOutputCell.setCellValue(output);
@@ -460,8 +448,6 @@ public class OutputAnalysisCore {
         Workbook workbook = WorkbookFactory.create(tempOutputFile);
         LOGGER.info("Successfully created Workbook from temporary copy of output file");
 
-        //TODO: Implement check if all sheets are present in the workbook
-
         try {
 
             // ==================   Get average utilization rates of IBIS Ovens ============================================
@@ -498,7 +484,6 @@ public class OutputAnalysisCore {
             // ===============================  Get throughput data ====================================================
             final String DAILY_THROUGHPUT_PRODUCT_REP = "Daily Throughput Product Rep";
             Sheet throughputSheet = workbook.getSheet(DAILY_THROUGHPUT_PRODUCT_REP);
-
 
             if (throughputSheet == null) {
                 // throw new IOException("Excel file doesn't contain sheet: " + DAILY_THROUGHPUT_PRODUCT_REP);
@@ -561,17 +546,12 @@ public class OutputAnalysisCore {
             LOGGER.info("Closed workbook and deleted temporary excel file.");
             LOGGER.info("SUCCESSFULLY generated Output statistics for " + originalInputFile.getName() + "\n" +
                                 "=========================================================================================");
-
         } catch (CustomException e) {
-
             LOGGER.severe("EXCEPTION: " + e.getMessage() + ".");
-
             workbook.close();
             tempOutputFile.delete();
             LOGGER.info("Closed workbook and deleted temporary excel file.");
-
         }
-
     }
 
     /**
@@ -592,7 +572,6 @@ public class OutputAnalysisCore {
             }
         }
     }
-
 }
 
 // Unused code

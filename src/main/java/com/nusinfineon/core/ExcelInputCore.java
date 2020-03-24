@@ -104,7 +104,6 @@ public class ExcelInputCore {
         this.bibLoadOnLotCriteria = bibLoadOnLotCriteria;
 
         this.excelFiles = new ArrayList<File>();
-
     } // End of Constructor
 
     public void execute() throws IOException, CustomException {
@@ -136,7 +135,6 @@ public class ExcelInputCore {
 
             // Adds the file into the array
             this.excelFiles.add(singleBatchExcelFileDestination);
-
         } // End of for-loop for batch sizes
     } // End of execute method
 
