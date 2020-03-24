@@ -22,7 +22,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         ui.start(stage);
     }
 

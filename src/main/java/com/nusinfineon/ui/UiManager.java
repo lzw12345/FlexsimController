@@ -26,18 +26,14 @@ public class UiManager implements Ui {
 
     @Override
     public void start(Stage primaryStage) {
-        //logger.info("Starting UI...");
-
         //Set the application icon.
         primaryStage.getIcons().add(getImage(ICON_APPLICATION));
 
         try {
             mainGui = new MainGui(primaryStage, core/*, logic*/);
             mainGui.show(); //This should be called before creating other UI parts
-            //mainGui.fillInnerParts();
 
         } catch (Throwable e) {
-            //logger.severe(StringUtil.getDetails(e));
             showFatalErrorDialogAndShutdown("Fatal error during initializing", e);
         }
     }
@@ -71,7 +67,6 @@ public class UiManager implements Ui {
      * and exits the application after the user has closed the alert dialog.
      */
     private void showFatalErrorDialogAndShutdown(String title, Throwable e) {
-        //logger.severe(title + " " + e.getMessage() + StringUtil.getDetails(e));
         showAlertDialogAndWait(Alert.AlertType.ERROR, title, e.getMessage(), e.toString());
         Platform.exit();
         System.exit(1);
