@@ -1,13 +1,15 @@
 package com.nusinfineon.util;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-
-import org.apache.commons.math3.stat.descriptive.rank.*;
-
-import java.io.IOException;
-import java.util.*;
 
 import com.nusinfineon.exceptions.CustomException;
 
@@ -19,6 +21,11 @@ public class OutputAnalysisCalculation {
 
     public static TreeMap<String, Double> calculateProductThroughput(Sheet throughputSheet) throws CustomException {
         try {
+            // Exits if the sheet is null
+            if (throughputSheet == null) {
+                return new TreeMap<String, Double>();
+            }
+
             // Declare column names used
             final String PRODUCT_ID = "Product";
             final String QTY_OUT = "Qty Out";
@@ -97,6 +104,11 @@ public class OutputAnalysisCalculation {
     public static TreeMap<String, Double> calculateProductCycleTimeFromDailyThroughput(Sheet throughputSheet)
         throws CustomException {
         try {
+            // Returns if the throughput sheet does not exist and is null
+            if (throughputSheet == null) {
+                return new TreeMap<String, Double>();
+            }
+
             final String PRODUCT_ID = "Product";
             final String TIME_IN_SYSTEM = "Time In System";
 
@@ -166,6 +178,11 @@ public class OutputAnalysisCalculation {
     public static TreeMap<Double, Double> calculateDailyThroughput(Sheet throughputSheet)
         throws CustomException {
         try {
+            // Returns if throughput sheet is null ie does not exist
+            if (throughputSheet == null) {
+                return new TreeMap<Double, Double>();
+            }
+
             final String PRODUCT_ID = "Product";
             final String QTY_OUT = "Qty Out";
             final String DAY = "Day";
@@ -263,32 +280,35 @@ public class OutputAnalysisCalculation {
                 Row currentRow = cycleTimeSheet.getRow(rowIndex);
 
                 Cell periodCell = currentRow.getCell(periodIndex);
-                Double period = periodCell.getNumericCellValue();
 
-                // Skip rows with period 0
-                if (period > 0) {
+                if (periodCell != null) {
+                    Double period = periodCell.getNumericCellValue();
 
-                    // Obtain number of counts for each product ID. End goal is to get the total for each product and get average CT for each product.
-                    if (currentRow.getCell(prooductIndex) != null) {
+                    // Skip rows with period 0
+                    if (period > 0) {
 
-                        String productID = currentRow.getCell(prooductIndex).getStringCellValue();
-                        if (productIDCounts.containsKey(productID)) {
-                            Integer currentCount = productIDCounts.get(productID);
-                            productIDCounts.put(productID, currentCount + 1);
-                        } else {
-                            productIDCounts.put(productID, 1);
+                        // Obtain number of counts for each product ID. End goal is to get the total for each product and get average CT for each product.
+                        if (currentRow.getCell(prooductIndex) != null) {
+
+                            String productID = currentRow.getCell(prooductIndex).getStringCellValue();
+                            if (productIDCounts.containsKey(productID)) {
+                                Integer currentCount = productIDCounts.get(productID);
+                                productIDCounts.put(productID, currentCount + 1);
+                            } else {
+                                productIDCounts.put(productID, 1);
+                            }
                         }
-                    }
 
-                    // Obtain the cumulative total for each product ID
-                    if (currentRow.getCell(cycleTimeIndex) != null) {
-                        String productID = currentRow.getCell(prooductIndex).getStringCellValue();
-                        Double productCycleTimeAverage = currentRow.getCell(cycleTimeIndex).getNumericCellValue();
-                        if (productIDTotalCycleTime.containsKey(productID)) {
-                            Double currentTotal = productIDTotalCycleTime.get(productID);
-                            productIDTotalCycleTime.put(productID, currentTotal + productCycleTimeAverage);
-                        } else {
-                            productIDTotalCycleTime.put(productID, productCycleTimeAverage);
+                        // Obtain the cumulative total for each product ID
+                        if (currentRow.getCell(cycleTimeIndex) != null) {
+                            String productID = currentRow.getCell(prooductIndex).getStringCellValue();
+                            Double productCycleTimeAverage = currentRow.getCell(cycleTimeIndex).getNumericCellValue();
+                            if (productIDTotalCycleTime.containsKey(productID)) {
+                                Double currentTotal = productIDTotalCycleTime.get(productID);
+                                productIDTotalCycleTime.put(productID, currentTotal + productCycleTimeAverage);
+                            } else {
+                                productIDTotalCycleTime.put(productID, productCycleTimeAverage);
+                            }
                         }
                     }
 
@@ -329,6 +349,11 @@ public class OutputAnalysisCalculation {
             throws CustomException {
 
         try {
+
+            // Returns an empty map if throughput sheet does not exist
+            if (dailyThroughputSheet == null) {
+                return new TreeMap<String, ArrayList<Double>>();
+            }
 
             // Read from product-key-cost table and store data
             HashMap<String, Double> mapOfProductToCost = new HashMap<String, Double>();
