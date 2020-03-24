@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 public class UiManager implements Ui {
 
     public static final String ALERT_DIALOG_PANE_FIELD_ID = "alertDialogPane";
-    private static final String ICON_APPLICATION = "/images/infineon-technologies-squarelogo.png";
+    private static final String ICON_APPLICATION = "/images/icon_large.png";
     private Core core;
 
     private MainGui mainGui;

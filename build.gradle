@@ -4,6 +4,7 @@ plugins {
     id 'checkstyle'
     id 'java-library'
     id 'com.github.johnrengelman.shadow' version '5.1.0'
+    id 'edu.sc.seis.launch4j' version '2.4.6'
 }
 
 version '1.0'
@@ -50,12 +51,22 @@ dependencies {
     testRuntime('org.junit.jupiter:junit-jupiter:5.5.0')
 }
 
+launch4j {
+    outfile = 'IBIS_Simulation.exe'
+    mainClassName = project.mainClassName
+    copyConfigurable = project.tasks.shadowJar.outputs.files
+    jar =  "..\\libs\\FlexsimController-0.1.0.jar"
+    bundledJrePath = '..\\runtime'
+    //dontWrapJar="true"
+    icon = "${projectDir}/src/main/resources/images/icon.ico"
+}
+
 checkstyle {
     toolVersion = '8.23'
 }
 
 shadowJar {
-    archiveBaseName = "IBIS_Simulation"
+    archiveBaseName = "FlexsimController"
     archiveVersion = "0.1.0"
     archiveClassifier = null
     archiveAppendix = null

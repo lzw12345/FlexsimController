@@ -15,3 +15,5 @@ src/main/resources/docs/
 # Test directories for run output excel files
 sample-output-files/
 
+# Generated FlexsimControllerStatus file
+FlexsimControllerStatus.xlsx
