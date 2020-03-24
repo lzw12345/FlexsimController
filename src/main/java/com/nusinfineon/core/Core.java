@@ -69,7 +69,7 @@ public class Core {
                 trolleyLocationSelectCriteria, bibLoadOnLotCriteria);
 
         // Initialise listener for running of simulation
-        ExcelListener excelListener = new ExcelListener(flexsimLocation, modelLocation, outputLocation,
+        runCore runCore = new runCore(flexsimLocation, modelLocation, outputLocation,
                 runSpeed, stopTime, isModelShown);
 
         try {
@@ -87,7 +87,7 @@ public class Core {
         ArrayList<Integer> batchSizes = excelInputCore.getListOfMinBatchSizes();
         excelOutputFiles = new ArrayList<>();
 
-        excelListener.executeRuns(excelInputFiles, batchSizes, lotSequencingRuleString, excelOutputFiles);
+        runCore.executeRuns(excelInputFiles, batchSizes, lotSequencingRuleString, excelOutputFiles);
 
         handleOutput();
 

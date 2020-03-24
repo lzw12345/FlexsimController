@@ -7,27 +7,18 @@ import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
 
-import java.awt.*;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.pretty_tools.dde.DDEException;
-import com.pretty_tools.dde.DDEMLException;
 import com.pretty_tools.dde.client.DDEClientConversation;
-import com.pretty_tools.dde.client.DDEClientEventListener;
 
 /**
  * Class to generate an excel listener using DDE
  */
-public class ExcelListener {
+public class runCore {
 
     private String flexsimLocation;
     private String modelLocation;
@@ -39,7 +30,6 @@ public class ExcelListener {
     private boolean isModelShown;
     private String stopTime;
     private String lotSequencingRule;
-    private File statusFile;
     private String scriptFilepath = "./script.txt";
     private File scriptFile;
     private int currentRunNum;
@@ -49,10 +39,9 @@ public class ExcelListener {
     private ArrayList<Integer> batchSizes;
     private DDEClientConversation conversation;
 
-    private final String DEFAULT_STATUS_SHEET = "#()STATUS#()#";
 
-    public ExcelListener(String flexsimLocation, String modelLocation, String outputLocation,
-                         String runSpeed, String stopTime, boolean isModelShown) throws IOException {
+    public runCore(String flexsimLocation, String modelLocation, String outputLocation,
+                   String runSpeed, String stopTime, boolean isModelShown) throws IOException {
 
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
@@ -64,67 +53,7 @@ public class ExcelListener {
         this.isModelShown = isModelShown;
 
         currentRunNum = 0;
-        statusFile = generateExcelStatusFile(getFullPath(outputLocation));
 
-        // DDE client
-        conversation = new DDEClientConversation();
-        // We can use UNICODE format if server prefers it
-        //conversation.setTextFormat(ClipboardFormat.CF_UNICODETEXT);
-        try {
-            //creates the event listener methods
-            conversation.setEventListener(new DDEClientEventListener() {
-                public void onDisconnect() {
-                    System.out.println("onDisconnect()");
-                }
-
-                //function called when a change is detected in the status excel file
-                public void onItemChanged(String topic, String item, String data) {
-                    excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
-                    if (currentRunNum == batchSizes.size()) {
-                        System.out.println("onItemChanged(" + topic + "," + item + "," + data.trim() + " i = " + currentRunNum + ")");
-                        System.out.println("No. of min. batch sizes = " + batchSizes.size());
-                        int i = 1;
-                        for (File iter : excelOutputFiles) {
-                            System.out.println("output file "+  i + ": " + iter.toString());
-                            i++;
-                        }
-                        try {
-                            endRuns();
-                        } catch (DDEException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        System.out.println("onItemChanged(" + topic + "," + item + "," + data.trim() + " i = " + currentRunNum + ")");
-                        if (data.trim().equals("finished")) {
-                            runModel(currentRunNum == batchSizes.size()-1);
-                        }
-                    }
-                    currentRunNum++;
-                }
-            });
-
-            Desktop.getDesktop().open(statusFile);
-
-            boolean fileIsNotLocked = statusFile.renameTo(statusFile);
-            while (fileIsNotLocked) {
-                TimeUnit.SECONDS.sleep(1);
-                fileIsNotLocked = statusFile.renameTo(statusFile);
-            }
-
-            TimeUnit.SECONDS.sleep(5);
-
-            System.out.println("Connecting...");
-            conversation.connect("Excel", DEFAULT_STATUS_SHEET);
-            conversation.startAdvice("R1C1");
-            System.out.println("Connected!!");
-
-        } catch (DDEMLException e) {
-            System.out.println("DDEMLException: 0x" + Integer.toHexString(e.getErrorCode()) + " " + e.getMessage());
-        } catch (DDEException e) {
-            System.out.println("DDEClientException: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("Exception: " + e);
-        }
     }
 
     /**
@@ -139,22 +68,18 @@ public class ExcelListener {
         this.lotSequencingRule = lotSequencingRule.replaceAll(" ", "_").toLowerCase();
         this.excelOutputFiles.clear();
 
-        runModel(currentRunNum == batchSizes.size()-1);
-        currentRunNum++;
-
-        while (currentRunNum <= batchSizes.size()){
-            TimeUnit.SECONDS.sleep(1);
+        while (currentRunNum <= batchSizes.size()-1) {
+            runModel(currentRunNum == batchSizes.size() - 1);
+            Server server = new Server(1880);
+            excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
+            currentRunNum++;
+        }
+        int i = 1;
+        for (File iter : excelOutputFiles) {
+            System.out.println("output file "+  i + ": " + iter.toString());
+            i++;
         }
 
-        conversation.disconnect();
-    }
-
-    /**
-     * Terminates runs
-     * @throws DDEException
-     */
-    public void endRuns() throws DDEException {
-        System.out.println("Runs terminated!");
     }
 
     /**
@@ -182,41 +107,30 @@ public class ExcelListener {
      * @throws IOException
      */
     public void scriptCreator(boolean isLastRun) throws IOException {
-        String statusFilepath = statusFile.getAbsolutePath().replace("\\" , "\\\\\\\\");
         scriptFile = new File(scriptFilepath);
         scriptFile.createNewFile();
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
-                + stopTime + "showprogressbar(\"\");\n"
+                + stopTime
                 // TODO: Uncomment:
                 //+ "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
+                + "excellaunch();"
                 + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
                 + ",\"MAIN15WriteReports(true, \\\""
                 + outputLocation + "\", " + "\\\"" + outputFile
                 + "\\\" , \\\"" + excelOutputFileName + "\\\");"
-                + "\\n hideprogressbar();\\n\\texcelopen(\\\""
-                + statusFilepath
-                + "\\\");\\n\\tmaintenance(1000, 1);\\n\\texcelsetsheet(\\\"#()STATUS#()#\\\");\\n\\texcelwritestr(1,1,\\\"finished\\\");"
-                +  (isLastRun ? "\\nexcelclose(0);" : "")
+                + "\\n hideprogressbar();"
+                + "\\nsocketinit();"
+                + "\\nint socknum = clientcreate();"
+                + "\\nclientconnect(socknum,\\\"127.0.0.1\\\",1880);"
+                + "\\nclientsend(socknum,\\\"REQ:service\\\")\\n;"
+                + "\\nclientclose (socknum);"
+                + "\\nsocketend();"
                 + "\\ncmdexit ();\\n}\")")
                 + editNodeCode("ProcessTime", "MODEL:/Tools/UserCommands/ProcessTimeGetTotal/code", GETPROCESSTIMECODE)
                 + editNodeCode("MAIN15", "MODEL://Tools/UserCommands//MAIN15WriteReports//code", MAIN15CODE)
                 + "MAINBuldAndRun ();\nresetmodel();\ngo();");
         fileWriter.close();
-    }
-
-    public File generateExcelStatusFile(String outputLocation) throws IOException {
-        File excel = new File("./FlexsimControllerStatus.xlsx");
-
-        if (excel.createNewFile()) {
-            Workbook wb = new XSSFWorkbook();
-            OutputStream fileOut = new FileOutputStream(excel);
-            wb.createSheet("#()STATUS#()#");
-            System.out.println("Sheets Has been created successfully");
-            wb.write(fileOut);
-            fileOut.close();
-        }
-        return excel;
     }
 
     /**

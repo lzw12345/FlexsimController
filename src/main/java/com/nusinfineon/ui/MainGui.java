@@ -182,12 +182,12 @@ public class MainGui extends UiPart<Stage> {
     private RadioButton getLotSelectionCriteria() {
         String selection = core.getLotSelectionCriteria();
         switch (selection) {
-            case "1":
-                return lotSelectionCriteria1;
-            case "2":
-                return lotSelectionCriteria2;
-            default:
-                return lotSelectionCriteria3;
+        case "1":
+            return lotSelectionCriteria1;
+        case "2":
+            return lotSelectionCriteria2;
+        default:
+            return lotSelectionCriteria3;
         }
     }
 
