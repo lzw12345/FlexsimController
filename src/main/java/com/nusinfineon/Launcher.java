@@ -2,12 +2,8 @@ package com.nusinfineon;
 
 import javafx.application.Application;
 
-import java.io.IOException;
-
 public class Launcher {
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Application.launch(Main.class, args);
-
     }
 }

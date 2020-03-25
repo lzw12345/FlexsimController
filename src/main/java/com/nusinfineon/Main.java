@@ -1,13 +1,14 @@
 package com.nusinfineon;
 
-import com.nusinfineon.ui.UiManager;
+import java.io.IOException;
+
 import com.nusinfineon.core.Core;
-import javafx.application.Application;
-import javafx.stage.Stage;
 import com.nusinfineon.storage.JsonParser;
 import com.nusinfineon.ui.Ui;
+import com.nusinfineon.ui.UiManager;
 
-import java.io.IOException;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 public class Main extends Application {
     private Core core;
@@ -17,11 +18,11 @@ public class Main extends Application {
     public Main() throws IOException {
         jsonParser = new JsonParser();
         core = jsonParser.loadData();
-        ui = new UiManager(core);
+        ui = new UiManager(core, jsonParser);
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         ui.start(stage);
     }
 

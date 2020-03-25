@@ -1,29 +1,30 @@
 package com.nusinfineon.ui;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
+import com.nusinfineon.storage.JsonParser;
+import com.nusinfineon.util.Messages;
 
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -37,9 +38,12 @@ public class MainGui extends UiPart<Stage> {
     private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - MIN_ALLOWABLE_BATCH_SIZE;
     private static final int MIN_ALLOWABLE_STEP_SIZE = 1;
     private static final String FXML = "MainGui.fxml";
+    private static final String ICON_APPLICATION = "/images/icon_large.png";
+    private static final String SAVE_FILE = "saveFile.txt";
 
     private Stage primaryStage;
     private Core core;
+    private JsonParser jsonParser;
 
     @FXML
     private HBox exeDragTarget;
@@ -59,8 +63,6 @@ public class MainGui extends UiPart<Stage> {
     private TextField outputFileLocation;
     @FXML
     private TextField runSpeed;
-    @FXML
-    private TextField warmUpPeriod;
     @FXML
     private TextField stopTime;
     @FXML
@@ -90,6 +92,8 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private RadioButton trolleyLocationSelectCriteria1;
     @FXML
+    private RadioButton trolleyLocationSelectCriteria2;
+    @FXML
     private RadioButton bibLoadOnLotCriteria1;
     @FXML
     private RadioButton bibLoadOnLotCriteria2;
@@ -101,20 +105,23 @@ public class MainGui extends UiPart<Stage> {
     private ToggleGroup trolleyLocationSelectCriteria;
     private ToggleGroup bibLoadOnLotCriteria;
 
-    public MainGui(Stage primaryStage, Core core) {
+    public MainGui(Stage primaryStage, Core core, JsonParser jsonParser) {
         super(FXML, primaryStage);
 
         // Set dependencies
         this.primaryStage = primaryStage;
         this.core = core;
+        this.jsonParser = jsonParser;
 
-        // Configure the UI
+        configureUi();
+    }
+
+    private void configureUi() {
         exeLocation.setText(core.getFlexsimLocation());
         modelFileLocation.setText(core.getModelLocation());
         inputFileLocation.setText(core.getInputLocation());
         outputFileLocation.setText(core.getOutputLocation());
         runSpeed.setText(core.getRunSpeed());
-        warmUpPeriod.setText(core.getWarmUpPeriod());
         stopTime.setText(core.getStopTime());
         showModel.setSelected(core.getIsModelShown());
 
@@ -144,6 +151,7 @@ public class MainGui extends UiPart<Stage> {
         trolleyLocationSelectCriteria = new ToggleGroup();
         trolleyLocationSelectCriteria0.setToggleGroup(trolleyLocationSelectCriteria);
         trolleyLocationSelectCriteria1.setToggleGroup(trolleyLocationSelectCriteria);
+        trolleyLocationSelectCriteria2.setToggleGroup(trolleyLocationSelectCriteria);
         trolleyLocationSelectCriteria.selectToggle(getTrolleyLocationSelectCriteria());
 
         bibLoadOnLotCriteria = new ToggleGroup();
@@ -173,12 +181,12 @@ public class MainGui extends UiPart<Stage> {
     private RadioButton getLotSelectionCriteria() {
         String selection = core.getLotSelectionCriteria();
         switch (selection) {
-            case "1":
-                return lotSelectionCriteria1;
-            case "2":
-                return lotSelectionCriteria2;
-            default:
-                return lotSelectionCriteria3;
+        case "1":
+            return lotSelectionCriteria1;
+        case "2":
+            return lotSelectionCriteria2;
+        default:
+            return lotSelectionCriteria3;
         }
     }
 
@@ -187,10 +195,12 @@ public class MainGui extends UiPart<Stage> {
     private RadioButton getTrolleyLocationSelectCriteria() {
         String selection = core.getTrolleyLocationSelectCriteria();
         switch (selection) {
+        case "0":
+            return trolleyLocationSelectCriteria0;
         case "1":
             return trolleyLocationSelectCriteria1;
         default:
-            return trolleyLocationSelectCriteria0;
+            return trolleyLocationSelectCriteria2;
         }
     }
 
@@ -234,15 +244,11 @@ public class MainGui extends UiPart<Stage> {
             modelFileLocation.setText(db.getFiles().toString().replaceAll("\\[", "").replaceAll("\\]",""));
             success = true;
         } else {
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setHeaderText("Input not valid");
-            errorAlert.setContentText("File must be a Flexsim nus.infineon.model with extension .fsm");
-            errorAlert.showAndWait();
+            showInvalidBox("File must be a FlexSim model with extension .fsm");
         }
         /* let the source know whether the string was successfully
          * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
     }
 
@@ -266,15 +272,11 @@ public class MainGui extends UiPart<Stage> {
             inputFileLocation.setText(db.getFiles().toString().replaceAll("\\[", "").replaceAll("\\]",""));
             success = true;
         } else {
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setHeaderText("Input not valid");
-            errorAlert.setContentText("File must be an Excel file with extension .xlsx");
-            errorAlert.showAndWait();
+            showInvalidBox("File must be an Excel file with extension .xlsx");
         }
         /* let the source know whether the string was successfully
          * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
     }
 
@@ -298,15 +300,11 @@ public class MainGui extends UiPart<Stage> {
             outputFileLocation.setText(db.getFiles().toString().replaceAll("\\[", "").replaceAll("\\]",""));
             success = true;
         } else {
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setHeaderText("Input not valid");
-            errorAlert.setContentText("File must be an Excel file with extension .xlsx");
-            errorAlert.showAndWait();
+            showInvalidBox("File must be an Excel file with extension .xlsx");
         }
         /* let the source know whether the string was successfully
          * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
     }
 
@@ -330,75 +328,157 @@ public class MainGui extends UiPart<Stage> {
             exeLocation.setText(db.getFiles().toString().replaceAll("\\[", "").replaceAll("\\]",""));
             success = true;
         } else {
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setHeaderText("Input not valid");
-            errorAlert.setContentText("File must be a executable file with extension .exe");
-            errorAlert.showAndWait();
+            showInvalidBox("File must be a executable file with extension .exe");
         }
         /* let the source know whether the string was successfully
          * transferred and used */
         event.setDropCompleted(success);
-
         event.consume();
+    }
+
+    /**
+     * Show About box.
+     */
+    @FXML
+    private void handleAbout() {
+        String title = "About IBIS Simulation";
+        String text = Messages.ABOUT_MESSAGE;
+
+        Alert aboutAlert = raiseAlertBox(Alert.AlertType.INFORMATION, title, null, text, 480, 300);
+        aboutAlert.showAndWait();
+    }
+
+    /**
+     * Resets input fields to default.
+     */
+    @FXML
+    private void handleDefault() {
+        core.inputData(null, null, null, null, null, null, false, null, null, null, null, null, null, null, null);
+        configureUi();
+    }
+
+    /**
+     * Saves the current input
+     */
+    @FXML
+    private void handleSave() throws IOException {
+        if (confirmSave()) {
+            saveInputDataToCore();
+            jsonParser.storeData(core);
+        }
+    }
+
+    /**
+     * Loads the saved input
+     */
+    @FXML
+    private void handleLoad() throws IOException {
+        if (confirmLoad()) {
+            try {
+                core = jsonParser.loadData();
+                configureUi();
+            } catch (UnrecognizedPropertyException e) {
+                showErrorBox(SAVE_FILE + " is of the wrong format!\nPlease place a previously saved file into the folder of \"IBIS_Simulation.exe\".");
+            } catch (FileNotFoundException e) {
+                showErrorBox(SAVE_FILE + " cannot be found!\nPlease place a previously saved file into the folder of \"IBIS_Simulation.exe\".");
+            }
+        }
+    }
+
+    /**
+     * Closes the application.
+     */
+    @FXML
+    private void handleExit() {
+        saveInputDataToCore();
+        primaryStage.hide();
     }
 
     @FXML
     public void handleModelExecution() throws IOException {
-
         if (isBlankFiles()) {
-            showErrorBox("File directories cannot be blank!");
+            showInvalidBox("File Directories cannot be blank!");
         } else if (!isFoundFiles(exeLocation.getText())) {
-            showErrorBox("Flexsim (.exe) address cannot be found!");
+            showInvalidBox("FlexSim (.exe) address cannot be found!");
         } else if (!isFoundFiles(modelFileLocation.getText())) {
-            showErrorBox("Model (.fsm) address cannot be found!");
+            showInvalidBox("Model (.fsm) address cannot be found!");
         } else if (!isFoundFiles(inputFileLocation.getText())) {
-            showErrorBox("Input (.xlsx) address cannot be found!");
+            showInvalidBox("Input (.xlsx) address cannot be found!");
         } else if (!isFoundFiles(outputFileLocation.getText())) {
-            showErrorBox("Output (.xlsx) address cannot be found!");
+            showInvalidBox("Output (.xlsx) address cannot be found!");
         } else if (!isValidExeLocation()) {
-            showErrorBox("Flexsim (.exe) must be the executable file: flexsim.exe");
+            showInvalidBox("FlexSim (.exe) must be the executable file: flexsim.exe");
         } else if (!isValidExtension(modelFileLocation.getText(), "fsm")) {
-            showErrorBox("Model (.fsm) must be a Flexsim nus.infineon.model with extension .fsm!");
+            showInvalidBox("Model (.fsm) must be a Flexsim model with extension .fsm!");
         } else if (!isValidExtension(inputFileLocation.getText(), "xlsx")) {
-            showErrorBox("Input (.xlsx) must be an Excel file with extension .xlsx!");
+            showInvalidBox("Input (.xlsx) must be an Excel file with extension .xlsx!");
         } else if (!isValidExtension(outputFileLocation.getText(), "xlsx")) {
-            showErrorBox("Output (.xlsx) must be an Excel file with extension .xlsx!");
+            showInvalidBox("Output (.xlsx) must be an Excel file with extension .xlsx!");
         } else if (isBlankRunParams()) {
-            showErrorBox("Run Speed and/or Stop Time cannot be blank!");
+            showInvalidBox("Run Parameters cannot be blank!");
         } else if (isNotDouble(runSpeed.getText()) || isNotDouble(stopTime.getText())) {
-            showErrorBox("Run Speed and/or Stop Time must be a number (integer/double)!");
+            showInvalidBox("Run Parameters must be numeric (integer/double)!");
         } else if (!isValidMinBatchSize(batchSizeMin.getValueFactory().getValue())) {
-            showErrorBox("Minimum batch size must be at least 1 and at most 24!");
+            showInvalidBox("Lowest batch size to run must be at least 1 and at most 24!");
         } else if (!isValidMaxBatchSize(batchSizeMax.getValueFactory().getValue())) {
-            showErrorBox("Maximum batch size must be at least 1 and at most 24!");
+            showInvalidBox("Highest batch size to run must be at least 1 and at most 24!");
         } else if (!isValidMinMax(batchSizeMin.getValueFactory().getValue(),
                 batchSizeMax.getValueFactory().getValue())) {
-            showErrorBox("Minimum batch size (" + batchSizeMin.getValueFactory().getValue() +
-                    ") cannot be larger than maximum batch size (" + batchSizeMax.getValueFactory().getValue() + ")!");
+            showInvalidBox("Lowest batch size (" + batchSizeMin.getValueFactory().getValue() +
+                    ") cannot be larger than highest batch size (" + batchSizeMax.getValueFactory().getValue() + ")!");
         } else if (!isValidStepSize(batchSizeStep.getValueFactory().getValue(),
                 batchSizeMin.getValueFactory().getValue(),
                 batchSizeMax.getValueFactory().getValue())) {
-            showErrorBox("Step Size between Runs cannot exceed " +
+            showInvalidBox("Step Size between Runs cannot exceed " +
                     Math.max(1, (batchSizeMax.getValueFactory().getValue() - batchSizeMin.getValueFactory().getValue()))
                     + "!");
         } else {
-            try {
-                core.execute(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                        outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                        showModel.isSelected(), lotSequencingRule.getValue(),
-                        Integer.toString(batchSizeMin.getValueFactory().getValue()),
-                        Integer.toString(batchSizeMax.getValueFactory().getValue()),
-                        Integer.toString(batchSizeStep.getValueFactory().getValue()),
-                        getSelectedResourceSelectCriteria(resourceSelectCriteria),
-                        getSelectedLotSelectionCriteria(lotSelectionCriteria),
-                        getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
-                        getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
-            } catch (IOException e) {
-                showErrorBox("An IO Exception has occurred.");
-            } catch (CustomException e) {
-                showErrorBox(e.getMessage());
+            if (confirmRun(batchSizeMin.getValueFactory().getValue(), batchSizeMax.getValueFactory().getValue(),
+                    batchSizeStep.getValueFactory().getValue())) {
+                try {
+                    execute();
+                } catch (IOException e) {
+                    showExceptionBox("An IO Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                } catch (CustomException e) {
+                    showExceptionBox("A Custom Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                }
             }
         }
+    }
+
+    /**
+     * Saves input data to core.
+     */
+    private void saveInputDataToCore() {
+        core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
+                outputFileLocation.getText(), runSpeed.getText(), stopTime.getText(),
+                showModel.isSelected(), lotSequencingRule.getValue(),
+                Integer.toString(batchSizeMin.getValueFactory().getValue()),
+                Integer.toString(batchSizeMax.getValueFactory().getValue()),
+                Integer.toString(batchSizeStep.getValueFactory().getValue()),
+                getSelectedResourceSelectCriteria(resourceSelectCriteria),
+                getSelectedLotSelectionCriteria(lotSelectionCriteria),
+                getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
+                getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
+    }
+
+    /**
+     * Executes Core with confirmation, waiting and completion alerts
+     */
+    private void execute() throws IOException, CustomException {
+        String title = "Simulation running...";
+        String text = "Please wait for the simulation to complete...";
+        Alert waitAlert = raiseAlertBox(Alert.AlertType.NONE, title, null, text, 480, 60);
+
+        waitAlert.show();
+
+        saveInputDataToCore();
+        jsonParser.storeData(core);
+        core.execute();
+
+        Stage stage = (Stage) waitAlert.getDialogPane().getScene().getWindow();
+        stage.close();
+        showCompletedBox();
     }
 
     /** Get the selected radio button for Resource Select Criteria from user input
@@ -436,10 +516,12 @@ public class MainGui extends UiPart<Stage> {
      */
     private String getSelectedTrolleyLocationSelectCriteria(ToggleGroup trolleyLocationSelectCriteria) {
         Toggle selection = trolleyLocationSelectCriteria.getSelectedToggle();
-        if (selection == trolleyLocationSelectCriteria1) {
+        if (selection == trolleyLocationSelectCriteria0) {
+            return "0";
+        } else if (selection == trolleyLocationSelectCriteria1) {
             return "1";
         } else {
-            return "0";
+            return "2";
         }
     }
 
@@ -456,16 +538,104 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Helper function to raise alert box with a supplied alert text.
+     * Raise dialog box for save confirmation.
+     * @return true when user clicks OK to confirm
+     */
+    private boolean confirmSave() {
+        String title = "Save Input";
+        String header = "Confirm to save input data?";
+        String text = Messages.CONFIRM_SAVE_MESSAGE;
+        Alert confirmationAlert = raiseAlertBox(Alert.AlertType.CONFIRMATION, title, header, text);
+
+        confirmationAlert.showAndWait();
+        if (confirmationAlert.getResult() == ButtonType.OK) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Raise dialog box for load confirmation.
+     * @return true when user clicks OK to confirm
+     */
+    private boolean confirmLoad() {
+        String title = "Open Input";
+        String header = "Confirm to load saved input data?";
+        String text = Messages.CONFIRM_LOAD_MESSAGE;
+        Alert confirmationAlert = raiseAlertBox(Alert.AlertType.CONFIRMATION, title, header, text);
+
+        confirmationAlert.showAndWait();
+        if (confirmationAlert.getResult() == ButtonType.OK) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Helper function to raise alert box with a supplied alert text for Confirmation.
+     * @return true when user clicks OK to confirm
+     */
+    private boolean confirmRun(int batchSizeMin, int batchSizeMax, int batchSizeStep) {
+        String title = "Confirm Simulation";
+        String header = "Confirm to run simulation?";
+        String text = "There will be " + ((batchSizeMax - batchSizeMin) / batchSizeStep + 1) + " simulation run(s).\n"
+                + Messages.CONFIRM_RUN_MESSAGE;
+        Alert confirmationAlert = raiseAlertBox(Alert.AlertType.CONFIRMATION, title, header, text);
+
+        confirmationAlert.showAndWait();
+        if (confirmationAlert.getResult() == ButtonType.OK) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Helper function to raise alert box with a supplied alert text for invalid input.
+     * @param alertText Alert text string to be displayed to the user.
+     */
+    private void showInvalidBox(String alertText) {
+        String title = "Invalid Input";
+        String header = "Invalid Input";
+        Alert errorAlert = raiseAlertBox(Alert.AlertType.ERROR, title, header, alertText);
+
+        errorAlert.showAndWait();
+    }
+
+    /**
+     * Helper function to raise alert box with a supplied alert text for Errors.
      * @param alertText Alert text string to be displayed to the user.
      */
     private void showErrorBox(String alertText) {
-        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-        errorAlert.setHeaderText("Invalid Input");
-        errorAlert.setContentText(alertText);
-        errorAlert.setResizable(true);
-        errorAlert.getDialogPane().setPrefSize(480, 240);
+        String title = "Error";
+        Alert errorAlert = raiseAlertBox(Alert.AlertType.ERROR, title, null, alertText);
+
         errorAlert.showAndWait();
+    }
+
+    /**
+     * Helper function to raise alert box with a supplied alert text for Exceptions.
+     * @param alertText Alert text string to be displayed to the user.
+     */
+    private void showExceptionBox(String alertText) {
+        String title = "Exception Error";
+        Alert errorAlert = raiseAlertBox(Alert.AlertType.ERROR, title, null, alertText);
+
+        errorAlert.showAndWait();
+    }
+
+    /**
+     * Helper function to raise alert box with a supplied alert text for Completion.
+     */
+    private void showCompletedBox() {
+        String title = "Simulation Complete";
+        String header = "Simulation has completed!";
+        String text = "You may run another simulation again or close the program.";
+        Alert completeAlert = raiseAlertBox(Alert.AlertType.INFORMATION, title, header, text);
+
+        completeAlert.showAndWait();
     }
 
     /**
@@ -614,97 +784,40 @@ public class MainGui extends UiPart<Stage> {
         }
     }
 
+    /**
+     * Generic function to raise alert box.
+     * @return Alert box
+     */
+    private Alert raiseAlertBox(Alert.AlertType type, String title, String header, String text, int prefWidth, int prefHeight) {
+        Alert alert = new Alert(type);
+
+        // Text
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(text);
+
+        // Properties
+        alert.setResizable(true);
+        alert.getDialogPane().setPrefSize(prefWidth, prefHeight);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
+        return alert;
+    }
+
+    /**
+     * Generic function to raise alert box with default dimensions.
+     * @return Alert box
+     */
+    private Alert raiseAlertBox(Alert.AlertType type, String title, String header, String text) {
+        return raiseAlertBox(type, title, header, text, 480, 240);
+    }
+
     public Stage getPrimaryStage() {
         return primaryStage;
     }
 
-    /* TODO: to be added
-    private void setAccelerators() {
-        setAccelerator(helpMenuItem, KeyCombination.valueOf("F1"));
-    }
-    */
-
-    /**
-     * Sets the accelerator of a MenuItem.
-     * @param keyCombination the KeyCombination value of the accelerator
-     */
-    private void setAccelerator(MenuItem menuItem, KeyCombination keyCombination) {
-        menuItem.setAccelerator(keyCombination);
-
-        /*
-         * TODO: the code below can be removed once the bug reported here
-         * https://bugs.openjdk.java.net/browse/JDK-8131666
-         * is fixed in later version of SDK.
-         *
-         * According to the bug report, TextInputControl (TextField, TextArea) will
-         * consume function-key events. Because CommandBox contains a TextField, and
-         * ResultDisplay contains a TextArea, thus some accelerators (e.g F1) will
-         * not work when the focus is in them because the key event is consumed by
-         * the TextInputControl(s).
-         *
-         * For now, we add following event filter to capture such key events and open
-         * help window purposely so to support accelerators even when focus is
-         * in CommandBox or ResultDisplay.
-         */
-        getRoot().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getTarget() instanceof TextInputControl && keyCombination.match(event)) {
-                menuItem.getOnAction().handle(new ActionEvent());
-                event.consume();
-            }
-        });
-    }
-
-    /**
-     * Fills up all the placeholders of this window.
-     * to be completed
-     */
-/*    void fillInnerParts() {
-        flashcardListPanel = new FlashcardListPanel(logic.getFilteredFlashcardList());
-        flashcardListPanelPlaceholder.getChildren().add(flashcardListPanel.getRoot());
-
-        resultDisplay = new ResultDisplay();
-        resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
-
-        flashcardDisplay = new FlashcardDisplay();
-        flashcardDisplayPlaceholder.getChildren().add(flashcardDisplay.getRoot());
-
-        CommandBox commandBox = new CommandBox(this::executeCommand);
-        commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
-        StatusBarFooter statusBarFooter = new StatusBarFooter(logic.getFlashcardListFilePath());
-        statusbarPlaceholder.getChildren().add(statusBarFooter.getRoot());
-    }*/
-
-    /**
-     * Sets the default size based on {@code guiSettings}. to be added
-     */
-/*    private void setWindowDefaultSize(GuiSettings guiSettings) {
-        primaryStage.setHeight(guiSettings.getWindowHeight());
-        primaryStage.setWidth(guiSettings.getWindowWidth());
-        if (guiSettings.getWindowCoordinates() != null) {
-            primaryStage.setX(guiSettings.getWindowCoordinates().getX());
-            primaryStage.setY(guiSettings.getWindowCoordinates().getY());
-        }
-    }*/
-
     void show() {
         primaryStage.show();
-    }
-
-    /**
-     * Closes the application.
-     */
-    @FXML
-    private void handleExit() {
-        core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                outputFileLocation.getText(), runSpeed.getText(), warmUpPeriod.getText(), stopTime.getText(),
-                showModel.isSelected(), lotSequencingRule.getValue(),
-                Integer.toString(batchSizeMin.getValueFactory().getValue()),
-                Integer.toString(batchSizeMax.getValueFactory().getValue()),
-                Integer.toString(batchSizeStep.getValueFactory().getValue()),
-                getSelectedResourceSelectCriteria(resourceSelectCriteria),
-                getSelectedLotSelectionCriteria(lotSelectionCriteria),
-                getSelectedTrolleyLocationSelectCriteria(trolleyLocationSelectCriteria),
-                getSelectedBibLoadOnLotCriteria(bibLoadOnLotCriteria));
-        primaryStage.hide();
     }
 }

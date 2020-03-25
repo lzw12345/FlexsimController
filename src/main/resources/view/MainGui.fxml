@@ -11,7 +11,11 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
@@ -26,438 +30,490 @@
 <fx:root fx:id="MainWindow" minHeight="360.0" minWidth="480.0" onCloseRequest="#handleExit" title="IBIS Simulation" type="Stage" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <scene>
       <Scene>
-          <BorderPane>
+         <BorderPane>
             <center>
-               <VBox BorderPane.alignment="CENTER">
-                  <children>
-                     <VBox>
-                        <children>
-                           <Label text="File Directories">
-                              <VBox.margin>
-                                 <Insets left="20.0" top="10.0" />
-                              </VBox.margin>
-                              <font>
-                                 <Font name="System Bold" size="16.0" />
-                              </font>
-                           </Label>
-                        </children>
-                     </VBox>
-                     <GridPane>
-                       <columnConstraints>
-                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
-                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="1020.0" minWidth="10.0" prefWidth="1020.0" />
-                       </columnConstraints>
-                       <rowConstraints>
-                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
-                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
-                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
-                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
-                       </rowConstraints>
-                        <children>
-                           <Label text="Flexsim (.exe): ">
-                              <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="flexsim.exe address (Found in Flexsim installation directory)" />
-                              </tooltip>
-                              <padding>
-                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                              </padding>
-                           </Label>
-                           <HBox fx:id="exeDragTarget" onDragDropped="#exeDragDropped" onDragOver="#exeDragOver" GridPane.columnIndex="1">
+               <TabPane BorderPane.alignment="CENTER">
+                  <tabs>
+                     <Tab closable="false" text="Simulation Settings">
+                        <content>
+                           <VBox prefHeight="200.0" prefWidth="100.0">
                               <children>
-                                 <TextField fx:id="exeLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file address, e.g. C:\Program Files (x86)\FlexSim7.3\program\flexsim.exe" HBox.hgrow="ALWAYS">
-                                    <cursor>
-                                       <Cursor fx:constant="DEFAULT" />
-                                    </cursor>
-                                 </TextField>
+                                 <VBox>
+                                    <children>
+                                       <Label text="Lot Dispatch">
+                                          <VBox.margin>
+                                             <Insets left="20.0" top="10.0" />
+                                          </VBox.margin>
+                                          <font>
+                                             <Font name="System Bold" size="16.0" />
+                                          </font>
+                                       </Label>
+                                       <Label text="Choose rule to sequence lots for simulation. Select &quot;First-Come-First-Served&quot; to keep the sequence supplied in Actual Lot Info. ">
+                                          <VBox.margin>
+                                             <Insets left="20.0" />
+                                          </VBox.margin>
+                                       </Label>
+                                    </children>
+                                 </VBox>
+                                 <GridPane minHeight="-Infinity" minWidth="-Infinity">
+                                    <columnConstraints>
+                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
+                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="1020.0" minWidth="10.0" prefWidth="1020.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                       <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <children>
+                                       <Label alignment="CENTER" contentDisplay="CENTER" text="Lot Sequencing Rule:">
+                                          <tooltip>
+                                             <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Default is First-Come-First-Served (FCFS) in order of Actual Lot Info" />
+                                          </tooltip>
+                                          <padding>
+                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                          </padding>
+                                       </Label>
+                                       <ChoiceBox fx:id="lotSequencingRule" prefWidth="300.0" GridPane.columnIndex="1">
+                                          <GridPane.margin>
+                                             <Insets bottom="5.0" top="5.0" />
+                                          </GridPane.margin>
+                                       </ChoiceBox>
+                                    </children>
+                                    <VBox.margin>
+                                       <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                                    </VBox.margin>
+                                 </GridPane>
+                                 <VBox>
+                                    <children>
+                                       <Label text="BIB Batch Size">
+                                          <VBox.margin>
+                                             <Insets left="20.0" top="10.0" />
+                                          </VBox.margin>
+                                          <font>
+                                             <Font name="System Bold" size="16.0" />
+                                          </font>
+                                       </Label>
+                                       <Label text="Choose the allowable minimum BIB batch size to try for each run. A range can be run incrementally based on the step size.  Maximum BIB batch size for every run is fixed at 24.">
+                                          <VBox.margin>
+                                             <Insets left="20.0" />
+                                          </VBox.margin>
+                                       </Label>
+                                    </children>
+                                 </VBox>
+                                 <GridPane minHeight="-Infinity" minWidth="-Infinity">
+                                    <columnConstraints>
+                                       <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="180.0" />
+                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="100.0" />
+                                       <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="180.0" />
+                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="100.0" />
+                                       <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="180.0" />
+                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="100.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                       <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <children>
+                                       <Label alignment="CENTER" contentDisplay="CENTER" text="Lowest Min. Batch Size to Run:">
+                                          <padding>
+                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                          </padding>
+                                          <tooltip>
+                                             <Tooltip text="Lower bound to run" />
+                                          </tooltip>
+                                       </Label>
+                                       <Spinner fx:id="batchSizeMin" GridPane.columnIndex="1">
+                                          <GridPane.margin>
+                                             <Insets right="20.0" />
+                                          </GridPane.margin>
+                                       </Spinner>
+                                       <Label alignment="CENTER" contentDisplay="CENTER" text="Highest Min. Batch Size to Run:" GridPane.columnIndex="2">
+                                          <padding>
+                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                          </padding>
+                                          <tooltip>
+                                             <Tooltip text="Upper bound to run" />
+                                          </tooltip>
+                                       </Label>
+                                       <Spinner fx:id="batchSizeMax" GridPane.columnIndex="3">
+                                          <GridPane.margin>
+                                             <Insets right="20.0" />
+                                          </GridPane.margin>
+                                       </Spinner>
+                                       <Label alignment="CENTER" contentDisplay="CENTER" text="Step Size between Runs:" GridPane.columnIndex="4">
+                                          <padding>
+                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                          </padding>
+                                          <tooltip>
+                                             <Tooltip text="Min. batch size after each step will be run" />
+                                          </tooltip>
+                                       </Label>
+                                       <Spinner fx:id="batchSizeStep" GridPane.columnIndex="5">
+                                          <GridPane.margin>
+                                             <Insets right="20.0" />
+                                          </GridPane.margin>
+                                       </Spinner>
+                                    </children>
+                                    <VBox.margin>
+                                       <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                                    </VBox.margin>
+                                 </GridPane>
+                                 <VBox>
+                                    <children>
+                                       <Label text="Additional Settings">
+                                          <VBox.margin>
+                                             <Insets left="20.0" top="10.0" />
+                                          </VBox.margin>
+                                          <font>
+                                             <Font name="System Bold" size="16.0" />
+                                          </font>
+                                       </Label>
+                                    </children>
+                                 </VBox>
+                                 <GridPane minHeight="-Infinity" minWidth="-Infinity">
+                                    <columnConstraints>
+                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
+                                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <VBox.margin>
+                                       <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                                    </VBox.margin>
+                                    <children>
+                                       <Label text="BIB Load on Lot Criteria:">
+                                          <tooltip>
+                                             <Tooltip text="This feature is to use standard procedure to load BIB, or to maximize the use of BIB by allowing multiple lots to be loaded onto a single BIB" />
+                                          </tooltip>
+                                       </Label>
+                                       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
+                                          <children>
+                                             <RadioButton fx:id="bibLoadOnLotCriteria1" mnemonicParsing="false" text="One lot per BIB">
+                                                <HBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </HBox.margin>
+                                             </RadioButton>
+                                             <RadioButton fx:id="bibLoadOnLotCriteria2" mnemonicParsing="false" text="Multi lots per BIB">
+                                                <HBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </HBox.margin>
+                                             </RadioButton>
+                                          </children>
+                                       </HBox>
+                                       <Label text="Resource Select Criteria:" GridPane.rowIndex="1">
+                                          <tooltip>
+                                             <Tooltip text="Criteria to select resource" />
+                                          </tooltip>
+                                       </Label>
+                                       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                          <children>
+                                             <RadioButton fx:id="resourceSelectCriteria1" mnemonicParsing="false" text="First Available">
+                                                <HBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </HBox.margin>
+                                             </RadioButton>
+                                             <RadioButton fx:id="resourceSelectCriteria2" mnemonicParsing="false" text="Shortest Queue">
+                                                <HBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </HBox.margin>
+                                             </RadioButton>
+                                             <RadioButton fx:id="resourceSelectCriteria3" mnemonicParsing="false" text="Shortest Distance">
+                                                <HBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </HBox.margin>
+                                             </RadioButton>
+                                             <RadioButton fx:id="resourceSelectCriteria4" mnemonicParsing="false" text="Shortest Queue + Shortest Distance">
+                                                <HBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </HBox.margin>
+                                             </RadioButton>
+                                          </children>
+                                       </HBox>
+                                       <Label text="Lot Selection Criteria for Loading:" GridPane.rowIndex="2">
+                                          <tooltip>
+                                             <Tooltip text="Lot selection criteria by loaders" />
+                                          </tooltip>
+                                       </Label>
+                                       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                          <children>
+                                             <RadioButton fx:id="lotSelectionCriteria1" mnemonicParsing="false" text="First-In-First-Out (FIFO)">
+                                                <HBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </HBox.margin>
+                                             </RadioButton>
+                                             <RadioButton fx:id="lotSelectionCriteria2" mnemonicParsing="false" text="Lot with same loader kit &amp; BIB type as previous lot processed">
+                                                <HBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </HBox.margin>
+                                             </RadioButton>
+                                             <RadioButton fx:id="lotSelectionCriteria3" mnemonicParsing="false" text="Lot with same loader kit &amp; BIB type as previous lot processed + Least changeover time">
+                                                <HBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </HBox.margin>
+                                             </RadioButton>
+                                          </children>
+                                       </HBox>
+                                       <Label text="Trolley Location Select Criteria:" GridPane.rowIndex="3">
+                                          <tooltip>
+                                             <Tooltip text="This option allows trolley to be placed at one of the empty trolley locations for a production location based on these criteria" />
+                                          </tooltip>
+                                       </Label>
+                                       <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                          <children>
+                                             <RadioButton fx:id="trolleyLocationSelectCriteria0" mnemonicParsing="false" text="Shortest Distance">
+                                                <HBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </HBox.margin>
+                                             </RadioButton>
+                                             <RadioButton fx:id="trolleyLocationSelectCriteria1" mnemonicParsing="false" text="Shortest Queue">
+                                                <HBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </HBox.margin>
+                                             </RadioButton>
+                                             <RadioButton fx:id="trolleyLocationSelectCriteria2" mnemonicParsing="false" text="Original Location">
+                                                <HBox.margin>
+                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                </HBox.margin>
+                                             </RadioButton>
+                                          </children>
+                                       </HBox>
+                                    </children>
+                                 </GridPane>
                               </children>
-                           </HBox>
-                           <Label text="Model (.fsm): " GridPane.rowIndex="1">
-                              <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Base Flexsim model file address" />
-                              </tooltip>
-                              <padding>
-                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                              </padding>
-                           </Label>
-                           <HBox fx:id="modelDragTarget" onDragDropped="#modelDragDropped" onDragOver="#modelDragOver" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           </VBox>
+                        </content>
+                     </Tab>
+                     <Tab closable="false" text="Run Parameters">
+                        <content>
+                           <VBox prefHeight="200.0" prefWidth="100.0">
                               <children>
-                                 <TextField fx:id="modelFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file address, e.g. C:\Documents\IBIS Model.fsm" HBox.hgrow="ALWAYS">
-                                    <cursor>
-                                       <Cursor fx:constant="DEFAULT" />
-                                    </cursor>
-                                 </TextField>
+                                 <VBox>
+                                    <children>
+                                       <Label text="Simulation Run Parameters">
+                                          <VBox.margin>
+                                             <Insets left="20.0" top="10.0" />
+                                          </VBox.margin>
+                                          <font>
+                                             <Font name="System Bold" size="16.0" />
+                                          </font>
+                                       </Label>
+                                       <Label text="Define the parameters for each simulation run. The higher the stop time, the greater the time frame for simulation. Note that total real time required is dependent on system performance.">
+                                          <VBox.margin>
+                                             <Insets left="20.0" />
+                                          </VBox.margin>
+                                       </Label>
+                                    </children>
+                                 </VBox>
+                                 <GridPane>
+                                    <columnConstraints>
+                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
+                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="1020.0" minWidth="10.0" prefWidth="1020.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                       <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <children>
+                                       <Label alignment="CENTER" contentDisplay="CENTER" text="Run Speed:">
+                                          <tooltip>
+                                             <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="(hours/real second) Default is 4 hours/real second but limited to system performance" />
+                                          </tooltip>
+                                          <padding>
+                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                          </padding>
+                                       </Label>
+                                       <TextField fx:id="runSpeed" promptText="hours/real second" GridPane.columnIndex="1">
+                                          <GridPane.margin>
+                                             <Insets />
+                                          </GridPane.margin>
+                                       </TextField>
+                                       <Label alignment="CENTER" contentDisplay="CENTER" text="Stop Time:" GridPane.rowIndex="1">
+                                          <tooltip>
+                                             <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="(hours) Total run time of simulation" />
+                                          </tooltip>
+                                          <padding>
+                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                          </padding>
+                                       </Label>
+                                       <TextField fx:id="stopTime" promptText="hours" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                          <GridPane.margin>
+                                             <Insets />
+                                          </GridPane.margin>
+                                       </TextField>
+                                    </children>
+                                    <VBox.margin>
+                                       <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                                    </VBox.margin>
+                                 </GridPane>
                               </children>
-                           </HBox>
-                           <Label text="Input Excel (.xlsx): " GridPane.rowIndex="2">
-                              <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Input Excel file address" />
-                              </tooltip>
-                              <padding>
-                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                              </padding>
-                           </Label>
-                           <HBox fx:id="inputFileDragTarget" onDragDropped="#inputDragDropped" onDragOver="#inputDragOver" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           </VBox>
+                        </content>
+                     </Tab>
+                     <Tab closable="false" text="File Directories">
+                        <content>
+                           <VBox>
                               <children>
-                                 <TextField fx:id="inputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file address, e.g. C:\Documents\Input.xlsx" HBox.hgrow="ALWAYS">
-                                    <cursor>
-                                       <Cursor fx:constant="DEFAULT" />
-                                    </cursor>
-                                 </TextField>
+                                 <VBox>
+                                    <children>
+                                       <Label text="File Directories">
+                                          <VBox.margin>
+                                             <Insets left="20.0" top="10.0" />
+                                          </VBox.margin>
+                                          <font>
+                                             <Font name="System Bold" size="16.0" />
+                                          </font>
+                                       </Label>
+                                       <Label text="File locations are required for the simulation model to run. For Output Excel, simply create a new empty Excel file in the desired location for the simulation output to be generated.">
+                                          <VBox.margin>
+                                             <Insets left="20.0" />
+                                          </VBox.margin>
+                                       </Label>
+                                    </children>
+                                 </VBox>
+                                 <GridPane>
+                                    <columnConstraints>
+                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
+                                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="1020.0" minWidth="10.0" prefWidth="1020.0" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                       <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    </rowConstraints>
+                                    <children>
+                                       <Label text="FlexSim (.exe): ">
+                                          <tooltip>
+                                             <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="flexsim.exe address (Found in FlexSim installation directory)" />
+                                          </tooltip>
+                                          <padding>
+                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                          </padding>
+                                       </Label>
+                                       <HBox fx:id="exeDragTarget" onDragDropped="#exeDragDropped" onDragOver="#exeDragOver" GridPane.columnIndex="1">
+                                          <children>
+                                             <TextField fx:id="exeLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file address, e.g. C:\Program Files (x86)\FlexSim7.3\program\flexsim.exe" HBox.hgrow="ALWAYS">
+                                                <cursor>
+                                                   <Cursor fx:constant="DEFAULT" />
+                                                </cursor>
+                                             </TextField>
+                                          </children>
+                                       </HBox>
+                                       <Label text="Model (.fsm): " GridPane.rowIndex="1">
+                                          <tooltip>
+                                             <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Base FlexSim model file address" />
+                                          </tooltip>
+                                          <padding>
+                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                          </padding>
+                                       </Label>
+                                       <HBox fx:id="modelDragTarget" onDragDropped="#modelDragDropped" onDragOver="#modelDragOver" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                          <children>
+                                             <TextField fx:id="modelFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file address, e.g. C:\Documents\IBIS Model.fsm" HBox.hgrow="ALWAYS">
+                                                <cursor>
+                                                   <Cursor fx:constant="DEFAULT" />
+                                                </cursor>
+                                             </TextField>
+                                          </children>
+                                       </HBox>
+                                       <Label text="Input Excel (.xlsx): " GridPane.rowIndex="2">
+                                          <tooltip>
+                                             <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Input Excel file address" />
+                                          </tooltip>
+                                          <padding>
+                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                          </padding>
+                                       </Label>
+                                       <HBox fx:id="inputFileDragTarget" onDragDropped="#inputDragDropped" onDragOver="#inputDragOver" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                          <children>
+                                             <TextField fx:id="inputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file address, e.g. C:\Documents\Input.xlsx" HBox.hgrow="ALWAYS">
+                                                <cursor>
+                                                   <Cursor fx:constant="DEFAULT" />
+                                                </cursor>
+                                             </TextField>
+                                          </children>
+                                       </HBox>
+                                       <Label text="Output Excel (.xlsx): " GridPane.rowIndex="3">
+                                          <tooltip>
+                                             <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Output Excel file address" />
+                                          </tooltip>
+                                          <padding>
+                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                          </padding>
+                                       </Label>
+                                       <HBox fx:id="outputFileDragTarget" onDragDropped="#outputDragDropped" onDragOver="#outputDragOver" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                          <children>
+                                             <TextField fx:id="outputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file address, e.g. C:\Documents\Output.xlsx" HBox.hgrow="ALWAYS">
+                                                <cursor>
+                                                   <Cursor fx:constant="DEFAULT" />
+                                                </cursor>
+                                             </TextField>
+                                          </children>
+                                       </HBox>
+                                    </children>
+                                    <VBox.margin>
+                                       <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                                    </VBox.margin>
+                                 </GridPane>
                               </children>
-                           </HBox>
-                           <Label text="Output Excel (.xlsx): " GridPane.rowIndex="3">
-                              <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Output Excel file address" />
-                              </tooltip>
-                              <padding>
-                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                              </padding>
-                           </Label>
-                           <HBox fx:id="outputFileDragTarget" onDragDropped="#outputDragDropped" onDragOver="#outputDragOver" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                              <children>
-                                 <TextField fx:id="outputFileLocation" alignment="TOP_LEFT" promptText="Drag here or type in the file address, e.g. C:\Documents\Output.xlsx" HBox.hgrow="ALWAYS">
-                                    <cursor>
-                                       <Cursor fx:constant="DEFAULT" />
-                                    </cursor>
-                                 </TextField>
-                              </children>
-                           </HBox>
-                        </children>
-                        <VBox.margin>
-                           <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                        </VBox.margin>
-                     </GridPane>
-                     <VBox>
-                        <children>
-                           <Label text="Simulation Run Parameters">
-                              <VBox.margin>
-                                 <Insets left="20.0" top="10.0" />
-                              </VBox.margin>
-                              <font>
-                                 <Font name="System Bold" size="16.0" />
-                              </font>
-                           </Label>
-                        </children>
-                     </VBox>
-                     <GridPane>
-                        <columnConstraints>
-                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
-                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="1020.0" minWidth="10.0" prefWidth="1020.0" />
-                        </columnConstraints>
-                        <rowConstraints>
-                           <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
-                           <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
-                           <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
-                        </rowConstraints>
-                        <children>
-                           <Label alignment="CENTER" contentDisplay="CENTER" text="Run Speed:">
-                              <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="(hours/real second) Default is 4 hours/real second but limited to system performance" />
-                              </tooltip>
-                              <padding>
-                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                              </padding>
-                           </Label>
-                           <TextField fx:id="runSpeed" promptText="hours/real second" GridPane.columnIndex="1">
-                              <GridPane.margin>
-                                 <Insets />
-                              </GridPane.margin></TextField>
-                           <Label alignment="CENTER" contentDisplay="CENTER" text="Warm-up Period:" GridPane.rowIndex="1">
-                              <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="(hours) Default is 0 hours" />
-                              </tooltip>
-                              <padding>
-                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                              </padding>
-                           </Label>
-                           <TextField fx:id="warmUpPeriod" promptText="hours" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                              <GridPane.margin>
-                                 <Insets />
-                              </GridPane.margin></TextField>
-                           <Label alignment="CENTER" contentDisplay="CENTER" text="Stop Time:" GridPane.rowIndex="2">
-                              <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="(hours) Total run time of simulation" />
-                              </tooltip>
-                              <padding>
-                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                              </padding>
-                           </Label>
-                           <TextField fx:id="stopTime" promptText="hours" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                              <GridPane.margin>
-                                 <Insets />
-                              </GridPane.margin></TextField>
-                        </children>
-                        <VBox.margin>
-                           <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                        </VBox.margin>
-                     </GridPane>
-                     <VBox>
-                        <children>
-                           <Label text="Lot Dispatch">
-                              <VBox.margin>
-                                 <Insets left="20.0" top="10.0" />
-                              </VBox.margin>
-                              <font>
-                                 <Font name="System Bold" size="16.0" />
-                              </font>
-                           </Label>
-                        </children>
-                     </VBox>
-                     <GridPane>
-                        <columnConstraints>
-                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
-                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="1020.0" minWidth="10.0" prefWidth="1020.0" />
-                        </columnConstraints>
-                        <rowConstraints>
-                           <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
-                        </rowConstraints>
-                        <children>
-                           <Label alignment="CENTER" contentDisplay="CENTER" text="Lot Sequencing Rule:">
-                              <tooltip>
-                                 <Tooltip autoHide="true" style="-fx-show-delay: 0s;" text="Default is First-Come-First-Served (FCFS) in order of Actual Lot Info" />
-                              </tooltip>
-                              <padding>
-                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                              </padding>
-                           </Label>
-                           <ChoiceBox fx:id="lotSequencingRule" prefWidth="300.0" GridPane.columnIndex="1">
-                              <GridPane.margin>
-                                 <Insets bottom="5.0" top="5.0" />
-                              </GridPane.margin>
-                           </ChoiceBox>
-                        </children>
-                        <VBox.margin>
-                           <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                        </VBox.margin>
-                     </GridPane>
-                     <VBox>
-                        <children>
-                           <Label text="Batch Size for Runs">
-                              <VBox.margin>
-                                 <Insets left="20.0" top="10.0" />
-                              </VBox.margin>
-                              <font>
-                                 <Font name="System Bold" size="16.0" />
-                              </font>
-                           </Label>
-                        </children>
-                     </VBox>
-                     <GridPane>
-                       <columnConstraints>
-                         <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="180.0" />
-                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="100.0" />
-                           <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="180.0" />
-                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="100.0" />
-                           <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="180.0" />
-                           <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="100.0" />
-                       </columnConstraints>
-                       <rowConstraints>
-                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
-                       </rowConstraints>
-                        <children>
-                           <Label alignment="CENTER" contentDisplay="CENTER" text="Minimum Batch Size of Runs:">
-                              <padding>
-                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                              </padding>
-                              <tooltip>
-                                 <Tooltip text="Smallest batch size to run" />
-                              </tooltip>
-                           </Label>
-                           <Spinner fx:id="batchSizeMin" GridPane.columnIndex="1">
-                              <GridPane.margin>
-                                 <Insets right="20.0" />
-                              </GridPane.margin>
-                           </Spinner>
-                           <Label alignment="CENTER" contentDisplay="CENTER" text="Maximum Batch Size of Runs:" GridPane.columnIndex="2">
-                              <padding>
-                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                              </padding>
-                              <tooltip>
-                                 <Tooltip text="Largest batch size to run" />
-                              </tooltip>
-                           </Label>
-                           <Spinner fx:id="batchSizeMax" GridPane.columnIndex="3">
-                              <GridPane.margin>
-                                 <Insets right="20.0" />
-                              </GridPane.margin>
-                           </Spinner>
-                           <Label alignment="CENTER" contentDisplay="CENTER" text="Step Size between Runs:" GridPane.columnIndex="4">
-                              <padding>
-                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                              </padding>
-                              <tooltip>
-                                 <Tooltip text="Batch size after each step will be run until stated max" />
-                              </tooltip>
-                           </Label>
-                           <Spinner fx:id="batchSizeStep" GridPane.columnIndex="5">
-                              <GridPane.margin>
-                                 <Insets right="20.0" />
-                              </GridPane.margin>
-                           </Spinner>
-                        </children>
-                        <VBox.margin>
-                           <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                        </VBox.margin>
-                     </GridPane>
-                     <VBox>
-                        <children>
-                           <Label text="Additional Parameters">
-                              <VBox.margin>
-                                 <Insets left="20.0" top="10.0" />
-                              </VBox.margin>
-                              <font>
-                                 <Font name="System Bold" size="16.0" />
-                              </font>
-                           </Label>
-                        </children>
-                     </VBox>
-                     <GridPane>
-                       <columnConstraints>
-                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="130.0" prefWidth="180.0" />
-                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                       </columnConstraints>
-                       <rowConstraints>
-                           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                       </rowConstraints>
-                        <VBox.margin>
-                           <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                        </VBox.margin>
-                        <children>
-                           <Label text="BIB Load on Lot Criteria:">
-                              <tooltip>
-                                 <Tooltip text="This feature is to use standard procedure to load BIB, or to maximize the use of BIB by allowing multiple lots to be loaded onto a single BIB" />
-                              </tooltip>
-                           </Label>
-                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
-                              <children>
-                                 <RadioButton fx:id="bibLoadOnLotCriteria1" mnemonicParsing="false" text="One lot per BIB">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                                 <RadioButton fx:id="bibLoadOnLotCriteria2" mnemonicParsing="false" text="Multi lots per BIB">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                              </children>
-                           </HBox>
-                           <Label text="Resource Select Criteria:" GridPane.rowIndex="1">
-                              <tooltip>
-                                 <Tooltip text="Criteria to select resource" />
-                              </tooltip></Label>
-                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                              <children>
-                                 <RadioButton fx:id="resourceSelectCriteria1" mnemonicParsing="false" text="First Available">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                                 <RadioButton fx:id="resourceSelectCriteria2" mnemonicParsing="false" text="Shortest Queue">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                                 <RadioButton fx:id="resourceSelectCriteria3" mnemonicParsing="false" text="Shortest Distance">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                                 <RadioButton fx:id="resourceSelectCriteria4" mnemonicParsing="false" text="Shortest Queue + Shortest Distance">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                              </children>
-                           </HBox>
-                           <Label text="Lot Selection Criteria for Loading:" GridPane.rowIndex="2">
-                              <tooltip>
-                                 <Tooltip text="Lot selection criteria by loaders" />
-                              </tooltip></Label>
-                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                              <children>
-                                 <RadioButton fx:id="lotSelectionCriteria1" mnemonicParsing="false" text="First-In-First-Out (FIFO)">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                                 <RadioButton fx:id="lotSelectionCriteria2" mnemonicParsing="false" text="Lot with same loader kit &amp; BIB type as previous lot processed">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                                 <RadioButton fx:id="lotSelectionCriteria3" mnemonicParsing="false" text="Lot with same loader kit &amp; BIB type as previous lot processed + Least changeover time">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                              </children>
-                           </HBox>
-                           <Label text="Trolley Location Select Criteria:" GridPane.rowIndex="3">
-                              <tooltip>
-                                 <Tooltip text="This option allows trolley to be placed at one of the empty trolley locations for a production location based on these criteria" />
-                              </tooltip>
-                           </Label>
-                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                              <children>
-                                 <RadioButton fx:id="trolleyLocationSelectCriteria0" mnemonicParsing="false" text="Shortest Distance">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                                 <RadioButton fx:id="trolleyLocationSelectCriteria1" mnemonicParsing="false" text="Shortest Queue">
-                                    <HBox.margin>
-                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                    </HBox.margin>
-                                 </RadioButton>
-                              </children>
-                           </HBox>
-                        </children>
-                     </GridPane>
-                     <VBox>
-                        <children>
-                           <CheckBox fx:id="showModel" mnemonicParsing="false" text="Show model in Flexsim?">
-                              <VBox.margin>
-                                 <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                              </VBox.margin>
-                           </CheckBox>
-                           <Button mnemonicParsing="false" onAction="#handleModelExecution" text="Run Model">
-                              <VBox.margin>
-                                 <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                              </VBox.margin>
-                              <padding>
-                                 <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-                              </padding>
-                           </Button>
-                        </children>
-                     </VBox>
-                  </children>
-               </VBox>
+                           </VBox>
+                        </content>
+                     </Tab>
+                  </tabs>
+                  <padding>
+                     <Insets bottom="10.0" />
+                  </padding>
+               </TabPane>
             </center>
             <top>
-               <MenuBar BorderPane.alignment="CENTER">
-                 <menus>
-                   <Menu mnemonicParsing="false" text="File">
+            <MenuBar BorderPane.alignment="CENTER">
+               <menus>
+                  <Menu mnemonicParsing="false" text="File">
                      <items>
-                       <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Close" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleDefault" text="New     " />
+                        <MenuItem mnemonicParsing="false" onAction="#handleLoad" text="Open     " />
+                        <MenuItem mnemonicParsing="false" onAction="#handleSave" text="Save     " />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Exit     " />
                      </items>
-                   </Menu>
-                   <Menu mnemonicParsing="false" text="Edit">
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="Help">
                      <items>
-                       <MenuItem mnemonicParsing="false" text="Delete" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="About     " />
                      </items>
-                   </Menu>
-                   <Menu mnemonicParsing="false" text="Help">
-                     <items>
-                       <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                   </Menu>
-                 </menus>
-               </MenuBar>
-            </top></BorderPane>
+                  </Menu>
+               </menus>
+            </MenuBar>
+         </top>
+            <bottom>
+               <VBox BorderPane.alignment="CENTER">
+                  <children>
+                     <Separator prefWidth="200.0">
+                        <VBox.margin>
+                           <Insets bottom="5.0" />
+                        </VBox.margin>
+                     </Separator>
+                     <CheckBox fx:id="showModel" mnemonicParsing="false" text="Show model on FlexSim?">
+                        <VBox.margin>
+                           <Insets left="20.0" right="20.0" />
+                        </VBox.margin>
+                        <padding>
+                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        </padding>
+                     </CheckBox>
+                     <Button mnemonicParsing="false" onAction="#handleModelExecution" text="Run Simulation">
+                        <VBox.margin>
+                           <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                        </VBox.margin>
+                        <padding>
+                           <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                        </padding>
+                     </Button>
+                  </children>
+               </VBox>
+            </bottom></BorderPane>
       </Scene>
    </scene>
 </fx:root>
