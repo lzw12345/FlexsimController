@@ -18,11 +18,11 @@ public class Main extends Application {
     public Main() throws IOException {
         jsonParser = new JsonParser();
         core = jsonParser.loadData();
-        ui = new UiManager(core);
+        ui = new UiManager(core, jsonParser);
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         ui.start(stage);
     }
 

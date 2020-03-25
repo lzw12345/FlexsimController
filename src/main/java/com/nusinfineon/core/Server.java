@@ -5,19 +5,16 @@ import java.net.*;
 import java.io.*;
 import java.util.concurrent.TimeUnit;
 
-public class Server
-{
+public class Server {
     //initialize socket and input stream
-    private Socket          socket   = null;
-    private ServerSocket    server   = null;
-    private DataInputStream in       =  null;
+    private Socket socket = null;
+    private ServerSocket server = null;
+    private DataInputStream in = null;
 
     // constructor with port
-    public Server(int port)
-    {
+    public Server(int port) {
         // starts server and waits for a connection
-        try
-        {
+        try {
             server = new ServerSocket(port);
             System.out.println("Server started");
 
@@ -29,12 +26,10 @@ public class Server
             // close connection
             socket.close();
             server.close();
+
             TimeUnit.SECONDS.sleep(5);
-        }
-        catch(IOException | InterruptedException i)
-        {
+        } catch(IOException | InterruptedException i) {
             System.out.println(i);
         }
     }
-
 }

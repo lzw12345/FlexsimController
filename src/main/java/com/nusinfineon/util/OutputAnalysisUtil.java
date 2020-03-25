@@ -61,7 +61,6 @@ public class OutputAnalysisUtil {
 
             rowIndex = rowIndex + 1;
         }
-
     }
 
     public static void saveProductCycleTimeFromDailyThroughputToNewSheet(String sheetName,
@@ -100,8 +99,6 @@ public class OutputAnalysisUtil {
 
             rowIndex = rowIndex + 1;
         }
-
-
     }
 
 
@@ -141,7 +138,6 @@ public class OutputAnalysisUtil {
 
             rowIndex = rowIndex + 1;
         }
-
     }
 
     public static void saveRunTypeAndUtilizationRatesTONewSheet(String sheetName, String runtype,
@@ -218,7 +214,6 @@ public class OutputAnalysisUtil {
 
             rowIndex = rowIndex + 1;
         }
-
     }
 
     public static File getProductKeyCostExcelFileFromRelativeDirectory() throws IOException {
@@ -258,7 +253,6 @@ public class OutputAnalysisUtil {
 
             rowIndex ++;
         }
-
     }
 
     /**
@@ -291,7 +285,6 @@ public class OutputAnalysisUtil {
 
             rowIndex ++;
         }
-
     }
 
     /**
@@ -307,7 +300,6 @@ public class OutputAnalysisUtil {
 
             hashMapOfDoubleValues.put(s, value);
         }
-
         return hashMapOfDoubleValues;
     }
 
@@ -453,7 +445,6 @@ public class OutputAnalysisUtil {
                 }
             }
         }
-
         return mapOfColumns;
     }
 
@@ -526,9 +517,5 @@ public class OutputAnalysisUtil {
 
             rowIndex = rowIndex + 1;
         }
-
     }
-
 }
-
-

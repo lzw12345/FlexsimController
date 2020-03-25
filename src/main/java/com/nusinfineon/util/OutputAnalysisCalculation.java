@@ -55,8 +55,8 @@ public class OutputAnalysisCalculation {
 
             // Iterate through the rows and get counts and sum of throughput.
             // Throughput = Time-in-system / Qty out
-            HashMap<String, Double> productThroughputs = new HashMap<>();
-            HashMap<String, Integer> productRowCounts = new HashMap();
+            HashMap<String, Double> productThroughputs = new HashMap<String, Double>();
+            HashMap<String, Integer> productRowCounts = new HashMap<String, Integer>();
             for (int rowIndex = 1; rowIndex < throughputSheet.getPhysicalNumberOfRows(); rowIndex++) {
                 Row currentRow = throughputSheet.getRow(rowIndex);
                 Cell qtyCell = currentRow.getCell(qtyOutColumnIndex);
@@ -81,14 +81,12 @@ public class OutputAnalysisCalculation {
                         } else {
                             productThroughputs.put(product, throughput );
                         }
-
                     }
                 } // End of If statement
-
             } // End of for loop
 
             // Get average throughputs for each product
-            TreeMap<String, Double> productAverageThroughput = new TreeMap<>();
+            TreeMap<String, Double> productAverageThroughput = new TreeMap<String, Double>();
             for (String product: productRowCounts.keySet()) {
                 Integer count = productRowCounts.get(product);
                 Double throughputSum = productThroughputs.get(product);
@@ -131,8 +129,8 @@ public class OutputAnalysisCalculation {
             } // End of for loop block
 
             // Obtain counts of product rows and sum up total "time in system".
-            TreeMap<String, Integer> mapOfProductRowCounts = new TreeMap<>();
-            TreeMap<String, Double> mapOfTimeInSystem = new TreeMap<>();
+            TreeMap<String, Integer> mapOfProductRowCounts = new TreeMap<String, Integer>();
+            TreeMap<String, Double> mapOfTimeInSystem = new TreeMap<String, Double>();
             for (int rowIndex = 1; rowIndex < throughputSheet.getPhysicalNumberOfRows(); rowIndex++) {
                 Row currentRow = throughputSheet.getRow(rowIndex);
                 Cell timeCell = currentRow.getCell(timeColumnIndex);
@@ -157,18 +155,16 @@ public class OutputAnalysisCalculation {
                         }
                     }
                 }
-
             } // end of for loop
 
             // Get the average time-in-system for each product
-            TreeMap<String, Double> mapOfProductToAverageTimeInSystem = new TreeMap<>();
+            TreeMap<String, Double> mapOfProductToAverageTimeInSystem = new TreeMap<String, Double>();
             for (String product: mapOfProductRowCounts.keySet()) {
                 Integer counts = mapOfProductRowCounts.get(product);
                 Double timeSum = mapOfTimeInSystem.get(product);
                 Double averageTimeInSystem = timeSum / counts;
                 mapOfProductToAverageTimeInSystem.put(product, averageTimeInSystem);
             }
-
             return mapOfProductToAverageTimeInSystem;
         } catch (Exception e) {
             throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
@@ -210,7 +206,7 @@ public class OutputAnalysisCalculation {
             } // End of for loop block
 
             // Iterate through the rows and get sum of quantity out for each day
-            TreeMap<Double, Double> dailyOutputs = new TreeMap<>();
+            TreeMap<Double, Double> dailyOutputs = new TreeMap<Double, Double>();
 
             for (int rowIndex = 1; rowIndex < throughputSheet.getPhysicalNumberOfRows(); rowIndex++) {
                 Row currentRow = throughputSheet.getRow(rowIndex);
@@ -227,13 +223,9 @@ public class OutputAnalysisCalculation {
                             dailyOutputs.put(day,  qtyValue);
                         }
                     }
-
                 }
-
             } // end of for loop
             return dailyOutputs;
-
-
         } catch (Exception e) {
             throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
         }
@@ -311,9 +303,7 @@ public class OutputAnalysisCalculation {
                             }
                         }
                     }
-
                 }
-
             } // End of for loop
 
             // Obtain the average cycle time for each product
@@ -325,13 +315,10 @@ public class OutputAnalysisCalculation {
                 Double productAverageCT = productTotal / (double) productCounts;
                 averageCycleTimeForEachProduct.put(productID, productAverageCT);
             }
-
             return averageCycleTimeForEachProduct;
-
         } catch (Exception e) {
             throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
         }
-
     }
 
     /**
@@ -349,7 +336,6 @@ public class OutputAnalysisCalculation {
             throws CustomException {
 
         try {
-
             // Returns an empty map if throughput sheet does not exist
             if (dailyThroughputSheet == null) {
                 return new TreeMap<String, ArrayList<Double>>();
@@ -406,7 +392,7 @@ public class OutputAnalysisCalculation {
             } // End of fot loop
 
             // Get the total worth of products outputted.
-            HashMap<String, Double> mapOfProductToWorth = new HashMap<>();
+            HashMap<String, Double> mapOfProductToWorth = new HashMap<String, Double>();
             for (String productKey : mapOfProductOutCounts.keySet()) {
                 Double productCost = 0.0;
                 // If an associated cost exists
@@ -418,7 +404,6 @@ public class OutputAnalysisCalculation {
 
                 Double productWorth = productCost * mapOfProductOutCounts.get(productKey);
                 mapOfProductToWorth.put(productKey, productWorth);
-
             }
 
             // Return a hashmap of the product id to an array of 2 items: {product output count & total worth}
@@ -434,74 +419,7 @@ public class OutputAnalysisCalculation {
 
                 mapOfProductToOutputAndWorth.put(product, productOutputAndWorth);
             }
-
             return mapOfProductToOutputAndWorth;
-
-        } catch (Exception e) {
-            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
-        }
-    }
-
-    public static TreeMap<String, Double> calculateAverageProductCycleTime(Sheet productCycleTimeSheet) throws CustomException {
-
-        try {
-
-            final String STAYTIME_AVERAGE_COLUMN = "StayTime Average (hr)";
-            final String STAYTIME_MIN_COLUMN = "StayTime Min (hr)";
-            final String STAYTIME_MAX_COLUMN = "StayTime Max (hr)";
-
-            // Get index of column names and initialize counts
-            HashMap<String, Integer> mapOfStayTimeToIndex = new HashMap<String, Integer>();
-            HashMap<String, Long> mapOfStayTimeToCounts = new HashMap<String, Long>();
-            Row headerRow = productCycleTimeSheet.getRow(0);
-            for (int cellIndex = 0; cellIndex < headerRow.getPhysicalNumberOfCells(); cellIndex++) {
-                String cellValue = headerRow.getCell(cellIndex).getStringCellValue();
-                switch (cellValue) {
-                    case STAYTIME_AVERAGE_COLUMN:
-                        mapOfStayTimeToIndex.put(STAYTIME_AVERAGE_COLUMN, cellIndex);
-                        mapOfStayTimeToCounts.put(STAYTIME_AVERAGE_COLUMN, Long.valueOf(0));
-                        break;
-                    case STAYTIME_MIN_COLUMN:
-                        mapOfStayTimeToIndex.put(STAYTIME_MIN_COLUMN, cellIndex);
-                        mapOfStayTimeToCounts.put(STAYTIME_MIN_COLUMN, Long.valueOf(0));
-                        break;
-                    case STAYTIME_MAX_COLUMN:
-                        mapOfStayTimeToIndex.put(STAYTIME_MAX_COLUMN, cellIndex);
-                        mapOfStayTimeToCounts.put(STAYTIME_MAX_COLUMN, Long.valueOf(0));
-                        break;
-                    default:
-                        break;
-                } // End of switch case block
-            } // End of for loop block
-
-            // Iterate through all rows and get the counts
-            for (int rowIndex = 1; rowIndex < productCycleTimeSheet.getPhysicalNumberOfRows(); rowIndex++) {
-                Row currentRow = productCycleTimeSheet.getRow(rowIndex);
-
-                // Populate counts
-                for (String columnName : mapOfStayTimeToIndex.keySet()) {
-                    int columnIndex = mapOfStayTimeToIndex.get(columnName);
-
-                    if (currentRow.getCell(columnIndex) != null) {
-                        long cellValue = (long) (currentRow.getCell(columnIndex).getNumericCellValue());
-                        long currentCount = mapOfStayTimeToCounts.get(columnName);
-                        mapOfStayTimeToCounts.put(columnName, currentCount + cellValue);
-                    }
-                }
-
-            }
-
-            // Average out the Stay-Cycle Time
-            TreeMap<String, Double> mapOfStayTimeToAverageStayTime = new TreeMap<String, Double>();
-            for (String cycleTime : mapOfStayTimeToCounts.keySet()) {
-                long currentValue = mapOfStayTimeToCounts.get(cycleTime);
-                Double averageCycleTime = (double) currentValue / (double) (productCycleTimeSheet.getPhysicalNumberOfRows() - 1);
-                cycleTime = "CYCLETIME_" + cycleTime.toUpperCase();
-                mapOfStayTimeToAverageStayTime.put(cycleTime, averageCycleTime);
-            }
-
-            return mapOfStayTimeToAverageStayTime;
-
         } catch (Exception e) {
             throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
         }
@@ -520,7 +438,6 @@ public class OutputAnalysisCalculation {
     public static TreeMap<String, Double> calculateAverageIbisOvenUtilRate(Sheet utilizationSheet) throws CustomException {
 
         try {
-
             // Hard code the columns that we are interested in.
             final String WAITING_FOR_OPERATOR = "waiting for operator";
             final String IDLE = "idle";
@@ -547,13 +464,11 @@ public class OutputAnalysisCalculation {
                 Row currentRow = utilizationSheet.getRow(rowIndex);
 
                 if (currentRow.getCell(0) != null) {
-
                     String platformType = currentRow.getCell(0).getStringCellValue();
 
                     if ((platformType != null) && (platformType.equals("IBIS"))) {
                         ibisRows.add(currentRow);
                     }
-
                 }
             }
 
@@ -567,7 +482,7 @@ public class OutputAnalysisCalculation {
                     mapOfColumnNameToTotalUtilRate.put(columnName, currentUtilRate + cellValue);
                 }
             }
-            TreeMap<String, Double> mapOfColumnNameToAverageUtilRate = new TreeMap<>();
+            TreeMap<String, Double> mapOfColumnNameToAverageUtilRate = new TreeMap<String, Double>();
             for (String columnName : mapOfColumnNameToTotalUtilRate.keySet()) {
                 Double rateSum = mapOfColumnNameToTotalUtilRate.get(columnName);
                 if (UTIL_COLUMNS_LIST.contains(columnName)) { // Only select the columns that have been pre-determined to be > 0 for IBIS rows.
@@ -575,240 +490,7 @@ public class OutputAnalysisCalculation {
                     mapOfColumnNameToAverageUtilRate.put("UTILIZATION_RATE_" + columnName.toUpperCase(), averageRate);
                 }
             }
-
             return mapOfColumnNameToAverageUtilRate;
-
-        } catch (Exception e) {
-            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
-        }
-    }
-
-    public static TreeMap<String, Double> calculateThroughputBasedOnThroughputByResource(Sheet throughputResourceSheet)
-            throws CustomException {
-
-        try {
-
-            final String PLATFORM = "Platform";
-            final String EQUIPMENT = "Equipment";
-            final String TOTAL_INPUT = "Total Input";
-            final String TOTAL_OUTPUT = "Total Output";
-
-            // Obtain column indexes
-            HashMap<String, Integer> mapOfColumnsToIndex = new HashMap<String, Integer>();
-
-            Row headerRow = throughputResourceSheet.getRow(0);
-            for (int cellIndex = 0; cellIndex < headerRow.getPhysicalNumberOfCells(); cellIndex++) {
-                String cellValue = headerRow.getCell(cellIndex).getStringCellValue();
-                switch (cellValue) {
-                    case PLATFORM:
-                        mapOfColumnsToIndex.put(PLATFORM, cellIndex);
-                        break;
-                    case EQUIPMENT:
-                        mapOfColumnsToIndex.put(EQUIPMENT, cellIndex);
-                        break;
-                    case TOTAL_INPUT:
-                        mapOfColumnsToIndex.put(TOTAL_INPUT, cellIndex);
-                        break;
-                    case TOTAL_OUTPUT:
-                        mapOfColumnsToIndex.put(TOTAL_OUTPUT, cellIndex);
-                        break;
-                    default:
-                        break;
-                } // End of switch case block
-            } // End of for loop block
-
-            // FlexSim has already summarized the outputs and inputs of each resource.
-            // The summarized values have a "-" in their EQUIPMENT Column
-            // Iterate through all rows and look for a "-".
-            TreeMap<String, Double> mapOfPlatformToTotalThroughput = new TreeMap<String, Double>();
-            for (int rowIndex = 1; rowIndex < throughputResourceSheet.getPhysicalNumberOfRows(); rowIndex++) {
-                Row currentRow = throughputResourceSheet.getRow(rowIndex);
-
-                // Checks if product cell is valid
-                if ( (currentRow.getCell(mapOfColumnsToIndex.get(EQUIPMENT)) != null) &&  (currentRow.getCell(mapOfColumnsToIndex.get(EQUIPMENT)).getStringCellValue().equals("-")) ) {
-                    // Extract the value and store in a hash map
-                    String platformType = currentRow.getCell(mapOfColumnsToIndex.get(PLATFORM)).getStringCellValue();
-                    Double platformTotalInput = currentRow.getCell(mapOfColumnsToIndex.get(TOTAL_INPUT)).getNumericCellValue();
-                    Double platformTotalOutput = currentRow.getCell(mapOfColumnsToIndex.get(TOTAL_OUTPUT)).getNumericCellValue();
-
-                    switch (platformType) {
-                        case "IBIS":
-                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_IBIS_TOTAL_INPUT", platformTotalInput);
-                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_IBIS_TOTAL_OUTPUT", platformTotalOutput);
-                            break;
-                        case "ETM":
-                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_ETN_TOTAL_INPUT", platformTotalInput);
-                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_ETN_TOTAL_OUTPUT", platformTotalOutput);
-                            break;
-                        case "MIS":
-                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_MIS_TOTAL_INPUT", platformTotalInput);
-                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_ETN_TOTAL_OUTPUT", platformTotalOutput);
-                            break;
-                        case "JTS":
-                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_JTS_TOTAL_INPUT", platformTotalInput);
-                            mapOfPlatformToTotalThroughput.put("THROUGHPUT_FROM_FLEXSIM_JTS_TOTAL_OUTPUT", platformTotalOutput);
-                            break;
-                        default:
-                            break;
-                    } // End of switch case
-
-                } // End of if statement
-            } // End of for loop
-            return mapOfPlatformToTotalThroughput;
-
-        } catch (Exception e) {
-            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
-        }
-
-    }
-
-    //TODO: Take average
-    public static TreeMap<String, Double> calculateThroughputBasedOnDailyThroughputByProduct(Sheet dailyThroughputProductSheet)
-            throws CustomException {
-
-        try {
-
-            final String QTY_IN = "Qty In";
-            final String QTY_OUT = "Qty Out";
-            final String LOTS_IN = "Lots In";
-            final String LOTS_OUT = "Lots Out";
-            final String PRODUCT = "Product";
-
-            // Get index of column names and initialize counts
-            HashMap<String, Integer> mapOfColumnsToIndex = new HashMap<String, Integer>();
-            TreeMap<String, Double> mapOfCounts = new TreeMap<String, Double>();
-            int productColumnIndex = -1;
-
-            Row headerRow = dailyThroughputProductSheet.getRow(0);
-            for (int cellIndex = 0; cellIndex < headerRow.getPhysicalNumberOfCells(); cellIndex++) {
-                String cellValue = headerRow.getCell(cellIndex).getStringCellValue();
-                switch (cellValue) {
-                    case QTY_IN:
-                        mapOfColumnsToIndex.put(QTY_IN, cellIndex);
-                        mapOfCounts.put(QTY_IN, Double.valueOf(0));
-                        break;
-                    case QTY_OUT:
-                        mapOfColumnsToIndex.put(QTY_OUT, cellIndex);
-                        mapOfCounts.put(QTY_OUT, Double.valueOf(0));
-                        break;
-                    case LOTS_IN:
-                        mapOfColumnsToIndex.put(LOTS_IN, cellIndex);
-                        mapOfCounts.put(LOTS_IN, Double.valueOf(0));
-                        break;
-                    case LOTS_OUT:
-                        mapOfColumnsToIndex.put(LOTS_OUT, cellIndex);
-                        mapOfCounts.put(LOTS_OUT, Double.valueOf(0));
-                        break;
-                    case PRODUCT:
-                        productColumnIndex = cellIndex;
-                    default:
-                        break;
-                } // End of switch case block
-            } // End of for loop block
-
-            // Iterate through all rows and get the counts
-            for (int rowIndex = 1; rowIndex < dailyThroughputProductSheet.getPhysicalNumberOfRows(); rowIndex++) {
-                Row currentRow = dailyThroughputProductSheet.getRow(rowIndex);
-
-                // Checks if product cell is valid
-                if (currentRow.getCell(productColumnIndex) != null) {
-                    // Populate counts
-                    for (String columnName : mapOfColumnsToIndex.keySet()) {
-                        int columnIndex = mapOfColumnsToIndex.get(columnName);
-                        double cellValue = (currentRow.getCell(columnIndex).getNumericCellValue());
-                        double currentCount = mapOfCounts.get(columnName);
-                        mapOfCounts.put(columnName, currentCount + cellValue);
-                    }
-                }
-            }
-
-            TreeMap<String, Double> mapOfCountsFinal = new TreeMap<String, Double>();
-            // Renames entries in the map
-            for (String columnName : mapOfCounts.keySet()) {
-                String newColumnName = "THROUGHPUT_BY_PRODUCT_SHEET_" + columnName.toUpperCase();
-                double count = mapOfCounts.get(columnName);
-                mapOfCountsFinal.put(newColumnName, count);
-            }
-
-            return mapOfCountsFinal;
-
-        } catch (Exception e) {
-            throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
-        }
-
-    }
-
-    /**
-     *
-     *  Logic: Looks at the input and output for the whole factory.
-     *  Input = "Load/Burn In/Transfer Normal Qty" + "Load/Burn In/Transfer YRTP Qty"
-     *  Output = "Unload Normal Qty" + "Unload YRTP Qty"
-     *
-     * @param dailyThroughputResourceSheet
-     * @return
-     */
-    public static TreeMap<String, Double> calculateThroughputBasedOnDailyThroughputByResource(Sheet dailyThroughputResourceSheet)
-            throws CustomException {
-
-        try {
-
-            final String LOAD_NORMAL_COLUMN = "Load/Burn In/Transfer Normal Qty";
-            final String LOAD_YRTP_COLUMN = "Load/Burn In/Transfer YRTP Qty";
-            final String UNLOAD_NORMAL_COLUMN = "Unload Normal Qty";
-            final String UNLOAD_YRTP_COLUMN = "Unload YRTP Qty";
-
-            // Get index of column names and initialize counts
-            HashMap<String, Integer> mapOfThroughputToIndex = new HashMap<String, Integer>();
-            HashMap<String, Long> mapOfThroughputToCounts = new HashMap<String, Long>();
-            Row headerRow = dailyThroughputResourceSheet.getRow(0);
-            for (int cellIndex = 0; cellIndex < headerRow.getPhysicalNumberOfCells(); cellIndex++) {
-                String cellValue = headerRow.getCell(cellIndex).getStringCellValue();
-                switch (cellValue) {
-                    case LOAD_NORMAL_COLUMN:
-                        mapOfThroughputToIndex.put(LOAD_NORMAL_COLUMN, cellIndex);
-                        mapOfThroughputToCounts.put(LOAD_NORMAL_COLUMN, Long.valueOf(0));
-                        break;
-                    case LOAD_YRTP_COLUMN:
-                        mapOfThroughputToIndex.put(LOAD_YRTP_COLUMN, cellIndex);
-                        mapOfThroughputToCounts.put(LOAD_YRTP_COLUMN, Long.valueOf(0));
-                        break;
-                    case UNLOAD_NORMAL_COLUMN:
-                        mapOfThroughputToIndex.put(UNLOAD_NORMAL_COLUMN, cellIndex);
-                        mapOfThroughputToCounts.put(UNLOAD_NORMAL_COLUMN, Long.valueOf(0));
-                        break;
-                    case UNLOAD_YRTP_COLUMN:
-                        mapOfThroughputToIndex.put(UNLOAD_YRTP_COLUMN, cellIndex);
-                        mapOfThroughputToCounts.put(UNLOAD_YRTP_COLUMN, Long.valueOf(0));
-                        break;
-                    default:
-                        break;
-                } // End of switch case block
-            } // End of for loop block
-
-            //TODO: Filter by IBIS Machines only
-
-            // Iterate through all rows and get the counts
-            for (int rowIndex = 1; rowIndex < dailyThroughputResourceSheet.getPhysicalNumberOfRows(); rowIndex++) {
-                Row currentRow = dailyThroughputResourceSheet.getRow(rowIndex);
-
-                // Populate counts
-                for (String columnName : mapOfThroughputToIndex.keySet()) {
-                    int columnIndex = mapOfThroughputToIndex.get(columnName);
-                    long cellValue = (long) (currentRow.getCell(columnIndex).getNumericCellValue());
-                    long currentCount = mapOfThroughputToCounts.get(columnName);
-                    mapOfThroughputToCounts.put(columnName, currentCount + cellValue);
-                }
-            }
-
-            // Sum up to input and output
-            TreeMap<String, Double> mapOfInputAndOutput = new TreeMap<String, Double>();
-            mapOfInputAndOutput.put("THROUGHPUT_BY_RESOURCE_TOTAL_INPUT", (double) mapOfThroughputToCounts.get(LOAD_NORMAL_COLUMN)
-                    + mapOfThroughputToCounts.get(LOAD_YRTP_COLUMN));
-            mapOfInputAndOutput.put("THROUGHPUT_BY_RESOURCE_TOTAL_OUTPUT", (double) mapOfThroughputToCounts.get(UNLOAD_NORMAL_COLUMN)
-                    + mapOfThroughputToCounts.get(UNLOAD_YRTP_COLUMN));
-
-            return mapOfInputAndOutput;
-
         } catch (Exception e) {
             throw new CustomException(OutputAnalysisUtil.ExceptionToString(e));
         }
@@ -827,4 +509,3 @@ public class OutputAnalysisCalculation {
         return (sum / mapOfProductToCost.size());
     }
 }
-

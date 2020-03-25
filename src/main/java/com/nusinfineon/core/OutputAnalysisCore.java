@@ -28,7 +28,6 @@ public class OutputAnalysisCore {
     private final static Logger LOGGER = Logger.getLogger(OutputAnalysisCore.class.getName());
 
     public static void main(String[] args) throws IOException, CustomException {
-
         // =============== Tests on the whole folder ===================================================================
         File folderDirectory = new File("sample-output-files/output-files-with-summary-data");
         File destinationDirectory = new File("sample-output-files");
@@ -98,7 +97,6 @@ public class OutputAnalysisCore {
         ArrayList<String> SOURCE_UTILIZATION_COLUMN_HEADERS = new ArrayList<>(Arrays.asList("RUN_TYPE", "UTILIZATION_RATE_IDLE",
                 "UTILIZATION_RATE_PROCESSING", "UTILIZATION_RATE_SETUP", "UTILIZATION_RATE_WAITING FOR OPERATOR",
                 "UTILIZATION_RATE_WAITING FOR TRANSPORTER"));
-
 
         // Iterate through each excel file and write the utilization data
         final String SOURCE_UTILIZATION_SHEET = "RUN_TYPE_AND_IBIS_UTILIZATION";
@@ -175,11 +173,8 @@ public class OutputAnalysisCore {
 
                         destinationRowCount = destinationRowCount + 1;
                     }
-
                 }
-
             }
-
             sourceWorkbook.close();
         }
 
@@ -195,7 +190,6 @@ public class OutputAnalysisCore {
             Cell cell = headerRow.createCell(i, CellType.STRING);
             cell.setCellValue(TIME_IN_SYSTEM_COLUMN_HEADERS[i]);
         }
-
 
         // Iterate through the excel files and write the stay time data
         final String SOURCE_TIME_IN_SYSTEM_SHEET = "PRODUCT_TIME_IN_SYSTEM";
@@ -234,9 +228,7 @@ public class OutputAnalysisCore {
 
                     destinationRowCount = destinationRowCount + 1;
                 }
-
             }
-
             sourceWorkbook.close();
         }
         // End of writing product stay times section
@@ -289,9 +281,7 @@ public class OutputAnalysisCore {
 
                     destinationRowCount = destinationRowCount + 1;
                 }
-
             }
-
             sourceWorkbook.close();
         }
         // End of writing product THROUGHPUT section
@@ -362,11 +352,9 @@ public class OutputAnalysisCore {
                     Cell destinationThroughputCell = destinationRow.createCell(i + 1, CellType.NUMERIC);
                     destinationThroughputCell.setCellValue(dailyThroughput);
 
-
                     destinationRowCount ++;
                 }
             }
-
             sourceWorkbook.close();
         }
         // End of writing daily product THROUGHPUT section
@@ -411,7 +399,6 @@ public class OutputAnalysisCore {
 
                     Cell destinationSProductCell = newWorthRow.createCell(1, CellType.STRING);
                     destinationSProductCell.setCellValue(product);
-
 
                     Cell destinationOutputCell = newWorthRow.createCell(2, CellType.NUMERIC);
                     destinationOutputCell.setCellValue(output);
@@ -460,8 +447,6 @@ public class OutputAnalysisCore {
         Workbook workbook = WorkbookFactory.create(tempOutputFile);
         LOGGER.info("Successfully created Workbook from temporary copy of output file");
 
-        //TODO: Implement check if all sheets are present in the workbook
-
         try {
 
             // ==================   Get average utilization rates of IBIS Ovens ============================================
@@ -498,7 +483,6 @@ public class OutputAnalysisCore {
             // ===============================  Get throughput data ====================================================
             final String DAILY_THROUGHPUT_PRODUCT_REP = "Daily Throughput Product Rep";
             Sheet throughputSheet = workbook.getSheet(DAILY_THROUGHPUT_PRODUCT_REP);
-
 
             if (throughputSheet == null) {
                 // throw new IOException("Excel file doesn't contain sheet: " + DAILY_THROUGHPUT_PRODUCT_REP);
@@ -561,17 +545,12 @@ public class OutputAnalysisCore {
             LOGGER.info("Closed workbook and deleted temporary excel file.");
             LOGGER.info("SUCCESSFULLY generated Output statistics for " + originalInputFile.getName() + "\n" +
                                 "=========================================================================================");
-
         } catch (CustomException e) {
-
             LOGGER.severe("EXCEPTION: " + e.getMessage() + ".");
-
             workbook.close();
             tempOutputFile.delete();
             LOGGER.info("Closed workbook and deleted temporary excel file.");
-
         }
-
     }
 
     /**
@@ -592,53 +571,4 @@ public class OutputAnalysisCore {
             }
         }
     }
-
 }
-
-// Unused code
-/*
-// =============================== Get Product throughput from Daily throughput Resource =======================
-final String DAILY_THROUGHPUT_RES_REP = "Daily Throughput Res Rep";
-Sheet dailyThroughputSheet = workbook.getSheet(DAILY_THROUGHPUT_RES_REP);
-if (dailyThroughputSheet == null) {
-    throw new IOException("Excel file doesn't contain sheet: " + DAILY_THROUGHPUT_RES_REP);
-}
-TreeMap<String, Double> treeMapOfSummarizedDailyThroughputByResource = OutputAnalysisCalculation.calculateThroughputBasedOnDailyThroughputByResource(dailyThroughputSheet);
-mapOfSummaryStatistics.putAll(treeMapOfSummarizedDailyThroughputByResource);
-// =========================== End of section on Summarizing Daily Throughput ==================================
-
-// =============================== Get average cycle time of products ==========================================
-final String THROUGHPUT_PRODUCT_REP = "Throughput Product Rep";
-Sheet productCycleTimeSheet = workbook.getSheet(THROUGHPUT_PRODUCT_REP);
-TreeMap<String, Double> treeMapOfAverageProductCycleTime = OutputAnalysisCalculation.calculateAverageProductCycleTime(productCycleTimeSheet);
-mapOfSummaryStatistics.putAll(treeMapOfAverageProductCycleTime);
-// =============================== End of Cycle Time Calculation ===============================================
-
-// =============================== Get value of throughput =====================================================
-
-// Read the sheet from product-cost excel file
-final String DAILY_THROUGHPUT_PRODUCT_REP = "Daily Throughput Product Rep";
-File productCostFile = OutputAnalysisUtil.getProductKeyCostExcelFileFromRelativeDirectory();
-Workbook productCostWorkbook = WorkbookFactory.create(productCostFile);
-Sheet productCostSheet = productCostWorkbook.getSheetAt(0);
-Sheet dailyProductThroughputSheet = workbook.getSheet(DAILY_THROUGHPUT_PRODUCT_REP);
-TreeMap<String, Double> treeMapOfTotalThroughputWorth = OutputAnalysisCalculation.calculateTotalProductWorth(dailyProductThroughputSheet, productCostSheet);
-productCostWorkbook.close();
-productCostFile.delete();
-mapOfSummaryStatistics.putAll(treeMapOfTotalThroughputWorth);
-// =========================== End of throughput worth calculation =============================================
-
-// =========================== Get Product Throughput from Daily Throughput Product ============================
-//final String DAILY_THROUGHPUT_PRODUCT_REP = "Daily Throughput Product Rep";
-TreeMap<String, Double> treeMapOfSummarizedDailyThroughputByProduct = OutputAnalysisCalculation.calculateThroughputBasedOnDailyThroughputByProduct(dailyProductThroughputSheet);
-mapOfSummaryStatistics.putAll(treeMapOfSummarizedDailyThroughputByProduct);
-// =========================== End of Product Throughput from Daily Throughput Product =========================
-
-// ========================== Get Product Throughput from "Throughput Res Rep" =================================
-final String THROUGHPUT_RES_REP = "Throughput Res Rep";
-Sheet throughputResourceSheet = workbook.getSheet(THROUGHPUT_RES_REP);
-TreeMap<String, Double> treeMapOfSummarizedThroughputByFlexsim = OutputAnalysisCalculation.calculateThroughputBasedOnThroughputByResource(throughputResourceSheet);
-mapOfSummaryStatistics.putAll(treeMapOfSummarizedThroughputByFlexsim);
-// =========================== End of Product Throughput from "Throughput Res Rep" =========================
-
-*/
