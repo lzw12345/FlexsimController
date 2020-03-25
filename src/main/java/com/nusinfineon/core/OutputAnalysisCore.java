@@ -22,10 +22,9 @@ import com.nusinfineon.exceptions.CustomException;
 import com.nusinfineon.util.OutputAnalysisCalculation;
 import com.nusinfineon.util.OutputAnalysisUtil;
 
-
 public class OutputAnalysisCore {
 
-    private final static Logger LOGGER = Logger.getLogger(OutputAnalysisCore.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(OutputAnalysisCore.class.getName());
 
     public static void main(String[] args) throws IOException, CustomException {
         // =============== Tests on the whole folder ===================================================================

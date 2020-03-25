@@ -35,25 +35,25 @@ public class Core {
     private boolean isModelShown;
     private ArrayList<File> excelOutputFiles;
 
-    private final static Logger LOGGER = Logger.getLogger(Core.class.getName());
-    private final static String LOT_SEQUENCE_FCFS = "First-Come-First-Served (Default)";
-    private final static String LOT_SEQUENCE_SPT = "Shortest Processing Time";
-    private final static String LOT_SEQUENCE_MJ = "Most Jobs";
-    private final static String LOT_SEQUENCE_RAND = "Random";
-    private final static String INIT_RUN_SPEED = "4";
-    private final static String INIT_STOP_TIME = "1140";
-    private final static String INIT_MAX_BATCH_SIZE = "24";
-    private final static String INIT_MIN_BATCH_SIZE = "1";
-    private final static String INIT_STEP_SIZE = "1";
-    private final static String INIT_RESOURCE_SELECT_CRITERIA = "4";
-    private final static String INIT_LOT_SELECTION_CRITERIA = "3";
-    private final static String INIT_TROLLEY_LOCATION_SELECT_CRITERIA = "2";
-    private final static String INIT_BIB_LOAD_ON_LOT_CRITERIA = "2";
+    private static final Logger LOGGER = Logger.getLogger(Core.class.getName());
+    private static final String LOT_SEQUENCE_FCFS = "First-Come-First-Served (Default)";
+    private static final String LOT_SEQUENCE_SPT = "Shortest Processing Time";
+    private static final String LOT_SEQUENCE_MJ = "Most Jobs";
+    private static final String LOT_SEQUENCE_RAND = "Random";
+    private static final String INIT_RUN_SPEED = "4";
+    private static final String INIT_STOP_TIME = "1140";
+    private static final String INIT_MAX_BATCH_SIZE = "24";
+    private static final String INIT_MIN_BATCH_SIZE = "1";
+    private static final String INIT_STEP_SIZE = "1";
+    private static final String INIT_RESOURCE_SELECT_CRITERIA = "4";
+    private static final String INIT_LOT_SELECTION_CRITERIA = "3";
+    private static final String INIT_TROLLEY_LOCATION_SELECT_CRITERIA = "2";
+    private static final String INIT_BIB_LOAD_ON_LOT_CRITERIA = "2";
 
-    private final static String OUTPUT_FOLDER_NAME = "Output";
-    private final static String RAW_OUTPUT_FOLDER_NAME = "Raw Output Excel Files";
-    private final static String TABLEAU_FILES_DIR = "/output/tableau_workbooks";
-    private final static ArrayList<String> TABLEAU_FILE_NAMES = new ArrayList<>(Arrays.asList(
+    private static final String OUTPUT_FOLDER_NAME = "Output";
+    private static final String RAW_OUTPUT_FOLDER_NAME = "Raw Output Excel Files";
+    private static final String TABLEAU_FILES_DIR = "/output/tableau_workbooks";
+    private static final ArrayList<String> TABLEAU_FILE_NAMES = new ArrayList<>(Arrays.asList(
             "Daily Throughput.twb", "IBIS Utilization Rates.twb", "Stay Time.twb",
             "Throughput.twb", "Time in System.twb", "Worth.twb"));
 
@@ -68,7 +68,7 @@ public class Core {
                 trolleyLocationSelectCriteria, bibLoadOnLotCriteria);
 
         // Initialise listener for running of simulation
-        runCore runCore = new runCore(flexsimLocation, modelLocation, outputLocation, runSpeed, stopTime, isModelShown);
+        RunCore runCore = new RunCore(flexsimLocation, modelLocation, outputLocation, runSpeed, stopTime, isModelShown);
 
         try {
             excelInputCore.execute();
@@ -82,10 +82,10 @@ public class Core {
 
         // Extract the array of files and sizes from ExcelInputCore
         ArrayList<File> excelInputFiles = excelInputCore.getExcelFiles();
-        ArrayList<Integer> batchSizes = excelInputCore.getListOfMinBatchSizes();
+        ArrayList<Integer> listOfMinBatchSizes = excelInputCore.getListOfMinBatchSizes();
         excelOutputFiles = new ArrayList<>();
 
-        runCore.executeRuns(excelInputFiles, batchSizes, lotSequencingRuleString, excelOutputFiles);
+        runCore.executeRuns(excelInputFiles, listOfMinBatchSizes, lotSequencingRuleString, excelOutputFiles);
 
         handleOutput();
 

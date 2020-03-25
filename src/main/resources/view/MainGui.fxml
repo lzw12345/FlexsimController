@@ -462,9 +462,6 @@
                         </content>
                      </Tab>
                   </tabs>
-                  <padding>
-                     <Insets bottom="10.0" />
-                  </padding>
                </TabPane>
             </center>
             <top>

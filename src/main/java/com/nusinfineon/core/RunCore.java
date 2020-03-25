@@ -1,8 +1,8 @@
 package com.nusinfineon.core;
 
-import static com.nusinfineon.util.FlexScriptDefaultCodes.GETPROCESSTIMECODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN15CODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.ONRUNSTOPCODE;
+import static com.nusinfineon.util.FlexScriptDefaultCodes.GET_PROCESS_TIME_CODE;
+import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN_15_CODE;
+import static com.nusinfineon.util.FlexScriptDefaultCodes.ON_RUN_STOP_CODE;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Class to generate an excel listener
+ * Class to generate a server to connect with FlexSim for running the simulation runs
  */
-public class runCore {
+public class RunCore {
 
     private String flexsimLocation;
     private String modelLocation;
@@ -33,9 +33,9 @@ public class runCore {
     private String excelOutputFileName;
     private ArrayList<File> excelInputFiles;
     private ArrayList<File> excelOutputFiles;
-    private ArrayList<Integer> batchSizes;
+    private ArrayList<Integer> listOfMinBatchSizes;
 
-    public runCore(String flexsimLocation, String modelLocation, String outputLocation,
+    public RunCore(String flexsimLocation, String modelLocation, String outputLocation,
                    String runSpeed, String stopTime, boolean isModelShown) {
 
         this.flexsimLocation = flexsimLocation;
@@ -53,16 +53,17 @@ public class runCore {
     /**
      * Main execute function to start runs
      */
-    public void executeRuns(ArrayList<File> excelInputFiles, ArrayList<Integer> batchSizes, String lotSequencingRule,
-                            ArrayList<File> excelOutputFiles) {
+    public void executeRuns(ArrayList<File> excelInputFiles, ArrayList<Integer> listOfMinBatchSizes,
+                            String lotSequencingRule, ArrayList<File> excelOutputFiles) {
         this.excelOutputFiles = excelOutputFiles;
         this.excelInputFiles = excelInputFiles;
-        this.batchSizes = batchSizes;
+        this.listOfMinBatchSizes = listOfMinBatchSizes;
         this.lotSequencingRule = lotSequencingRule.replaceAll(" ", "_").toLowerCase();
         this.excelOutputFiles.clear();
 
-        while (currentRunNum <= batchSizes.size()-1) {
-            runModel(currentRunNum == batchSizes.size() - 1);
+        // Iterate through list of runs and run the model with server to establish connection with FlexSim
+        while (currentRunNum <= listOfMinBatchSizes.size()-1) {
+            runModel();
             Server server = new Server(1880);
             excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
             currentRunNum++;
@@ -77,16 +78,17 @@ public class runCore {
     /**
      * Main code the runs the program
      */
-    public void runModel(boolean isLastRun) {
-        System.out.println("Min batch size: " + batchSizes.get(currentRunNum) + ". Input file path: " + excelInputFiles.get(currentRunNum).toString());
+    public void runModel() {
+        System.out.println("Min batch size: " + listOfMinBatchSizes.get(currentRunNum) + ". Input file path: "
+                + excelInputFiles.get(currentRunNum).toString());
         String tempInputFile = excelInputFiles.get(currentRunNum).toString();
         inputFile = '"' + getBaseName(tempInputFile) + "." + getExtension(tempInputFile);
         inputLocation = getFullPath(tempInputFile).replace("\\", "\\\\");
-        excelOutputFileName = "min_" + batchSizes.get(currentRunNum) + "_BIB_" + lotSequencingRule + "_output";
+        excelOutputFileName = "min_" + listOfMinBatchSizes.get(currentRunNum) + "_BIB_" + lotSequencingRule + "_output";
         deleteExistingFile(getFullPath(outputLocation) + excelOutputFileName + ".xlsx");
 
         try {
-            scriptCreator(isLastRun);
+            scriptCreator();
             Runtime.getRuntime().exec(commandLineGenerator(isModelShown));
         } catch (IOException e) {
             e.printStackTrace();
@@ -97,16 +99,15 @@ public class runCore {
      * Creates the Flexscript for the model
      * @throws IOException
      */
-    public void scriptCreator(boolean isLastRun) throws IOException {
+    public void scriptCreator() throws IOException {
         scriptFile = new File(scriptFilepath);
         scriptFile.createNewFile();
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
                 + stopTime
-                // TODO: Uncomment:
-                //+ "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
+                + "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
                 + "excellaunch();"
-                + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
+                + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ON_RUN_STOP_CODE
                 + ",\"MAIN15WriteReports(true, \\\""
                 + outputLocation + "\", " + "\\\"" + outputFile
                 + "\\\" , \\\"" + excelOutputFileName + "\\\");"
@@ -118,8 +119,8 @@ public class runCore {
                 + "\\nclientclose (socknum);"
                 + "\\nsocketend();"
                 + "\\ncmdexit ();\\n}\")")
-                + editNodeCode("ProcessTime", "MODEL:/Tools/UserCommands/ProcessTimeGetTotal/code", GETPROCESSTIMECODE)
-                + editNodeCode("MAIN15", "MODEL://Tools/UserCommands//MAIN15WriteReports//code", MAIN15CODE)
+                + editNodeCode("ProcessTime", "MODEL:/Tools/UserCommands/ProcessTimeGetTotal/code", GET_PROCESS_TIME_CODE)
+                + editNodeCode("MAIN15", "MODEL://Tools/UserCommands//MAIN15WriteReports//code", MAIN_15_CODE)
                 + "MAINBuldAndRun ();\nresetmodel();\ngo();");
         fileWriter.close();
     }
@@ -139,13 +140,13 @@ public class runCore {
                 + "setnodestr(" + nodename + "," + codeName + ");\n"
                 + "enablecode(" + nodename + ");\n"
                 + "buildnodeflexscript(" + nodename + ");\n";
-
         return script;
     }
 
     /**
      * Creates the commandline to execute model
      * @throws IOException
+     * @return command
      */
     public String commandLineGenerator(boolean isModelShown) {
         String command = '"' + flexsimLocation + '"' +

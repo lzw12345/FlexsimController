@@ -467,8 +467,8 @@ public class MainGui extends UiPart<Stage> {
      */
     private void execute() throws IOException, CustomException {
         String title = "Simulation running...";
-        String text = "Please wait for the simulation to complete...";
-        Alert waitAlert = raiseAlertBox(Alert.AlertType.NONE, title, null, text, 480, 60);
+        String header = "Please wait for the simulation to complete...";
+        Alert waitAlert = raiseAlertBox(Alert.AlertType.NONE, title, header, null, 480, 60);
 
         waitAlert.show();
 
@@ -632,7 +632,7 @@ public class MainGui extends UiPart<Stage> {
     private void showCompletedBox() {
         String title = "Simulation Complete";
         String header = "Simulation has completed!";
-        String text = "You may run another simulation again or close the program.";
+        String text = "You may run another simulation or close the program.";
         Alert completeAlert = raiseAlertBox(Alert.AlertType.INFORMATION, title, header, text);
 
         completeAlert.showAndWait();

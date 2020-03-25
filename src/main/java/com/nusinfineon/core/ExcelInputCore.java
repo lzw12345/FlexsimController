@@ -30,6 +30,7 @@ import com.nusinfineon.util.SPTLotEntry;
  * purposes of setting the lot sequencing rule, varying the batch size and inputting settings.
  */
 public class ExcelInputCore {
+
     private static final String MASTER_XLSX_FILE_NAME = "temp_master_input";
     private static final String PRODUCT_INFO_SHEET_NAME = "Product Info and Eqpt Matrix";
     private static final String MIN_BIB_COLUMN_NAME = "BIB Slot Utilization Min";
@@ -64,7 +65,7 @@ public class ExcelInputCore {
 
     private static final int MAX_ALLOWABLE_BATCH_SIZE = 24;
 
-    private final static Logger LOGGER = Logger.getLogger(ExcelInputCore.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ExcelInputCore.class.getName());
 
     private File originalInputExcelFile;
     private File tempCopyOriginalInputExcelFile;
