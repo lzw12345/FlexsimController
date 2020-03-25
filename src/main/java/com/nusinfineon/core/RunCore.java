@@ -33,7 +33,7 @@ public class RunCore {
     private String excelOutputFileName;
     private ArrayList<File> excelInputFiles;
     private ArrayList<File> excelOutputFiles;
-    private ArrayList<Integer> batchSizes;
+    private ArrayList<Integer> listOfMinBatchSizes;
 
     public RunCore(String flexsimLocation, String modelLocation, String outputLocation,
                    String runSpeed, String stopTime, boolean isModelShown) {
@@ -53,16 +53,17 @@ public class RunCore {
     /**
      * Main execute function to start runs
      */
-    public void executeRuns(ArrayList<File> excelInputFiles, ArrayList<Integer> batchSizes, String lotSequencingRule,
-                            ArrayList<File> excelOutputFiles) {
+    public void executeRuns(ArrayList<File> excelInputFiles, ArrayList<Integer> listOfMinBatchSizes,
+                            String lotSequencingRule, ArrayList<File> excelOutputFiles) {
         this.excelOutputFiles = excelOutputFiles;
         this.excelInputFiles = excelInputFiles;
-        this.batchSizes = batchSizes;
+        this.listOfMinBatchSizes = listOfMinBatchSizes;
         this.lotSequencingRule = lotSequencingRule.replaceAll(" ", "_").toLowerCase();
         this.excelOutputFiles.clear();
 
-        while (currentRunNum <= batchSizes.size()-1) {
-            runModel(currentRunNum == batchSizes.size() - 1);
+        // Iterate through list of runs and run the model with server to establish connection with FlexSim
+        while (currentRunNum <= listOfMinBatchSizes.size()-1) {
+            runModel();
             Server server = new Server(1880);
             excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
             currentRunNum++;
@@ -77,16 +78,17 @@ public class RunCore {
     /**
      * Main code the runs the program
      */
-    public void runModel(boolean isLastRun) {
-        System.out.println("Min batch size: " + batchSizes.get(currentRunNum) + ". Input file path: " + excelInputFiles.get(currentRunNum).toString());
+    public void runModel() {
+        System.out.println("Min batch size: " + listOfMinBatchSizes.get(currentRunNum) + ". Input file path: "
+                + excelInputFiles.get(currentRunNum).toString());
         String tempInputFile = excelInputFiles.get(currentRunNum).toString();
         inputFile = '"' + getBaseName(tempInputFile) + "." + getExtension(tempInputFile);
         inputLocation = getFullPath(tempInputFile).replace("\\", "\\\\");
-        excelOutputFileName = "min_" + batchSizes.get(currentRunNum) + "_BIB_" + lotSequencingRule + "_output";
+        excelOutputFileName = "min_" + listOfMinBatchSizes.get(currentRunNum) + "_BIB_" + lotSequencingRule + "_output";
         deleteExistingFile(getFullPath(outputLocation) + excelOutputFileName + ".xlsx");
 
         try {
-            scriptCreator(isLastRun);
+            scriptCreator();
             Runtime.getRuntime().exec(commandLineGenerator(isModelShown));
         } catch (IOException e) {
             e.printStackTrace();
@@ -97,7 +99,7 @@ public class RunCore {
      * Creates the Flexscript for the model
      * @throws IOException
      */
-    public void scriptCreator(boolean isLastRun) throws IOException {
+    public void scriptCreator() throws IOException {
         scriptFile = new File(scriptFilepath);
         scriptFile.createNewFile();
         FileWriter fileWriter = new FileWriter(scriptFilepath);
@@ -144,6 +146,7 @@ public class RunCore {
     /**
      * Creates the commandline to execute model
      * @throws IOException
+     * @return command
      */
     public String commandLineGenerator(boolean isModelShown) {
         String command = '"' + flexsimLocation + '"' +
