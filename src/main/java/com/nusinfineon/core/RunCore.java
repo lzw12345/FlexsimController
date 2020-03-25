@@ -1,8 +1,8 @@
 package com.nusinfineon.core;
 
-import static com.nusinfineon.util.FlexScriptDefaultCodes.GETPROCESSTIMECODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN15CODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.ONRUNSTOPCODE;
+import static com.nusinfineon.util.FlexScriptDefaultCodes.GET_PROCESS_TIME_CODE;
+import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN_15_CODE;
+import static com.nusinfineon.util.FlexScriptDefaultCodes.ON_RUN_STOP_CODE;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Class to generate an excel listener
+ * Class to generate a server to connect with FlexSim for running the simulation runs
  */
-public class runCore {
+public class RunCore {
 
     private String flexsimLocation;
     private String modelLocation;
@@ -35,7 +35,7 @@ public class runCore {
     private ArrayList<File> excelOutputFiles;
     private ArrayList<Integer> batchSizes;
 
-    public runCore(String flexsimLocation, String modelLocation, String outputLocation,
+    public RunCore(String flexsimLocation, String modelLocation, String outputLocation,
                    String runSpeed, String stopTime, boolean isModelShown) {
 
         this.flexsimLocation = flexsimLocation;
@@ -103,10 +103,9 @@ public class runCore {
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
                 + stopTime
-                // TODO: Uncomment:
-                //+ "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
+                + "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
                 + "excellaunch();"
-                + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ONRUNSTOPCODE
+                + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ON_RUN_STOP_CODE
                 + ",\"MAIN15WriteReports(true, \\\""
                 + outputLocation + "\", " + "\\\"" + outputFile
                 + "\\\" , \\\"" + excelOutputFileName + "\\\");"
@@ -118,8 +117,8 @@ public class runCore {
                 + "\\nclientclose (socknum);"
                 + "\\nsocketend();"
                 + "\\ncmdexit ();\\n}\")")
-                + editNodeCode("ProcessTime", "MODEL:/Tools/UserCommands/ProcessTimeGetTotal/code", GETPROCESSTIMECODE)
-                + editNodeCode("MAIN15", "MODEL://Tools/UserCommands//MAIN15WriteReports//code", MAIN15CODE)
+                + editNodeCode("ProcessTime", "MODEL:/Tools/UserCommands/ProcessTimeGetTotal/code", GET_PROCESS_TIME_CODE)
+                + editNodeCode("MAIN15", "MODEL://Tools/UserCommands//MAIN15WriteReports//code", MAIN_15_CODE)
                 + "MAINBuldAndRun ();\nresetmodel();\ngo();");
         fileWriter.close();
     }
@@ -139,7 +138,6 @@ public class runCore {
                 + "setnodestr(" + nodename + "," + codeName + ");\n"
                 + "enablecode(" + nodename + ");\n"
                 + "buildnodeflexscript(" + nodename + ");\n";
-
         return script;
     }
 

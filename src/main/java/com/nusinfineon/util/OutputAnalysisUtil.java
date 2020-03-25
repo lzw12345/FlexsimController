@@ -24,7 +24,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 public class OutputAnalysisUtil {
 
-    private final static String PRODUCT_KEY_COST_FILE = "/output/product_key_cost.xlsx";
+    private static final String PRODUCT_KEY_COST_FILE = "/output/product_key_cost.xlsx";
 
     public static void saveDailyOutputSheet(String sheetName, TreeMap<Double, Double> treeMapOfDayToOutput,
                                             Workbook excelWorkbook) {
