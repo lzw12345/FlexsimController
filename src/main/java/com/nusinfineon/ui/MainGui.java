@@ -9,7 +9,6 @@ import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
 import com.nusinfineon.storage.JsonParser;
 import com.nusinfineon.util.Messages;
-import com.pretty_tools.dde.DDEException;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -343,10 +342,9 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private void handleAbout() {
         String title = "About IBIS Simulation";
-        String header = null;
         String text = Messages.ABOUT_MESSAGE;
 
-        Alert aboutAlert = raiseAlertBox(Alert.AlertType.INFORMATION, title, header, text, 480, 300);
+        Alert aboutAlert = raiseAlertBox(Alert.AlertType.INFORMATION, title, null, text, 480, 300);
         aboutAlert.showAndWait();
     }
 
@@ -399,7 +397,7 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     public void handleModelExecution() throws IOException {
         if (isBlankFiles()) {
-            showInvalidBox("File directories cannot be blank!");
+            showInvalidBox("File Directories cannot be blank!");
         } else if (!isFoundFiles(exeLocation.getText())) {
             showInvalidBox("FlexSim (.exe) address cannot be found!");
         } else if (!isFoundFiles(modelFileLocation.getText())) {
@@ -417,17 +415,17 @@ public class MainGui extends UiPart<Stage> {
         } else if (!isValidExtension(outputFileLocation.getText(), "xlsx")) {
             showInvalidBox("Output (.xlsx) must be an Excel file with extension .xlsx!");
         } else if (isBlankRunParams()) {
-            showInvalidBox("Run Speed and/or Stop Time cannot be blank!");
+            showInvalidBox("Run Parameters cannot be blank!");
         } else if (isNotDouble(runSpeed.getText()) || isNotDouble(stopTime.getText())) {
-            showInvalidBox("Run Speed and/or Stop Time must be a number (integer/double)!");
+            showInvalidBox("Run Parameters must be numeric (integer/double)!");
         } else if (!isValidMinBatchSize(batchSizeMin.getValueFactory().getValue())) {
-            showInvalidBox("Minimum batch size must be at least 1 and at most 24!");
+            showInvalidBox("Lowest batch size to run must be at least 1 and at most 24!");
         } else if (!isValidMaxBatchSize(batchSizeMax.getValueFactory().getValue())) {
-            showInvalidBox("Maximum batch size must be at least 1 and at most 24!");
+            showInvalidBox("Highest batch size to run must be at least 1 and at most 24!");
         } else if (!isValidMinMax(batchSizeMin.getValueFactory().getValue(),
                 batchSizeMax.getValueFactory().getValue())) {
-            showInvalidBox("Minimum batch size (" + batchSizeMin.getValueFactory().getValue() +
-                    ") cannot be larger than maximum batch size (" + batchSizeMax.getValueFactory().getValue() + ")!");
+            showInvalidBox("Lowest batch size (" + batchSizeMin.getValueFactory().getValue() +
+                    ") cannot be larger than highest batch size (" + batchSizeMax.getValueFactory().getValue() + ")!");
         } else if (!isValidStepSize(batchSizeStep.getValueFactory().getValue(),
                 batchSizeMin.getValueFactory().getValue(),
                 batchSizeMax.getValueFactory().getValue())) {
@@ -443,10 +441,6 @@ public class MainGui extends UiPart<Stage> {
                     showExceptionBox("An IO Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
                 } catch (CustomException e) {
                     showExceptionBox("A Custom Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
-                } catch (InterruptedException e) {
-                    showExceptionBox("A Interrupted Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
-                } catch (DDEException e) {
-                    showExceptionBox("A DDEException has occurred.\n" + e.getMessage() + "\nPlease try again.");
                 }
             }
         }
@@ -471,17 +465,18 @@ public class MainGui extends UiPart<Stage> {
     /**
      * Executes Core with confirmation, waiting and completion alerts
      */
-    private void execute() throws IOException, CustomException, InterruptedException, DDEException {
+    private void execute() throws IOException, CustomException {
         String title = "Simulation running...";
         String text = "Please wait for the simulation to complete...";
         Alert waitAlert = raiseAlertBox(Alert.AlertType.NONE, title, null, text, 480, 60);
-        Stage stage = (Stage) waitAlert.getDialogPane().getScene().getWindow();
 
         waitAlert.show();
 
         saveInputDataToCore();
         jsonParser.storeData(core);
         core.execute();
+
+        Stage stage = (Stage) waitAlert.getDialogPane().getScene().getWindow();
         stage.close();
         showCompletedBox();
     }

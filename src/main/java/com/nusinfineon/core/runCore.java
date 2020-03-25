@@ -12,11 +12,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.pretty_tools.dde.DDEException;
-import com.pretty_tools.dde.client.DDEClientConversation;
-
 /**
- * Class to generate an excel listener using DDE
+ * Class to generate an excel listener
  */
 public class runCore {
 
@@ -37,11 +34,9 @@ public class runCore {
     private ArrayList<File> excelInputFiles;
     private ArrayList<File> excelOutputFiles;
     private ArrayList<Integer> batchSizes;
-    private DDEClientConversation conversation;
-
 
     public runCore(String flexsimLocation, String modelLocation, String outputLocation,
-                   String runSpeed, String stopTime, boolean isModelShown) throws IOException {
+                   String runSpeed, String stopTime, boolean isModelShown) {
 
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
@@ -53,15 +48,13 @@ public class runCore {
         this.isModelShown = isModelShown;
 
         currentRunNum = 0;
-
     }
 
     /**
      * Main execute function to start runs
-     * @throws DDEException
      */
     public void executeRuns(ArrayList<File> excelInputFiles, ArrayList<Integer> batchSizes, String lotSequencingRule,
-                            ArrayList<File> excelOutputFiles) throws InterruptedException, DDEException {
+                            ArrayList<File> excelOutputFiles) {
         this.excelOutputFiles = excelOutputFiles;
         this.excelInputFiles = excelInputFiles;
         this.batchSizes = batchSizes;
@@ -79,7 +72,6 @@ public class runCore {
             System.out.println("output file "+  i + ": " + iter.toString());
             i++;
         }
-
     }
 
     /**
@@ -103,7 +95,6 @@ public class runCore {
 
     /**
      * Creates the Flexscript for the model
-     *
      * @throws IOException
      */
     public void scriptCreator(boolean isLastRun) throws IOException {
@@ -135,11 +126,10 @@ public class runCore {
 
     /**
      * Function to generate a default template for replace code in a Flexsim node
-     *
      * @param name
      * @param nodePath
      * @param code
-     * @return
+     * @return script
      */
     public String editNodeCode(String name, String nodePath, String code) {
         String nodename = name + "Node";
@@ -155,10 +145,9 @@ public class runCore {
 
     /**
      * Creates the commandline to execute model
-     *
      * @throws IOException
      */
-    public String commandLineGenerator(boolean isModelShown) throws IOException {
+    public String commandLineGenerator(boolean isModelShown) {
         String command = '"' + flexsimLocation + '"' +
                 '"' + modelLocation + '"' + " /maintenance " + (isModelShown ? "" : "nogui_") + "runscript " +
                 "/scriptpath "  + '"' + scriptFile.getAbsolutePath() + '"' ;
@@ -167,7 +156,6 @@ public class runCore {
 
     /**
      * Deletes existing output files to prevent excel overwrite popup
-     *
      * @param pathname
      */
     public void deleteExistingFile(String pathname) {

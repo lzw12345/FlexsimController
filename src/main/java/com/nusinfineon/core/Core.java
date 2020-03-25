@@ -15,7 +15,6 @@ import org.apache.commons.io.FileUtils;
 
 import com.nusinfineon.Main;
 import com.nusinfineon.exceptions.CustomException;
-import com.pretty_tools.dde.DDEException;
 
 public class Core {
 
@@ -62,15 +61,14 @@ public class Core {
      * Main execute function to generate input files. run model and generate output file
      * @throws IOException, CustomException, InterruptedException, DDEException
      */
-    public void execute() throws IOException, CustomException, InterruptedException, DDEException {
+    public void execute() throws IOException, CustomException {
         // Code block handling creation of excel file for min batch size iterating
         ExcelInputCore excelInputCore = new ExcelInputCore(inputLocation, lotSequencingRuleString, batchSizeMinString,
                 batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria,
                 trolleyLocationSelectCriteria, bibLoadOnLotCriteria);
 
         // Initialise listener for running of simulation
-        runCore runCore = new runCore(flexsimLocation, modelLocation, outputLocation,
-                runSpeed, stopTime, isModelShown);
+        runCore runCore = new runCore(flexsimLocation, modelLocation, outputLocation, runSpeed, stopTime, isModelShown);
 
         try {
             excelInputCore.execute();
