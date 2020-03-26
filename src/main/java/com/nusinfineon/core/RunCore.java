@@ -32,7 +32,6 @@ public class RunCore {
     private String excelOutputFileName;
     private ArrayList<File> excelInputFiles;
     private ArrayList<File> excelOutputFiles;
-    private ArrayList<Integer> listOfMinBatchSizes;
 
     public RunCore(String flexsimLocation, String modelLocation, String outputLocation,
                    String runSpeed, String stopTime, boolean isModelShown) {
@@ -52,15 +51,13 @@ public class RunCore {
     /**
      * Main execute function to start runs
      */
-    public void executeRuns(ArrayList<File> excelInputFiles, ArrayList<Integer> listOfMinBatchSizes,
-                            String lotSequencingRule, ArrayList<File> excelOutputFiles) {
-        this.excelOutputFiles = excelOutputFiles;
+    public void executeRuns(ArrayList<File> excelInputFiles, ArrayList<File> excelOutputFiles) {
         this.excelInputFiles = excelInputFiles;
-        this.listOfMinBatchSizes = listOfMinBatchSizes;
+        this.excelOutputFiles = excelOutputFiles;
         this.excelOutputFiles.clear();
 
         // Iterate through list of runs and run the model with server to establish connection with FlexSim
-        while (currentRunNum <= listOfMinBatchSizes.size()-1) {
+        while (currentRunNum <= excelInputFiles.size()-1) {
             runModel();
             Server server = new Server(1880);
             excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
@@ -77,12 +74,11 @@ public class RunCore {
      * Main code the runs the program
      */
     public void runModel() {
-        System.out.println("Min batch size: " + listOfMinBatchSizes.get(currentRunNum) + ". Input file path: "
-                + excelInputFiles.get(currentRunNum).toString());
+        System.out.println("Input file path: " + excelInputFiles.get(currentRunNum).toString());
         String tempInputFile = excelInputFiles.get(currentRunNum).toString();
-        inputFile = '"' + getBaseName(tempInputFile) + "." + getExtension(tempInputFile);
+        inputFile = getBaseName(tempInputFile) + "." + getExtension(tempInputFile);
         inputLocation = getFullPath(tempInputFile).replace("\\", "\\\\");
-        excelOutputFileName = getBaseName(inputFile).substring(0,getBaseName(inputFile).lastIndexOf("_")) + "output";
+        excelOutputFileName = getBaseName(inputFile).substring(0,getBaseName(inputFile).lastIndexOf("_")) + "_output";
         deleteExistingFile(getFullPath(outputLocation) + excelOutputFileName + ".xlsx");
 
         try {
@@ -102,14 +98,14 @@ public class RunCore {
         scriptFile.createNewFile();
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
-                + stopTime
+                + stopTime + "\n"
                 + "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
-                + "excellaunch();"
+                + "excellaunch();\n"
                 + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ON_RUN_STOP_CODE
                 + ",\"MAIN15WriteReports(true, \\\""
                 + outputLocation + "\", " + "\\\"" + outputFile
                 + "\\\" , \\\"" + excelOutputFileName + "\\\");"
-                + "\\n hideprogressbar();"
+                + "\\nhideprogressbar();"
                 + "\\nsocketinit();"
                 + "\\nint socknum = clientcreate();"
                 + "\\nclientconnect(socknum,\\\"127.0.0.1\\\",1880);"

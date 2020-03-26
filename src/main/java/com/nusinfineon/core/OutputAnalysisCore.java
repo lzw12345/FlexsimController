@@ -26,32 +26,15 @@ public class OutputAnalysisCore {
 
     private static final Logger LOGGER = Logger.getLogger(OutputAnalysisCore.class.getName());
 
-    public static void main(String[] args) throws IOException, CustomException {
-        // =============== Tests on the whole folder ===================================================================
-        File folderDirectory = new File("sample-output-files/output-files-with-summary-data");
-        File destinationDirectory = new File("sample-output-files");
-
-
-        // Generate output statistics for all excel files in a folder
-        appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
-
-        // Generate the tableau excel file from the folder of excel files (with output data appended)
-        generateExcelTableauFile(folderDirectory, destinationDirectory);
-
-        // Copy Tableau files from resources to output folder
-        File tableauSourceDirectory = new File("build/resources/main/output/tableau_workbooks");
-        try {
-            FileUtils.copyDirectory(tableauSourceDirectory, destinationDirectory);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public OutputAnalysisCore() {
+        // Empty constructor
     }
 
     /**
      * Generates a single excel file to be used with Tableau. Summarizes the output file data for each excel file.
      * Saves the file into "src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx"
      */
-    public static void generateExcelTableauFile(File folderOfExcelFiles, File destinationDirectory)
+    public void generateExcelTableauFile(File folderOfExcelFiles, File destinationDirectory)
             throws IOException, CustomException {
         LOGGER.info("Starting generateExcelTableauFile method");
 
@@ -557,7 +540,7 @@ public class OutputAnalysisCore {
      * @param folderDirectory Directory of a folder with excel files to be processed.
      * @throws CustomException if argument is not a directory.
      */
-    public static void appendSummaryStatisticsOfFolderOFExcelFiles(File folderDirectory) throws CustomException, IOException {
+    public void appendSummaryStatisticsOfFolderOFExcelFiles(File folderDirectory) throws CustomException, IOException {
         if (!folderDirectory.isDirectory()) {
             throw new CustomException(folderDirectory.toString() + " is not a directory");
         }
