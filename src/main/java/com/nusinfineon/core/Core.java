@@ -57,13 +57,6 @@ public class Core {
             "Daily Throughput.twb", "IBIS Utilization Rates.twb", "Stay Time.twb",
             "Throughput.twb", "Time in System.twb", "Worth.twb"));
 
-    private final static String OUTPUT_FOLDER_NAME = "Output";
-    private final static String RAW_OUTPUT_FOLDER_NAME = "Raw Output Excel Files";
-    private final static String TABLEAU_FILES_DIR = "/output/tableau_workbooks";
-    private final static ArrayList<String> TABLEAU_FILE_NAMES = new ArrayList<>(Arrays.asList(
-            "Daily Throughput.twb", "IBIS Utilization Rates.twb", "Stay Time.twb",
-            "Throughput.twb", "Time in System.twb", "Worth.twb"));
-
     /**
      * Main execute function to generate input files. run model and generate output file
      * @throws IOException, CustomException, InterruptedException, DDEException
@@ -76,6 +69,9 @@ public class Core {
 
         // Initialise listener for running of simulation
         RunCore runCore = new RunCore(flexsimLocation, modelLocation, outputLocation, runSpeed, stopTime, isModelShown);
+
+        // Initalize OutputAnalysisCore to handle output analysis later
+        OutputAnalysisCore outputCore = new OutputAnalysisCore();
 
         try {
             excelInputCore.execute();
@@ -94,7 +90,7 @@ public class Core {
 
         runCore.executeRuns(excelInputFiles, listOfMinBatchSizes, lotSequencingRuleString, excelOutputFiles);
 
-        handleOutput();
+        handleOutput(outputCore);
 
         Runtime.getRuntime().exec("cmd /c taskkill /f /im excel.exe");
     }
@@ -103,7 +99,7 @@ public class Core {
      * Used to handle processing and analysis of output
      * @throws IOException
      */
-    private void handleOutput() throws IOException, CustomException {
+    private void handleOutput(OutputAnalysisCore outputCore) throws IOException, CustomException {
         File outputFile = new File(outputLocation);
         String outputPathName = outputFile.getParent();
         Path outputDir = Paths.get(outputPathName, OUTPUT_FOLDER_NAME);
@@ -141,10 +137,12 @@ public class Core {
 
         if (folderDirectory.list().length > 0) {
             // Generate output statistics for all excel files in a folder
-            OutputAnalysisCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+            // OutputAnalysisCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+            outputCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
             // Generate the tableau excel file from the folder of excel files (with output data appended)
-            OutputAnalysisCore.generateExcelTableauFile(folderDirectory, destinationDirectory);
+            // OutputAnalysisCore.generateExcelTableauFile(folderDirectory, destinationDirectory);
+            outputCore.generateExcelTableauFile(folderDirectory, destinationDirectory);
 
             // Copy Tableau files from resources to output folder
             for (String fileName : TABLEAU_FILE_NAMES) {
