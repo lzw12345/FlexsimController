@@ -1,17 +1,16 @@
 package com.nusinfineon.core;
 
-import static com.nusinfineon.util.FlexScriptDefaultCodes.GET_PROCESS_TIME_CODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN_15_CODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.ON_RUN_STOP_CODE;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+
+import com.nusinfineon.core.util.ScriptGenerator;
+import com.nusinfineon.core.util.Server;
 
 /**
  * Class to generate a server to connect with FlexSim for running the simulation runs
@@ -27,7 +26,6 @@ public class RunCore {
     private String outputLocation;
     private String outputFile;
     private boolean isModelShown;
-    private String scriptFilepath = "./script.txt";
     private File scriptFile;
     private int currentRunNum;
     private String excelOutputFileName;
@@ -64,6 +62,7 @@ public class RunCore {
             excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
             currentRunNum++;
         }
+
         int i = 1;
         for (File iter : excelOutputFiles) {
             LOGGER.info("output file "+  i + ": " + iter.toString());

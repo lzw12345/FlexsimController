@@ -1,8 +1,9 @@
-package com.nusinfineon.core;
+package com.nusinfineon.core.util;
 
-import static com.nusinfineon.util.FlexScriptDefaultCodes.GET_PROCESS_TIME_CODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN_15_CODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.ON_RUN_STOP_CODE;
+import static com.nusinfineon.util.Directories.SCRIPT_FILE_NAME;
+import static com.nusinfineon.core.util.FlexScriptDefaultCodes.GET_PROCESS_TIME_CODE;
+import static com.nusinfineon.core.util.FlexScriptDefaultCodes.MAIN_15_CODE;
+import static com.nusinfineon.core.util.FlexScriptDefaultCodes.ON_RUN_STOP_CODE;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -10,12 +11,12 @@ import java.io.IOException;
 
 public class ScriptGenerator {
 
-    private String scriptFilepath = "./script.txt";
+    private String scriptFilepath = "./" + SCRIPT_FILE_NAME;
     private File scriptFile;
     private String stopTime;
     private String runSpeed;
 
-    public  ScriptGenerator (String runSpeed, String stopTime){
+    public ScriptGenerator (String runSpeed, String stopTime){
         this.runSpeed = "runspeed(" + runSpeed + ");";
         this.stopTime = "stoptime(" + stopTime + ");";
     }
@@ -24,20 +25,20 @@ public class ScriptGenerator {
      * Creates the Flexscript for the model
      * @throws IOException
      */
-    public File generateScript( String inputLocation, String inputFile, String outputLocation,
+    public File generateScript(String inputLocation, String inputFile, String outputLocation,
                                String outputFile, String excelOutputFileName) throws IOException {
         scriptFile = new File(scriptFilepath);
         scriptFile.createNewFile();
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
-                + stopTime
+                + stopTime + "\n"
                 //+ "MAIN2LoadData (\"" + inputLocation + "\",\"" + inputFile + "\");\n"
-                + "excellaunch();"
+                + "excellaunch();\n"
                 + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ON_RUN_STOP_CODE
                 + ",\"MAIN15WriteReports(true, \\\""
                 + outputLocation + "\", " + "\\\"" + outputFile
                 + "\\\" , \\\"" + excelOutputFileName + "\\\");"
-                + "\\n hideprogressbar();"
+                + "\\nhideprogressbar();"
                 + "\\nsocketinit();"
                 + "\\nint socknum = clientcreate();"
                 + "\\nclientconnect(socknum,\\\"127.0.0.1\\\",1880);"
@@ -70,6 +71,4 @@ public class ScriptGenerator {
                 + "buildnodeflexscript(" + nodename + ");\n";
         return script;
     }
-
-
 }

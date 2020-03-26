@@ -22,17 +22,17 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import com.nusinfineon.exceptions.CustomException;
-import com.nusinfineon.util.LotEntry.GenericLotEntry;
-import com.nusinfineon.util.LotEntry.LotEntry;
+import com.nusinfineon.core.input.LotEntry.GenericLotEntry;
+import com.nusinfineon.core.input.LotEntry.LotEntry;
 import com.nusinfineon.util.LotSequencingRule;
-import com.nusinfineon.util.LotEntry.MJLotEntry;
-import com.nusinfineon.util.LotEntry.SPTLotEntry;
+import com.nusinfineon.core.input.LotEntry.MJLotEntry;
+import com.nusinfineon.core.input.LotEntry.SPTLotEntry;
 
 /**
  * Class represents the core functionality involved in interfacing with a Microsoft Excel document for the
  * purposes of setting the lot sequencing rule, varying the batch size and inputting settings.
  */
-public class ExcelInputCore {
+public class InputCore {
 
     private static final String MASTER_XLSX_FILE_NAME = "temp_master_input";
     private static final String PRODUCT_INFO_SHEET_NAME = "Product Info and Eqpt Matrix";
@@ -63,7 +63,7 @@ public class ExcelInputCore {
 
     private static final int MAX_ALLOWABLE_BATCH_SIZE = 24;
 
-    private static final Logger LOGGER = Logger.getLogger(ExcelInputCore.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(InputCore.class.getName());
 
     private File originalInputExcelFile;
     private File tempCopyOriginalInputExcelFile;
@@ -78,10 +78,10 @@ public class ExcelInputCore {
     /**
      * Creates an object from the user defined Strings.
      */
-    public ExcelInputCore(String excelFilePath, HashMap<LotSequencingRule, Boolean> lotSequencingRules,
-                          String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString,
-                          String resourceSelectCriteria, String lotSelectionCriteria,
-                          String trolleyLocationSelectCriteria, String bibLoadOnLotCriteria){
+    public InputCore(String excelFilePath, HashMap<LotSequencingRule, Boolean> lotSequencingRules,
+                     String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString,
+                     String resourceSelectCriteria, String lotSelectionCriteria,
+                     String trolleyLocationSelectCriteria, String bibLoadOnLotCriteria){
 
         this.originalInputExcelFile = new File(excelFilePath);
         int minBatchSize = Integer.parseInt(batchSizeMinString);
@@ -392,8 +392,8 @@ public class ExcelInputCore {
             lotInfoRow.createCell(LOT_INFO_LOTSIZE_COLUMN).setCellValue(lotEntry.getLotSize());
             lotInfoRow.createCell(LOT_INFO_PRODUCTION_LOCATION_COLUMN).setCellValue(lotEntry.getProductionLocation());
             lotInfoRow.createCell(LOT_INFO_PERIOD_COLUMN).setCellValue(lotEntry.getPeriod());
-            // TODO: Remove this line when not needed:
-            lotInfoRow.createCell(LOT_INFO_NEW_COLUMN).setCellValue(lotEntry.getComparable()); // For checking only
+            // TODO: Remove this line when not needed (For checking only):
+            // lotInfoRow.createCell(LOT_INFO_NEW_COLUMN).setCellValue(lotEntry.getComparable());
             newRow++;
         }
     }

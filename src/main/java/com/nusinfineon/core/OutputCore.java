@@ -1,5 +1,7 @@
 package com.nusinfineon.core;
 
+import static com.nusinfineon.util.Directories.TABLEAU_EXCEL_FILE_NAME;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,14 +20,14 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.nusinfineon.exceptions.CustomException;
-import com.nusinfineon.util.OutputAnalysisCalculation;
-import com.nusinfineon.util.OutputAnalysisUtil;
+import com.nusinfineon.core.output.OutputAnalysisCalculation;
+import com.nusinfineon.core.output.OutputAnalysisUtil;
 
-public class OutputAnalysisCore {
+public class OutputCore {
 
-    private static final Logger LOGGER = Logger.getLogger(OutputAnalysisCore.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(OutputCore.class.getName());
 
-    public OutputAnalysisCore() {
+    public OutputCore() {
         // Empty constructor
     }
 
@@ -33,13 +35,13 @@ public class OutputAnalysisCore {
      * Generates a single excel file to be used with Tableau. Summarizes the output file data for each excel file.
      * Saves the file into "src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx"
      */
-    public void generateExcelTableauFile(File folderOfExcelFiles, File destinationDirectory)
+    public void generateTableauExcelFile(File folderOfExcelFiles, File destinationDirectory)
             throws IOException, CustomException {
-        LOGGER.info("Starting generateExcelTableauFile method");
+        LOGGER.info("Starting generateTableauExcelFile method");
 
         // Generate a list of excel files from the folder
         if (!folderOfExcelFiles.isDirectory()) {
-            throw new CustomException("Argument for generateExcelTableauFile() method is not a folder");
+            throw new CustomException("Argument for generateTableauExcelFile() method is not a folder");
         }
 
         ArrayList<File> excelFiles = new ArrayList<File>();
@@ -51,7 +53,7 @@ public class OutputAnalysisCore {
         LOGGER.info("No. of excel files to process: " + excelFiles.size());
 
         // Create the destination excel file
-        final File destinationFile = new File( destinationDirectory + "/tableau-excel-file.xlsx");
+        final File destinationFile = new File( destinationDirectory + "/" + TABLEAU_EXCEL_FILE_NAME);
         if (!destinationFile.exists()) {
             // Delete if there is a file present
             destinationFile.createNewFile();

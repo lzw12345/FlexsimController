@@ -271,8 +271,7 @@ public class MainGui extends UiPart<Stage> {
         } else {
             showInvalidBox("File must be a FlexSim model with extension .fsm");
         }
-        /* let the source know whether the string was successfully
-         * transferred and used */
+        /* let the source know whether the string was successfully transferred and used */
         event.setDropCompleted(success);
         event.consume();
     }
@@ -299,8 +298,7 @@ public class MainGui extends UiPart<Stage> {
         } else {
             showInvalidBox("File must be an Excel file with extension .xlsx");
         }
-        /* let the source know whether the string was successfully
-         * transferred and used */
+        /* let the source know whether the string was successfully transferred and used */
         event.setDropCompleted(success);
         event.consume();
     }
@@ -327,8 +325,7 @@ public class MainGui extends UiPart<Stage> {
         } else {
             showInvalidBox("File must be an Excel file with extension .xlsx");
         }
-        /* let the source know whether the string was successfully
-         * transferred and used */
+        /* let the source know whether the string was successfully transferred and used */
         event.setDropCompleted(success);
         event.consume();
     }
@@ -355,8 +352,7 @@ public class MainGui extends UiPart<Stage> {
         } else {
             showInvalidBox("File must be a executable file with extension .exe");
         }
-        /* let the source know whether the string was successfully
-         * transferred and used */
+        /* let the source know whether the string was successfully transferred and used */
         event.setDropCompleted(success);
         event.consume();
     }
@@ -434,7 +430,7 @@ public class MainGui extends UiPart<Stage> {
         } else if (!isValidExeLocation()) {
             showInvalidBox("FlexSim (.exe) must be the executable file: flexsim.exe");
         } else if (!isValidExtension(modelFileLocation.getText(), "fsm")) {
-            showInvalidBox("Model (.fsm) must be a Flexsim model with extension .fsm!");
+            showInvalidBox("Model (.fsm) must be a FlexSim model with extension .fsm!");
         } else if (!isValidExtension(inputFileLocation.getText(), "xlsx")) {
             showInvalidBox("Input (.xlsx) must be an Excel file with extension .xlsx!");
         } else if (!isValidExtension(outputFileLocation.getText(), "xlsx")) {
@@ -443,6 +439,8 @@ public class MainGui extends UiPart<Stage> {
             showInvalidBox("Run Parameters cannot be blank!");
         } else if (isNotDouble(runSpeed.getText()) || isNotDouble(stopTime.getText())) {
             showInvalidBox("Run Parameters must be numeric (integer/double)!");
+        } else if (!isLotSequenceSelected()) {
+            showInvalidBox("At least 1 Lot Sequencing Rule must be selected!");
         } else if (!isValidMinBatchSize(batchSizeMin.getValueFactory().getValue())) {
             showInvalidBox("Lowest batch size to run must be at least 1 and at most 24!");
         } else if (!isValidMaxBatchSize(batchSizeMax.getValueFactory().getValue())) {
@@ -505,10 +503,11 @@ public class MainGui extends UiPart<Stage> {
      * Executes Core with confirmation, waiting and completion alerts
      */
     private Alert getWaitAlert() {
-        String title = "Simulation running...";
+        String title = "Simulation running... (Please wait...)";
         String header = "Please wait for the simulation to complete...";
         String text = "Please wait for the simulation to complete...";
         Alert waitAlert = raiseAlertBox(Alert.AlertType.NONE, title, header, text, 480, 60);
+
         return waitAlert;
     }
 
@@ -636,6 +635,7 @@ public class MainGui extends UiPart<Stage> {
         String text = "There will be " + numberOfRuns + " simulation run(s).\n"
                 + Messages.CONFIRM_RUN_MESSAGE;
         Alert confirmationAlert = raiseAlertBox(Alert.AlertType.CONFIRMATION, title, header, text);
+
         confirmationAlert.showAndWait();
         if (confirmationAlert.getResult() == ButtonType.OK) {
             return true;
@@ -652,6 +652,7 @@ public class MainGui extends UiPart<Stage> {
         String title = "Invalid Input";
         String header = "Invalid Input";
         Alert errorAlert = raiseAlertBox(Alert.AlertType.ERROR, title, header, alertText);
+
         errorAlert.showAndWait();
     }
 
@@ -757,6 +758,21 @@ public class MainGui extends UiPart<Stage> {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Returns true if any of the required simulation run parameters are blank.
+     * @return Boolean.
+     */
+    private boolean isLotSequenceSelected() {
+        HashMap<LotSequencingRule, Boolean> lotSequencingRules = getLotSequencingRules();
+
+        for (Map.Entry<LotSequencingRule, Boolean> rule : lotSequencingRules.entrySet()) {
+            if (rule.getValue() == true) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
