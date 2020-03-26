@@ -631,7 +631,6 @@ public class MainGui extends UiPart<Stage> {
         String text = "There will be " + numberOfRuns + " simulation run(s).\n"
                 + Messages.CONFIRM_RUN_MESSAGE;
         Alert confirmationAlert = raiseAlertBox(Alert.AlertType.CONFIRMATION, title, header, text);
-
         confirmationAlert.showAndWait();
         if (confirmationAlert.getResult() == ButtonType.OK) {
             return true;
@@ -648,7 +647,6 @@ public class MainGui extends UiPart<Stage> {
         String title = "Invalid Input";
         String header = "Invalid Input";
         Alert errorAlert = raiseAlertBox(Alert.AlertType.ERROR, title, header, alertText);
-
         errorAlert.showAndWait();
     }
 

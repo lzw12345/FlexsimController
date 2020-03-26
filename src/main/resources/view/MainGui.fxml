@@ -526,6 +526,9 @@
                         </padding>
                      </Button>
                   </children>
+                  <padding>
+                     <Insets top="10.0" />
+                  </padding>
                </VBox>
             </bottom></BorderPane>
       </Scene>

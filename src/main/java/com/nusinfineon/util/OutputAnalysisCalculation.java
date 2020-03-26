@@ -341,6 +341,11 @@ public class OutputAnalysisCalculation {
                 return new TreeMap<String, ArrayList<Double>>();
             }
 
+            // Returns an empty map if throughput sheet does not exist
+            if (dailyThroughputSheet == null) {
+                return new TreeMap<String, ArrayList<Double>>();
+            }
+
             // Read from product-key-cost table and store data
             HashMap<String, Double> mapOfProductToCost = new HashMap<String, Double>();
             for (int rowIndex = 1; rowIndex < productCostSheet.getPhysicalNumberOfRows(); rowIndex++) {
