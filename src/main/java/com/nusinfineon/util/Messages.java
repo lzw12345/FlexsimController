@@ -16,7 +16,7 @@ public class Messages {
             + "\nEnsure that the save file is previously saved from the program.";
 
     public static final String CONFIRM_RUN_MESSAGE = "Warning: The more runs there are, the longer it will take until completion."
-            + "\nPreviously generated output files in the Output folder will be overwritten."
+            + "\nPreviously generated output files in the Input and Output folders will be overwritten."
             + "\nPlease save and close all opened files on Excel before you click OK.";
 
     public static final String SAVE_FILE_WRONG_FORMAT_MESSAGE = SAVE_FILE

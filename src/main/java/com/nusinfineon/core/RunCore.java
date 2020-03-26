@@ -50,11 +50,11 @@ public class RunCore {
 
     /**
      * Main execute function to start runs
+     * @return excelOutputFiles
      */
-    public void executeRuns(ArrayList<File> excelInputFiles, ArrayList<File> excelOutputFiles) {
+    public ArrayList<File> executeRuns(ArrayList<File> excelInputFiles) {
         this.excelInputFiles = excelInputFiles;
-        this.excelOutputFiles = excelOutputFiles;
-        this.excelOutputFiles.clear();
+        this.excelOutputFiles = new ArrayList<>();
 
         // Iterate through list of runs and run the model with server to establish connection with FlexSim
         while (currentRunNum <= excelInputFiles.size()-1) {
@@ -68,6 +68,8 @@ public class RunCore {
             System.out.println("output file "+  i + ": " + iter.toString());
             i++;
         }
+
+        return excelOutputFiles;
     }
 
     /**
@@ -99,7 +101,7 @@ public class RunCore {
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
                 + stopTime + "\n"
-                + "MAIN2LoadData (\"" + inputLocation + "\"," + inputFile + "\");\n"
+                //+ "MAIN2LoadData (\"" + inputLocation + "\",\"" + inputFile + "\");\n"
                 + "excellaunch();\n"
                 + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ON_RUN_STOP_CODE
                 + ",\"MAIN15WriteReports(true, \\\""

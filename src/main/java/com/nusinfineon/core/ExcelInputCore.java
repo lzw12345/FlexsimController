@@ -22,11 +22,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import com.nusinfineon.exceptions.CustomException;
-import com.nusinfineon.util.GenericLotEntry;
-import com.nusinfineon.util.LotEntry;
+import com.nusinfineon.util.LotEntry.GenericLotEntry;
+import com.nusinfineon.util.LotEntry.LotEntry;
 import com.nusinfineon.util.LotSequencingRule;
-import com.nusinfineon.util.MJLotEntry;
-import com.nusinfineon.util.SPTLotEntry;
+import com.nusinfineon.util.LotEntry.MJLotEntry;
+import com.nusinfineon.util.LotEntry.SPTLotEntry;
 
 /**
  * Class represents the core functionality involved in interfacing with a Microsoft Excel document for the
@@ -107,11 +107,12 @@ public class ExcelInputCore {
     public void execute() throws IOException, CustomException {
 
         createCopyOfInputFile(); // Uses the copy of the input file as a reference
+        checkValidInputFile();
         LOGGER.info("Successfully created a copy of main Input excel file");
 
         // Iterate through rules
         for (Map.Entry<LotSequencingRule, Boolean> rule : lotSequencingRules.entrySet()) {
-            // If rule is selected.
+            // If rule is selected
             if (rule.getValue()) {
                 // Iterate through batch sizes
                 for (int batchNumber : listOfMinBatchSizes) {
@@ -143,6 +144,17 @@ public class ExcelInputCore {
             }
         } // End of for-loop for sequencing rules
     } // End of execute method
+
+    /**
+     * Checks if input file is valid.
+     * @throws IOException
+     * @throws CustomException
+     */
+    private void checkValidInputFile() throws IOException, CustomException {
+        Workbook workbook = WorkbookFactory.create(this.tempCopyOriginalInputExcelFile);
+        // TODO
+        workbook.close();
+    }
 
     /**
      * Creates a copy of the master file and stores it in a temporary working directory.

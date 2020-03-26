@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -430,7 +429,6 @@ public class OutputAnalysisCore {
         LOGGER.info("Successfully created Workbook from temporary copy of output file");
 
         try {
-
             // ==================   Get average utilization rates of IBIS Ovens ============================================
             final String UTIL_RES_REP = "Util Res Rep";
             Sheet utilSheet = workbook.getSheet(UTIL_RES_REP);

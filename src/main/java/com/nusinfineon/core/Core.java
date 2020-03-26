@@ -35,6 +35,7 @@ public class Core {
     private String trolleyLocationSelectCriteria;
     private String bibLoadOnLotCriteria;
     private boolean isModelShown;
+    private ArrayList<File> excelInputFiles;
     private ArrayList<File> excelOutputFiles;
 
     private static final Logger LOGGER = Logger.getLogger(Core.class.getName());
@@ -45,13 +46,14 @@ public class Core {
     private static final String INIT_RUN_SPEED = "4";
     private static final String INIT_STOP_TIME = "1140";
     private static final String INIT_MAX_BATCH_SIZE = "24";
-    private static final String INIT_MIN_BATCH_SIZE = "1";
+    private static final String INIT_MIN_BATCH_SIZE = "20";
     private static final String INIT_STEP_SIZE = "1";
     private static final String INIT_RESOURCE_SELECT_CRITERIA = "4";
     private static final String INIT_LOT_SELECTION_CRITERIA = "3";
     private static final String INIT_TROLLEY_LOCATION_SELECT_CRITERIA = "2";
     private static final String INIT_BIB_LOAD_ON_LOT_CRITERIA = "2";
 
+    private static final String INPUT_FOLDER_NAME = "Input";
     private static final String OUTPUT_FOLDER_NAME = "Output";
     private static final String RAW_OUTPUT_FOLDER_NAME = "Raw Output Excel Files";
     private static final String TABLEAU_FILES_DIR = "/output/tableau_workbooks";
@@ -61,18 +63,17 @@ public class Core {
 
     /**
      * Main execute function to generate input files. run model and generate output file
-     * @throws IOException, CustomException, InterruptedException, DDEException
      */
     public void execute() throws IOException, CustomException {
-        // Code block handling creation of excel file for min batch size iterating
+        // Code block handling creation of excel file for runs iteration
         ExcelInputCore excelInputCore = new ExcelInputCore(inputLocation, lotSequencingRules, batchSizeMinString,
                 batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria,
                 trolleyLocationSelectCriteria, bibLoadOnLotCriteria);
 
-        // Initialise listener for running of simulation
+        // Initialise RunCore for running of simulation
         RunCore runCore = new RunCore(flexsimLocation, modelLocation, outputLocation, runSpeed, stopTime, isModelShown);
 
-        // Initalize OutputAnalysisCore to handle output analysis later
+        // Initialise OutputAnalysisCore to handle output analysis later
         OutputAnalysisCore outputCore = new OutputAnalysisCore();
 
         try {
@@ -86,10 +87,9 @@ public class Core {
         }
 
         // Extract the array of files and sizes from ExcelInputCore
-        ArrayList<File> excelInputFiles = excelInputCore.getExcelFiles();
-        excelOutputFiles = new ArrayList<>();
+        excelInputFiles = excelInputCore.getExcelFiles();
 
-        runCore.executeRuns(excelInputFiles, excelOutputFiles);
+        excelOutputFiles = runCore.executeRuns(excelInputFiles);
 
         handleOutput(outputCore);
 
@@ -98,15 +98,37 @@ public class Core {
 
     /**
      * Used to handle processing and analysis of output
-     * @throws IOException
      */
     private void handleOutput(OutputAnalysisCore outputCore) throws IOException, CustomException {
+        // Handle input files
+        File inputFile = new File(inputLocation);
+        String inputPathName = inputFile.getParent();
+        Path inputDir = Paths.get(inputPathName, INPUT_FOLDER_NAME);
+
+        // Delete and recreate input folder if exists
+        if (!Files.exists(inputDir)) {
+            Files.createDirectory(inputDir);
+            LOGGER.info("Input directory created");
+        } else {
+            LOGGER.info("Input directory already exists");
+            FileUtils.deleteDirectory(new File(inputDir.toString()));
+            Files.createDirectory(inputDir);
+        }
+
+        // Move input files into Input folder
+        for (File file : excelInputFiles) {
+            String newFileName = file.getName().substring(0, file.getName().lastIndexOf("_")) + "_input.xlsx";
+            FileUtils.copyFile(file, new File(inputDir + "/" + newFileName));
+            LOGGER.info(newFileName + " created in input folder");
+        }
+
+        // Handle output files
         File outputFile = new File(outputLocation);
         String outputPathName = outputFile.getParent();
         Path outputDir = Paths.get(outputPathName, OUTPUT_FOLDER_NAME);
         Path rawOutputDir = Paths.get(outputPathName, OUTPUT_FOLDER_NAME, RAW_OUTPUT_FOLDER_NAME);
 
-        // Create folder directories
+        // Create output folder
         if (!Files.exists(outputDir)) {
             Files.createDirectory(outputDir);
             LOGGER.info("Output directory created");
@@ -163,16 +185,6 @@ public class Core {
 
     /**
      * Used to store data into core before execute and save (the json parser serializes it)
-     *
-     * @param flexsimLocation
-     * @param modelLocation
-     * @param inputLocation
-     * @param outputLocation
-     * @param runSpeed
-     * @param stopTime
-     * @param batchSizeMinString
-     * @param batchSizeMaxString
-     * @param batchSizeStepString
      */
     public void inputData(String flexsimLocation, String modelLocation, String inputLocation, String outputLocation,
                           String runSpeed, String stopTime, boolean isModelShown,

@@ -1,4 +1,6 @@
-package com.nusinfineon.util;
+package com.nusinfineon.util.LotEntry;
+
+import com.nusinfineon.util.LotEntry.LotEntry;
 
 public class MJLotEntry extends LotEntry {
     public MJLotEntry(String lot, String product, Double lotSize, String productionLocation, Double period) {

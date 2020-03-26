@@ -1,4 +1,6 @@
-package com.nusinfineon.util;
+package com.nusinfineon.util.LotEntry;
+
+import com.nusinfineon.util.LotEntry.LotEntry;
 
 public class SPTLotEntry extends LotEntry {
     private Double processTime;

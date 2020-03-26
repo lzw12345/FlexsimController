@@ -460,13 +460,17 @@ public class MainGui extends UiPart<Stage> {
         } else {
             if (confirmRun(batchSizeMin.getValueFactory().getValue(), batchSizeMax.getValueFactory().getValue(),
                     batchSizeStep.getValueFactory().getValue(), getLotSequencingRules())) {
+                Alert waitAlert = getWaitAlert();
                 try {
+                    waitAlert.show();
                     execute();
                 } catch (IOException e) {
                     showExceptionBox("An IO Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
                 } catch (CustomException e) {
-                    showExceptionBox("A Custom Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                    showExceptionBox("An error has occurred.\n" + e.getMessage() + "\nPlease try again.");
                 }
+                Stage stage = (Stage) waitAlert.getDialogPane().getScene().getWindow();
+                stage.close();
             }
         }
     }
@@ -491,20 +495,21 @@ public class MainGui extends UiPart<Stage> {
      * Executes Core with confirmation, waiting and completion alerts
      */
     private void execute() throws IOException, CustomException {
+        saveInputDataToCore();
+        jsonParser.storeData(core);
+        core.execute();
+        showCompletedBox();
+    }
+
+    /**
+     * Executes Core with confirmation, waiting and completion alerts
+     */
+    private Alert getWaitAlert() {
         String title = "Simulation running...";
         String header = "Please wait for the simulation to complete...";
         String text = "Please wait for the simulation to complete...";
         Alert waitAlert = raiseAlertBox(Alert.AlertType.NONE, title, header, text, 480, 60);
-
-        waitAlert.show();
-
-        saveInputDataToCore();
-        jsonParser.storeData(core);
-        core.execute();
-
-        Stage stage = (Stage) waitAlert.getDialogPane().getScene().getWindow();
-        stage.close();
-        showCompletedBox();
+        return waitAlert;
     }
 
     /** Get the selected Lot Sequencing Rules from user input

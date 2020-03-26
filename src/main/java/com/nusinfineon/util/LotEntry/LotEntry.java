@@ -1,4 +1,4 @@
-package com.nusinfineon.util;
+package com.nusinfineon.util.LotEntry;
 
 public abstract class LotEntry implements Comparable<LotEntry> {
     private String lot;
