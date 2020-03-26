@@ -30,6 +30,7 @@ import com.nusinfineon.util.SPTLotEntry;
  * purposes of setting the lot sequencing rule, varying the batch size and inputting settings.
  */
 public class ExcelInputCore {
+
     private static final String MASTER_XLSX_FILE_NAME = "temp_master_input";
     private static final String PRODUCT_INFO_SHEET_NAME = "Product Info and Eqpt Matrix";
     private static final String MIN_BIB_COLUMN_NAME = "BIB Slot Utilization Min";
@@ -63,9 +64,8 @@ public class ExcelInputCore {
     private static final String BIB_LOAD_ON_LOT_CRITERIA_PARAMETER = "BIB Load on Lot Criteria";
 
     private static final int MAX_ALLOWABLE_BATCH_SIZE = 24;
-    private static final int MIN_ALLOWABLE_BATCH_SIZE = 1;
 
-    private final static Logger LOGGER = Logger.getLogger(ExcelInputCore.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ExcelInputCore.class.getName());
 
     private File originalInputExcelFile;
     private File tempCopyOriginalInputExcelFile;
@@ -104,7 +104,6 @@ public class ExcelInputCore {
         this.bibLoadOnLotCriteria = bibLoadOnLotCriteria;
 
         this.excelFiles = new ArrayList<File>();
-
     } // End of Constructor
 
     public void execute() throws IOException, CustomException {
@@ -136,7 +135,6 @@ public class ExcelInputCore {
 
             // Adds the file into the array
             this.excelFiles.add(singleBatchExcelFileDestination);
-
         } // End of for-loop for batch sizes
     } // End of execute method
 
@@ -256,18 +254,6 @@ public class ExcelInputCore {
                 }
             }
         }
-
-        /*
-            int periodCount = 1;
-            double currentPeriod = lotInfoSheet.getRow(1).getCell(LOT_INFO_PERIOD_COLUMN).getNumericCellValue();
-            for (Row lotInfoRow : lotInfoSheet) {
-                double period = lotInfoRow.getCell(LOT_INFO_PERIOD_COLUMN).getNumericCellValue();
-                if (period != currentPeriod) {
-                    periodCount++;
-                    currentPeriod = period;
-                }
-            }
-        */
 
         double currentPeriod = 0.0;
         ArrayList<LotEntry> subLotList = new ArrayList<>();
@@ -474,17 +460,5 @@ public class ExcelInputCore {
      */
     public ArrayList<Integer> getListOfMinBatchSizes() {
         return listOfMinBatchSizes;
-    }
-
-    /**
-     * Prints the Batch numbers as calculated from user input.
-     * @return String.
-     */
-    public String printBatchesToRun() {
-        return this.listOfMinBatchSizes.toString();
-    }
-
-    public File getOriginalInputExcelFile() {
-        return this.originalInputExcelFile;
     }
 }

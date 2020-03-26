@@ -1,5 +1,10 @@
 package com.nusinfineon.storage;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
@@ -8,11 +13,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nusinfineon.core.Core;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class JsonParser {
 
@@ -46,7 +46,7 @@ public class JsonParser {
 
     /**
      * Method to load data from the Json formatted file.
-     * @return returns the core class with all the saveddata loaded
+     * @return returns the core class with all the saved data loaded
      * @throws IOException in the case of missing file
      */
     public Core loadData() throws IOException {
