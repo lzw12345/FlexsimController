@@ -79,27 +79,30 @@ public class ExcelListener {
 
                 //function called when a change is detected in the status excel file
                 public void onItemChanged(String topic, String item, String data) {
-                    excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
-                    if (currentRunNum == batchSizes.size()) {
-                        System.out.println("onItemChanged(" + topic + "," + item + "," + data.trim() + " i = " + currentRunNum + ")");
-                        System.out.println("No. of min. batch sizes = " + batchSizes.size());
-                        int i = 1;
-                        for (File iter : excelOutputFiles) {
-                            System.out.println("output file "+  i + ": " + iter.toString());
-                            i++;
+                    System.out.println("onItemChanged(" + topic + "," + item + "," + data.trim());
+                    if (data.trim().equals("finished")) {
+                        excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
+                        if (currentRunNum == batchSizes.size()) {
+                            System.out.println("onItemChanged(" + topic + "," + item + "," + data.trim() + " i = " + currentRunNum + ")");
+                            System.out.println("No. of min. batch sizes = " + batchSizes.size());
+                            int i = 1;
+                            for (File iter : excelOutputFiles) {
+                                System.out.println("output file " + i + ": " + iter.toString());
+                                i++;
+                            }
+                            try {
+                                endRuns();
+                            } catch (DDEException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            System.out.println("onItemChanged(" + topic + "," + item + "," + data.trim() + " i = " + currentRunNum + ")");
+                            if (data.trim().equals("finished")) {
+                                runModel(currentRunNum == batchSizes.size() - 1);
+                            }
                         }
-                        try {
-                            endRuns();
-                        } catch (DDEException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        System.out.println("onItemChanged(" + topic + "," + item + "," + data.trim() + " i = " + currentRunNum + ")");
-                        if (data.trim().equals("finished")) {
-                            runModel(currentRunNum == batchSizes.size()-1);
-                        }
+                        currentRunNum++;
                     }
-                    currentRunNum++;
                 }
             });
 
