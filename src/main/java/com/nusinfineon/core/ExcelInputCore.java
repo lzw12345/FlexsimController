@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -22,6 +24,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import com.nusinfineon.exceptions.CustomException;
 import com.nusinfineon.util.GenericLotEntry;
 import com.nusinfineon.util.LotEntry;
+import com.nusinfineon.util.LotSequencingRule;
 import com.nusinfineon.util.MJLotEntry;
 import com.nusinfineon.util.SPTLotEntry;
 
@@ -42,11 +45,6 @@ public class ExcelInputCore {
     private static final int LOT_INFO_PRODUCTION_LOCATION_COLUMN = 3;
     private static final int LOT_INFO_PERIOD_COLUMN = 4;
     private static final int LOT_INFO_NEW_COLUMN = 5;
-
-    private static final String LOT_SEQUENCE_FCFS = "First-Come-First-Served (Default)";
-    private static final String LOT_SEQUENCE_SPT = "Shortest Processing Time";
-    private static final String LOT_SEQUENCE_MJ = "Most Jobs";
-    private static final String LOT_SEQUENCE_RAND = "Random";
 
     private static final String PROCESS_TIME_SHEET_NAME = "Process Time";
     private static final int PROCESS_TIME_PRODUCT_KEY_COLUMN = 0;
@@ -71,7 +69,7 @@ public class ExcelInputCore {
     private File tempCopyOriginalInputExcelFile;
     private ArrayList<Integer> listOfMinBatchSizes;
     private ArrayList<File> excelFiles;
-    private String lotSequencingRule;
+    private HashMap<LotSequencingRule, Boolean> lotSequencingRules;
     private String resourceSelectCriteria;
     private String lotSelectionCriteria;
     private String trolleyLocationSelectCriteria;
@@ -80,7 +78,7 @@ public class ExcelInputCore {
     /**
      * Creates an object from the user defined Strings.
      */
-    public ExcelInputCore(String excelFilePath, String lotSequencingRule,
+    public ExcelInputCore(String excelFilePath, HashMap<LotSequencingRule, Boolean> lotSequencingRules,
                           String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString,
                           String resourceSelectCriteria, String lotSelectionCriteria,
                           String trolleyLocationSelectCriteria, String bibLoadOnLotCriteria){
@@ -90,10 +88,10 @@ public class ExcelInputCore {
         int maxBatchSize = Integer.parseInt(batchSizeMaxString);
         int batchStep = Integer.parseInt(batchSizeStepString);
 
-        this.lotSequencingRule = lotSequencingRule;
+        this.lotSequencingRules = lotSequencingRules;
 
         // Calculates the exact batch size needed and adds to an array.
-        this.listOfMinBatchSizes = new ArrayList<Integer>();
+        this.listOfMinBatchSizes = new ArrayList<>();
         for (int i = minBatchSize; i <= maxBatchSize; i = batchStep + i) {
             listOfMinBatchSizes.add(i);
         }
@@ -103,7 +101,7 @@ public class ExcelInputCore {
         this.trolleyLocationSelectCriteria = trolleyLocationSelectCriteria;
         this.bibLoadOnLotCriteria = bibLoadOnLotCriteria;
 
-        this.excelFiles = new ArrayList<File>();
+        this.excelFiles = new ArrayList<>();
     } // End of Constructor
 
     public void execute() throws IOException, CustomException {
@@ -111,31 +109,39 @@ public class ExcelInputCore {
         createCopyOfInputFile(); // Uses the copy of the input file as a reference
         LOGGER.info("Successfully created a copy of main Input excel file");
 
-        for (int batchNumber : listOfMinBatchSizes) {
-            LOGGER.info("Writing temp Input excel file for batch size " + batchNumber);
+        // Iterate through rules
+        for (Map.Entry<LotSequencingRule, Boolean> rule : lotSequencingRules.entrySet()) {
+            // If rule is selected.
+            if (rule.getValue()) {
+                // Iterate through batch sizes
+                for (int batchNumber : listOfMinBatchSizes) {
+                    LOGGER.info("Writing temp Input excel file for batch size " + batchNumber
+                            + ", " + rule.getKey().toString());
 
-            // Create the workbook from a copy of the original excel file
-            Workbook workbook = WorkbookFactory.create(this.tempCopyOriginalInputExcelFile);
+                    // Create the workbook from a copy of the original excel file
+                    Workbook workbook = WorkbookFactory.create(this.tempCopyOriginalInputExcelFile);
 
-            // Edit batch size
-            editMinBatchSize(workbook, batchNumber);
+                    // Edit batch size
+                    editMinBatchSize(workbook, batchNumber);
 
-            // Lot sequencing on Actual Lot Info
-            processLotSequencing(workbook);
+                    // Lot sequencing on Actual Lot Info
+                    processLotSequencing(workbook, rule.getKey());
 
-            // Edit settings
-            editSettings(workbook, batchNumber);
+                    // Edit settings
+                    editSettings(workbook, batchNumber);
 
-            // Saves the workbook and close the stream
-            String fileName = "input_data_batch_size_" + batchNumber + "__";
-            File singleBatchExcelFileDestination = Files.createTempFile(fileName, ".xlsx").toFile();
-            FileOutputStream outputStream = new FileOutputStream(singleBatchExcelFileDestination.toString());
-            workbook.write(outputStream);
-            workbook.close();
+                    // Saves the workbook and close the stream
+                    String fileName = rule.getKey().toString() + "_" + batchNumber + "_min_size_";
+                    File singleBatchExcelFileDestination = Files.createTempFile(fileName, ".xlsx").toFile();
+                    FileOutputStream outputStream = new FileOutputStream(singleBatchExcelFileDestination.toString());
+                    workbook.write(outputStream);
+                    workbook.close();
 
-            // Adds the file into the array
-            this.excelFiles.add(singleBatchExcelFileDestination);
-        } // End of for-loop for batch sizes
+                    // Adds the file into the array
+                    this.excelFiles.add(singleBatchExcelFileDestination);
+                } // End of for-loop for batch sizes
+            }
+        } // End of for-loop for sequencing rules
     } // End of execute method
 
     /**
@@ -202,24 +208,24 @@ public class ExcelInputCore {
      * Processes the lot sequencing on Actual Lot Info sheet
      * @param workbook Workbook to edit
      */
-    private void processLotSequencing(Workbook workbook) {
+    private void processLotSequencing(Workbook workbook, LotSequencingRule rule) {
         // Access Actual Lot Info sheet
         Sheet lotInfoSheet = workbook.getSheet(LOT_INFO_SHEET_NAME);
 
         ArrayList<LotEntry> lotList = new ArrayList<>();
 
-        switch (this.lotSequencingRule) {
-            case LOT_SEQUENCE_SPT:
+        switch (rule) {
+            case SPT:
                 // Access Process Time sheet
                 Sheet processTimeSheet = workbook.getSheet(PROCESS_TIME_SHEET_NAME);
                 // Get list sorted by shortest processing time
                 lotList = shortestProcessingTime(lotInfoSheet, processTimeSheet);
                 break;
-            case LOT_SEQUENCE_MJ:
+            case MJ:
                 // Get list sorted by most jobs
                 lotList = mostJobs(lotInfoSheet);
                 break;
-            case LOT_SEQUENCE_RAND:
+            case RAND:
                 // Get list sorted randomly
                 lotList = randomSequence(lotInfoSheet);
                 break;
@@ -227,7 +233,7 @@ public class ExcelInputCore {
                 break;
         }
 
-        if (!this.lotSequencingRule.equals(LOT_SEQUENCE_FCFS)) {
+        if (!rule.equals(LotSequencingRule.FCFS)) {
             // Edit Actual Lot Info sheet with sorted list
             editActualLotInfoList(lotList, lotInfoSheet);
         }
@@ -452,13 +458,5 @@ public class ExcelInputCore {
      */
     public ArrayList<File> getExcelFiles() {
         return excelFiles;
-    }
-
-    /**
-     * Returns an arrayList of batch sizes
-     * @return Array List of batch sizes
-     */
-    public ArrayList<Integer> getListOfMinBatchSizes() {
-        return listOfMinBatchSizes;
     }
 }

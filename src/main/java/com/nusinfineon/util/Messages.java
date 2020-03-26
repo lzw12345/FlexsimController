@@ -18,4 +18,10 @@ public class Messages {
     public static final String CONFIRM_RUN_MESSAGE = "Warning: The more runs there are, the longer it will take until completion."
             + "\nPreviously generated output files in the Output folder will be overwritten."
             + "\nPlease save and close all opened files on Excel before you click OK.";
+
+    public static final String SAVE_FILE_WRONG_FORMAT_MESSAGE = SAVE_FILE
+            + " is of the wrong format!\nPlease place a previously saved file into the folder of \"IBIS_Simulation.exe\".";
+
+    public static final String SAVE_FILE_NOT_FOUND_MESSAGE = SAVE_FILE
+            + " cannot be found!\nPlease place a previously saved file into the folder of \"IBIS_Simulation.exe\".";
 }

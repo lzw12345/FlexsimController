@@ -4,8 +4,12 @@ package com.nusinfineon.core;
 import java.net.*;
 import java.io.*;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class Server {
+
+    private static final Logger LOGGER = Logger.getLogger(RunCore.class.getName());
+
     //initialize socket and input stream
     private Socket socket = null;
     private ServerSocket server = null;
@@ -21,12 +25,12 @@ public class Server {
         try {
             // starts server and waits for a connection
             server = new ServerSocket(port);
-            System.out.println("Server started");
+            LOGGER.info("Server started");
 
-            System.out.println("Waiting for a client ...");
+            LOGGER.info("Waiting for Flexsim to finish and connect ...");
 
             socket = server.accept();
-            System.out.println("Client accepted");
+            LOGGER.info("Flexsim Connected , starting next run");
 
             // close connection
             socket.close();

@@ -2,12 +2,17 @@ package com.nusinfineon;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.nusinfineon.core.Core;
 import com.nusinfineon.storage.JsonParser;
 import com.nusinfineon.ui.Ui;
 import com.nusinfineon.ui.UiManager;
+import com.nusinfineon.util.Messages;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -17,7 +22,20 @@ public class Main extends Application {
 
     public Main() throws IOException {
         jsonParser = new JsonParser();
-        core = jsonParser.loadData();
+
+        try {
+            core = jsonParser.loadData();
+        } catch (UnrecognizedPropertyException | JsonParseException e) {
+            final Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText(Messages.SAVE_FILE_WRONG_FORMAT_MESSAGE
+                    + "\nOtherwise, delete the file and try opening the program again.");
+            alert.setResizable(true);
+            alert.getDialogPane().setPrefSize(480, 240);
+            alert.showAndWait();
+            Platform.exit();
+            System.exit(1);
+        }
+
         ui = new UiManager(core, jsonParser);
     }
 

@@ -9,12 +9,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 
 import com.nusinfineon.Main;
 import com.nusinfineon.exceptions.CustomException;
+import com.nusinfineon.util.LotSequencingRule;
 
 public class Core {
 
@@ -24,7 +26,7 @@ public class Core {
     private String outputLocation;
     private String runSpeed;
     private String stopTime;
-    private String lotSequencingRuleString;
+    private HashMap<LotSequencingRule, Boolean> lotSequencingRules;
     private String batchSizeMinString;
     private String batchSizeMaxString;
     private String batchSizeStepString;
@@ -36,10 +38,10 @@ public class Core {
     private ArrayList<File> excelOutputFiles;
 
     private static final Logger LOGGER = Logger.getLogger(Core.class.getName());
-    private static final String LOT_SEQUENCE_FCFS = "First-Come-First-Served (Default)";
-    private static final String LOT_SEQUENCE_SPT = "Shortest Processing Time";
-    private static final String LOT_SEQUENCE_MJ = "Most Jobs";
-    private static final String LOT_SEQUENCE_RAND = "Random";
+    private static final Boolean INIT_FCFS = true;
+    private static final Boolean INIT_SPT = false;
+    private static final Boolean INIT_MJ = false;
+    private static final Boolean INIT_RAND = false;
     private static final String INIT_RUN_SPEED = "4";
     private static final String INIT_STOP_TIME = "1140";
     private static final String INIT_MAX_BATCH_SIZE = "24";
@@ -63,12 +65,15 @@ public class Core {
      */
     public void execute() throws IOException, CustomException {
         // Code block handling creation of excel file for min batch size iterating
-        ExcelInputCore excelInputCore = new ExcelInputCore(inputLocation, lotSequencingRuleString, batchSizeMinString,
+        ExcelInputCore excelInputCore = new ExcelInputCore(inputLocation, lotSequencingRules, batchSizeMinString,
                 batchSizeMaxString, batchSizeStepString, resourceSelectCriteria, lotSelectionCriteria,
                 trolleyLocationSelectCriteria, bibLoadOnLotCriteria);
 
         // Initialise listener for running of simulation
         RunCore runCore = new RunCore(flexsimLocation, modelLocation, outputLocation, runSpeed, stopTime, isModelShown);
+
+        // Initalize OutputAnalysisCore to handle output analysis later
+        OutputAnalysisCore outputCore = new OutputAnalysisCore();
 
         try {
             excelInputCore.execute();
@@ -82,11 +87,11 @@ public class Core {
 
         // Extract the array of files and sizes from ExcelInputCore
         ArrayList<File> excelInputFiles = excelInputCore.getExcelFiles();
-        ArrayList<Integer> listOfMinBatchSizes = excelInputCore.getListOfMinBatchSizes();
 
-        excelOutputFiles = runCore.executeRuns(excelInputFiles, listOfMinBatchSizes);
 
-        handleOutput();
+        excelOutputFiles = runCore.executeRuns(excelInputFiles);
+
+        handleOutput(outputCore);
 
         Runtime.getRuntime().exec("cmd /c taskkill /f /im excel.exe");
     }
@@ -95,7 +100,7 @@ public class Core {
      * Used to handle processing and analysis of output
      * @throws IOException
      */
-    private void handleOutput() throws IOException, CustomException {
+    private void handleOutput(OutputAnalysisCore outputCore) throws IOException, CustomException {
         File outputFile = new File(outputLocation);
         String outputPathName = outputFile.getParent();
         Path outputDir = Paths.get(outputPathName, OUTPUT_FOLDER_NAME);
@@ -133,10 +138,12 @@ public class Core {
 
         if (folderDirectory.list().length > 0) {
             // Generate output statistics for all excel files in a folder
-            OutputAnalysisCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+            // OutputAnalysisCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+            outputCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
             // Generate the tableau excel file from the folder of excel files (with output data appended)
-            OutputAnalysisCore.generateExcelTableauFile(folderDirectory, destinationDirectory);
+            // OutputAnalysisCore.generateExcelTableauFile(folderDirectory, destinationDirectory);
+            outputCore.generateExcelTableauFile(folderDirectory, destinationDirectory);
 
             // Copy Tableau files from resources to output folder
             for (String fileName : TABLEAU_FILE_NAMES) {
@@ -167,10 +174,11 @@ public class Core {
      * @param batchSizeMaxString
      * @param batchSizeStepString
      */
-    public void inputData(String flexsimLocation, String modelLocation, String inputLocation,
-                          String outputLocation, String runSpeed, String stopTime, boolean isModelShown,
-                          String lotSequencingRuleString, String batchSizeMinString, String batchSizeMaxString,
-                          String batchSizeStepString, String resourceSelectCriteria, String lotSelectionCriteria,
+    public void inputData(String flexsimLocation, String modelLocation, String inputLocation, String outputLocation,
+                          String runSpeed, String stopTime, boolean isModelShown,
+                          HashMap<LotSequencingRule, Boolean> lotSequencingRules,
+                          String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString,
+                          String resourceSelectCriteria, String lotSelectionCriteria,
                           String trolleyLocationSelectCriteria, String bibLoadOnLotCriteria) {
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
@@ -180,7 +188,7 @@ public class Core {
         this.stopTime = stopTime;
         this.isModelShown = isModelShown;
 
-        this.lotSequencingRuleString = lotSequencingRuleString;
+        this.lotSequencingRules = lotSequencingRules;
 
         this.batchSizeMinString = batchSizeMinString;
         this.batchSizeMaxString = batchSizeMaxString;
@@ -228,23 +236,15 @@ public class Core {
         return isModelShown;
     }
 
-    public ArrayList<String> getLotSequencingRulesList() {
-        ArrayList<String> rulesList = new ArrayList<>();
-
-        rulesList.add(LOT_SEQUENCE_FCFS);
-        rulesList.add(LOT_SEQUENCE_SPT);
-        rulesList.add(LOT_SEQUENCE_MJ);
-        rulesList.add(LOT_SEQUENCE_RAND);
-
-        return rulesList;
-    }
-
-    public String getLotSequencingRuleString() {
-        if (lotSequencingRuleString == null) {
-            return LOT_SEQUENCE_FCFS;
-        } else {
-            return lotSequencingRuleString;
+    public HashMap<LotSequencingRule, Boolean> getLotSequencingRules() {
+        if (lotSequencingRules == null) {
+            lotSequencingRules = new HashMap<LotSequencingRule, Boolean>();
+            lotSequencingRules.put(LotSequencingRule.FCFS, INIT_FCFS);
+            lotSequencingRules.put(LotSequencingRule.SPT, INIT_SPT);
+            lotSequencingRules.put(LotSequencingRule.MJ, INIT_MJ);
+            lotSequencingRules.put(LotSequencingRule.RAND, INIT_RAND);
         }
+        return lotSequencingRules;
     }
 
     public String getBatchSizeMinString() {

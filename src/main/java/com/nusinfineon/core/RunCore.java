@@ -11,11 +11,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * Class to generate a server to connect with FlexSim for running the simulation runs
  */
 public class RunCore {
+
+    private static final Logger LOGGER = Logger.getLogger(RunCore.class.getName());
 
     private String flexsimLocation;
     private String modelLocation;
@@ -34,12 +37,12 @@ public class RunCore {
     private ScriptGenerator scriptGenerator;
     private Server server;
 
+
     public RunCore(String flexsimLocation, String modelLocation, String outputLocation,
                    String runSpeed, String stopTime, boolean isModelShown) {
 
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
-        deleteExistingFile(getFullPath(outputLocation) + "OutputNew.xlsx");
         outputFile = getBaseName(outputLocation) + "." + getExtension(outputLocation);
         this.outputLocation = getFullPath(outputLocation).replace("\\", "\\\\\\\\\\");
         this.isModelShown = isModelShown;
@@ -51,13 +54,12 @@ public class RunCore {
     /**
      * Main execute function to start runs
      */
-    public ArrayList<File> executeRuns(ArrayList<File> excelInputFiles, ArrayList<Integer> listOfMinBatchSizes) {
+    public ArrayList<File> executeRuns(ArrayList<File> excelInputFiles) {
         excelOutputFiles = new ArrayList<File>();
         this.excelInputFiles = excelInputFiles;
-        this.listOfMinBatchSizes = listOfMinBatchSizes;
 
         // Iterate through list of runs and run the model with server to establish connection with FlexSim
-        while (currentRunNum <= listOfMinBatchSizes.size()-1) {
+        while (currentRunNum <= excelInputFiles.size()-1) {
             runModel();
             server.checkForConnection();
             excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
@@ -65,7 +67,7 @@ public class RunCore {
         }
         int i = 1;
         for (File iter : excelOutputFiles) {
-            System.out.println("output file "+  i + ": " + iter.toString());
+            LOGGER.info("output file "+  i + ": " + iter.toString());
             i++;
         }
         return excelOutputFiles;
@@ -75,12 +77,11 @@ public class RunCore {
      * Main code the runs the program
      */
     public void runModel() {
-        System.out.println("Min batch size: " + listOfMinBatchSizes.get(currentRunNum) + ". Input file path: "
-                + excelInputFiles.get(currentRunNum).toString());
+        LOGGER.info("Input file path: " + excelInputFiles.get(currentRunNum).toString());
         String tempInputFile = excelInputFiles.get(currentRunNum).toString();
         inputFile =  getBaseName(tempInputFile) + "." + getExtension(tempInputFile);
         inputLocation = getFullPath(tempInputFile).replace("\\", "\\\\");
-        excelOutputFileName = getBaseName(inputFile).substring(0,getBaseName(inputFile).lastIndexOf("_")) + "output";
+        excelOutputFileName = getBaseName(inputFile).substring(0,getBaseName(inputFile).lastIndexOf("_")) + "_output";
         deleteExistingFile(getFullPath(outputLocation) + excelOutputFileName + ".xlsx");
 
         try {
@@ -113,9 +114,9 @@ public class RunCore {
         try {
             File f = new File(pathname);                         //file to be delete
             if (f.delete()) {                                    //returns Boolean value
-                System.out.println(f.getName() + " deleted");   //getting and printing the file name
+                LOGGER.info( f.getName() + " was deleted");   //getting and printing the file name
             } else {
-                System.out.println(pathname + " doesn't exist");
+                LOGGER.info(pathname.replace("\\\\\\\\\\", "\\") + " already doesn't exist");
             }
         } catch (Exception e) {
             e.printStackTrace();
