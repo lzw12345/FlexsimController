@@ -26,7 +26,6 @@ public class RunCore {
     private String runSpeed;
     private boolean isModelShown;
     private String stopTime;
-    private String lotSequencingRule;
     private String scriptFilepath = "./script.txt";
     private File scriptFile;
     private int currentRunNum;
@@ -58,7 +57,6 @@ public class RunCore {
         this.excelOutputFiles = excelOutputFiles;
         this.excelInputFiles = excelInputFiles;
         this.listOfMinBatchSizes = listOfMinBatchSizes;
-        this.lotSequencingRule = lotSequencingRule.replaceAll(" ", "_").toLowerCase();
         this.excelOutputFiles.clear();
 
         // Iterate through list of runs and run the model with server to establish connection with FlexSim
@@ -84,7 +82,7 @@ public class RunCore {
         String tempInputFile = excelInputFiles.get(currentRunNum).toString();
         inputFile = '"' + getBaseName(tempInputFile) + "." + getExtension(tempInputFile);
         inputLocation = getFullPath(tempInputFile).replace("\\", "\\\\");
-        excelOutputFileName = "min_" + listOfMinBatchSizes.get(currentRunNum) + "_BIB_" + lotSequencingRule + "_output";
+        excelOutputFileName = getBaseName(inputFile).substring(0,getBaseName(inputFile).lastIndexOf("_")) + "output";
         deleteExistingFile(getFullPath(outputLocation) + excelOutputFileName + ".xlsx");
 
         try {
