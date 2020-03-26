@@ -3,19 +3,21 @@ package com.nusinfineon.ui;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.nusinfineon.core.Core;
 import com.nusinfineon.exceptions.CustomException;
 import com.nusinfineon.storage.JsonParser;
+import com.nusinfineon.util.LotSequencingRule;
 import com.nusinfineon.util.Messages;
 
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -39,7 +41,6 @@ public class MainGui extends UiPart<Stage> {
     private static final int MIN_ALLOWABLE_STEP_SIZE = 1;
     private static final String FXML = "MainGui.fxml";
     private static final String ICON_APPLICATION = "/images/icon_large.png";
-    private static final String SAVE_FILE = "saveFile.txt";
 
     private Stage primaryStage;
     private Core core;
@@ -72,7 +73,13 @@ public class MainGui extends UiPart<Stage> {
     @FXML
     private Spinner<Integer> batchSizeStep;
     @FXML
-    private ChoiceBox<String> lotSequencingRule;
+    private CheckBox lotSequencingRuleFCFS;
+    @FXML
+    private CheckBox lotSequencingRuleSPT;
+    @FXML
+    private CheckBox lotSequencingRuleMJ;
+    @FXML
+    private CheckBox lotSequencingRuleRAND;
     @FXML
     private RadioButton resourceSelectCriteria1;
     @FXML
@@ -125,8 +132,10 @@ public class MainGui extends UiPart<Stage> {
         stopTime.setText(core.getStopTime());
         showModel.setSelected(core.getIsModelShown());
 
-        lotSequencingRule.setItems(FXCollections.observableArrayList(core.getLotSequencingRulesList()));
-        lotSequencingRule.setValue(core.getLotSequencingRuleString());
+        lotSequencingRuleFCFS.setSelected(getIsFCFSSelected(core.getLotSequencingRules()));
+        lotSequencingRuleSPT.setSelected(getIsSPTSelected(core.getLotSequencingRules()));
+        lotSequencingRuleMJ.setSelected(getIsMJSelected(core.getLotSequencingRules()));
+        lotSequencingRuleRAND.setSelected(getIsRANDSelected(core.getLotSequencingRules()));
 
         batchSizeMin.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
                 MIN_ALLOWABLE_BATCH_SIZE, MAX_ALLOWABLE_BATCH_SIZE, Integer.parseInt(core.getBatchSizeMinString())));
@@ -158,6 +167,22 @@ public class MainGui extends UiPart<Stage> {
         bibLoadOnLotCriteria1.setToggleGroup(bibLoadOnLotCriteria);
         bibLoadOnLotCriteria2.setToggleGroup(bibLoadOnLotCriteria);
         bibLoadOnLotCriteria.selectToggle(getBibLoadOnLotCriteria());
+    }
+
+    private Boolean getIsFCFSSelected(HashMap<LotSequencingRule, Boolean> lotSequencingRules) {
+        return lotSequencingRules.get(LotSequencingRule.FCFS);
+    }
+
+    private Boolean getIsSPTSelected(HashMap<LotSequencingRule, Boolean> lotSequencingRules) {
+        return lotSequencingRules.get(LotSequencingRule.SPT);
+    }
+
+    private Boolean getIsMJSelected(HashMap<LotSequencingRule, Boolean> lotSequencingRules) {
+        return lotSequencingRules.get(LotSequencingRule.MJ);
+    }
+
+    private Boolean getIsRANDSelected(HashMap<LotSequencingRule, Boolean> lotSequencingRules) {
+        return lotSequencingRules.get(LotSequencingRule.RAND);
     }
 
     /** Gets the saved radio button for Resource Select Criteria
@@ -377,10 +402,10 @@ public class MainGui extends UiPart<Stage> {
             try {
                 core = jsonParser.loadData();
                 configureUi();
-            } catch (UnrecognizedPropertyException e) {
-                showErrorBox(SAVE_FILE + " is of the wrong format!\nPlease place a previously saved file into the folder of \"IBIS_Simulation.exe\".");
+            } catch (UnrecognizedPropertyException | JsonParseException e) {
+                showErrorBox(Messages.SAVE_FILE_WRONG_FORMAT_MESSAGE);
             } catch (FileNotFoundException e) {
-                showErrorBox(SAVE_FILE + " cannot be found!\nPlease place a previously saved file into the folder of \"IBIS_Simulation.exe\".");
+                showErrorBox(Messages.SAVE_FILE_NOT_FOUND_MESSAGE);
             }
         }
     }
@@ -434,7 +459,7 @@ public class MainGui extends UiPart<Stage> {
                     + "!");
         } else {
             if (confirmRun(batchSizeMin.getValueFactory().getValue(), batchSizeMax.getValueFactory().getValue(),
-                    batchSizeStep.getValueFactory().getValue())) {
+                    batchSizeStep.getValueFactory().getValue(), getLotSequencingRules())) {
                 try {
                     execute();
                 } catch (IOException e) {
@@ -451,8 +476,8 @@ public class MainGui extends UiPart<Stage> {
      */
     private void saveInputDataToCore() {
         core.inputData(exeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
-                outputFileLocation.getText(), runSpeed.getText(), stopTime.getText(),
-                showModel.isSelected(), lotSequencingRule.getValue(),
+                outputFileLocation.getText(), runSpeed.getText(), stopTime.getText(), showModel.isSelected(),
+                getLotSequencingRules(),
                 Integer.toString(batchSizeMin.getValueFactory().getValue()),
                 Integer.toString(batchSizeMax.getValueFactory().getValue()),
                 Integer.toString(batchSizeStep.getValueFactory().getValue()),
@@ -468,7 +493,8 @@ public class MainGui extends UiPart<Stage> {
     private void execute() throws IOException, CustomException {
         String title = "Simulation running...";
         String header = "Please wait for the simulation to complete...";
-        Alert waitAlert = raiseAlertBox(Alert.AlertType.NONE, title, header, null, 480, 60);
+        String text = "Please wait for the simulation to complete...";
+        Alert waitAlert = raiseAlertBox(Alert.AlertType.NONE, title, header, text, 480, 60);
 
         waitAlert.show();
 
@@ -479,6 +505,19 @@ public class MainGui extends UiPart<Stage> {
         Stage stage = (Stage) waitAlert.getDialogPane().getScene().getWindow();
         stage.close();
         showCompletedBox();
+    }
+
+    /** Get the selected Lot Sequencing Rules from user input
+     */
+    private HashMap<LotSequencingRule, Boolean> getLotSequencingRules() {
+        HashMap<LotSequencingRule, Boolean> lotSequencingRules = new HashMap<>();
+
+        lotSequencingRules.put(LotSequencingRule.FCFS, lotSequencingRuleFCFS.isSelected());
+        lotSequencingRules.put(LotSequencingRule.SPT, lotSequencingRuleSPT.isSelected());
+        lotSequencingRules.put(LotSequencingRule.MJ, lotSequencingRuleMJ.isSelected());
+        lotSequencingRules.put(LotSequencingRule.RAND, lotSequencingRuleRAND.isSelected());
+
+        return lotSequencingRules;
     }
 
     /** Get the selected radio button for Resource Select Criteria from user input
@@ -577,10 +616,19 @@ public class MainGui extends UiPart<Stage> {
      * Helper function to raise alert box with a supplied alert text for Confirmation.
      * @return true when user clicks OK to confirm
      */
-    private boolean confirmRun(int batchSizeMin, int batchSizeMax, int batchSizeStep) {
+    private boolean confirmRun(int batchSizeMin, int batchSizeMax, int batchSizeStep,
+                               HashMap<LotSequencingRule, Boolean> lotSequencingRules) {
+        int numberOfRuns = 0;
+        for (Map.Entry<LotSequencingRule, Boolean> rule : lotSequencingRules.entrySet()) {
+            if (rule.getValue()) {
+                numberOfRuns++;
+            }
+        }
+        numberOfRuns = numberOfRuns*((batchSizeMax - batchSizeMin) / batchSizeStep + 1);
+
         String title = "Confirm Simulation";
         String header = "Confirm to run simulation?";
-        String text = "There will be " + ((batchSizeMax - batchSizeMin) / batchSizeStep + 1) + " simulation run(s).\n"
+        String text = "There will be " + numberOfRuns + " simulation run(s).\n"
                 + Messages.CONFIRM_RUN_MESSAGE;
         Alert confirmationAlert = raiseAlertBox(Alert.AlertType.CONFIRMATION, title, header, text);
 
