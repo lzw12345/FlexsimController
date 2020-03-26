@@ -10,11 +10,16 @@ public class Server {
     private Socket socket = null;
     private ServerSocket server = null;
     private DataInputStream in = null;
-
+    private int port;
     // constructor with port
     public Server(int port) {
-        // starts server and waits for a connection
+        this.port = port;
+
+    }
+
+    public void checkForConnection() {
         try {
+            // starts server and waits for a connection
             server = new ServerSocket(port);
             System.out.println("Server started");
 
@@ -26,7 +31,6 @@ public class Server {
             // close connection
             socket.close();
             server.close();
-
             TimeUnit.SECONDS.sleep(5);
         } catch(IOException | InterruptedException i) {
             System.out.println(i);

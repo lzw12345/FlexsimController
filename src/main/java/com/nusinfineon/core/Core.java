@@ -83,9 +83,8 @@ public class Core {
         // Extract the array of files and sizes from ExcelInputCore
         ArrayList<File> excelInputFiles = excelInputCore.getExcelFiles();
         ArrayList<Integer> listOfMinBatchSizes = excelInputCore.getListOfMinBatchSizes();
-        excelOutputFiles = new ArrayList<>();
 
-        runCore.executeRuns(excelInputFiles, listOfMinBatchSizes, lotSequencingRuleString, excelOutputFiles);
+        excelOutputFiles = runCore.executeRuns(excelInputFiles, listOfMinBatchSizes);
 
         handleOutput();
 
