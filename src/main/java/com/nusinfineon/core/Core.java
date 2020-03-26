@@ -70,6 +70,9 @@ public class Core {
         // Initialise listener for running of simulation
         RunCore runCore = new RunCore(flexsimLocation, modelLocation, outputLocation, runSpeed, stopTime, isModelShown);
 
+        // Initalize OutputAnalysisCore to handle output analysis later
+        OutputAnalysisCore outputCore = new OutputAnalysisCore();
+
         try {
             excelInputCore.execute();
         } catch (IOException e) {
@@ -87,7 +90,7 @@ public class Core {
 
         runCore.executeRuns(excelInputFiles, listOfMinBatchSizes, lotSequencingRuleString, excelOutputFiles);
 
-        handleOutput();
+        handleOutput(outputCore);
 
         Runtime.getRuntime().exec("cmd /c taskkill /f /im excel.exe");
     }
@@ -96,7 +99,7 @@ public class Core {
      * Used to handle processing and analysis of output
      * @throws IOException
      */
-    private void handleOutput() throws IOException, CustomException {
+    private void handleOutput(OutputAnalysisCore outputCore) throws IOException, CustomException {
         File outputFile = new File(outputLocation);
         String outputPathName = outputFile.getParent();
         Path outputDir = Paths.get(outputPathName, OUTPUT_FOLDER_NAME);
@@ -134,10 +137,12 @@ public class Core {
 
         if (folderDirectory.list().length > 0) {
             // Generate output statistics for all excel files in a folder
-            OutputAnalysisCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+            // OutputAnalysisCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+            outputCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
             // Generate the tableau excel file from the folder of excel files (with output data appended)
-            OutputAnalysisCore.generateExcelTableauFile(folderDirectory, destinationDirectory);
+            // OutputAnalysisCore.generateExcelTableauFile(folderDirectory, destinationDirectory);
+            outputCore.generateExcelTableauFile(folderDirectory, destinationDirectory);
 
             // Copy Tableau files from resources to output folder
             for (String fileName : TABLEAU_FILE_NAMES) {
