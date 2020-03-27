@@ -32,6 +32,25 @@ public class OutputCore {
     }
 
     /**
+     * Wrapper function to handle all files in a specified folder.
+     * @param folderDirectory Directory of a folder with excel files to be processed.
+     * @throws CustomException if argument is not a directory.
+     */
+    public void appendSummaryStatisticsOfFolderOFExcelFiles(File folderDirectory) throws CustomException, IOException {
+        if (!folderDirectory.isDirectory()) {
+            throw new CustomException(folderDirectory.toString() + " is not a directory");
+        }
+        LOGGER.info("Accessing folder: " + folderDirectory.toString());
+
+        // Process all files in the directory and append their respective summary statistics
+        for (File file: folderDirectory.listFiles()) {
+            if (file.exists() && (!file.isDirectory())) {
+                appendSummaryStatisticsOfSingleOutputExcelFile(file);
+            }
+        }
+    }
+
+    /**
      * Generates a single excel file to be used with Tableau. Summarizes the output file data for each excel file.
      * Saves the file into "src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx"
      */
@@ -532,25 +551,6 @@ public class OutputCore {
             workbook.close();
             tempOutputFile.delete();
             LOGGER.info("Closed workbook and deleted temporary excel file.");
-        }
-    }
-
-    /**
-     * Wrapper function to handle all files in a specified folder.
-     * @param folderDirectory Directory of a folder with excel files to be processed.
-     * @throws CustomException if argument is not a directory.
-     */
-    public void appendSummaryStatisticsOfFolderOFExcelFiles(File folderDirectory) throws CustomException, IOException {
-        if (!folderDirectory.isDirectory()) {
-            throw new CustomException(folderDirectory.toString() + " is not a directory");
-        }
-        LOGGER.info("Accessing folder: " + folderDirectory.toString());
-
-        // Process all files in the directory and append their respective summary statistics
-        for (File file: folderDirectory.listFiles()) {
-            if (file.exists() && (!file.isDirectory())) {
-                appendSummaryStatisticsOfSingleOutputExcelFile(file);
-            }
         }
     }
 }

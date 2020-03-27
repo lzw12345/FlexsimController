@@ -85,7 +85,7 @@ public class Core {
     /**
      * Used to handle processing of input
      */
-    private void handleInput(InputCore inputCore) throws IOException, CustomException {
+    private void handleInput(InputCore inputCore) throws CustomException {
         try {
             inputCore.execute();
         } catch (IOException e) {
@@ -103,7 +103,7 @@ public class Core {
     /**
      * Used to handle simulation runs
      */
-    private void handleRuns(RunCore runCore) throws IOException, CustomException {
+    private void handleRuns(RunCore runCore) {
         excelOutputFiles = runCore.executeRuns(excelInputFiles);
     }
 
@@ -171,11 +171,9 @@ public class Core {
 
         if (folderDirectory.list().length > 0) {
             // Generate output statistics for all excel files in a folder
-            // OutputCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
             outputCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
             // Generate the tableau excel file from the folder of excel files (with output data appended)
-            // OutputCore.generateTableauExcelFile(folderDirectory, destinationDirectory);
             outputCore.generateTableauExcelFile(folderDirectory, destinationDirectory);
 
             // Copy Tableau files from resources to Output folder

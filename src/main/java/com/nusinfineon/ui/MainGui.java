@@ -460,8 +460,8 @@ public class MainGui extends UiPart<Stage> {
             if (confirmRun(batchSizeMin.getValueFactory().getValue(), batchSizeMax.getValueFactory().getValue(),
                     batchSizeStep.getValueFactory().getValue(), getLotSequencingRules())) {
                 Alert waitAlert = getWaitAlert();
+                waitAlert.show();
                 try {
-                    waitAlert.show();
                     execute();
                 } catch (IOException e) {
                     showErrorBox("An IO Exception has occurred. Please try again.\n" + e.getMessage());
@@ -633,7 +633,7 @@ public class MainGui extends UiPart<Stage> {
 
         String title = "Confirm Simulation";
         String header = "Confirm to run simulation?";
-        String text = "There will be " + numberOfRuns + " simulation run(s).\n"
+        String text = "There will be " + numberOfRuns + " simulation run(s).\n\n"
                 + Messages.CONFIRM_RUN_MESSAGE;
         Alert confirmationAlert = raiseAlertBox(Alert.AlertType.CONFIRMATION, title, header, text);
 
