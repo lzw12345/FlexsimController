@@ -13,7 +13,6 @@ import com.nusinfineon.exceptions.CustomException;
  */
 public class OutputAnalysisDriver {
 
-
     public static void main(String[] args) throws IOException, CustomException {
         System.out.println("Starting output analysis...");
         OutputCore outputCore = new OutputCore();

@@ -1,5 +1,7 @@
 package com.nusinfineon.ui;
 
+import static com.nusinfineon.util.Directories.ICON_APPLICATION;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,7 +42,6 @@ public class MainGui extends UiPart<Stage> {
     private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - MIN_ALLOWABLE_BATCH_SIZE;
     private static final int MIN_ALLOWABLE_STEP_SIZE = 1;
     private static final String FXML = "MainGui.fxml";
-    private static final String ICON_APPLICATION = "/images/icon_large.png";
 
     private Stage primaryStage;
     private Core core;
@@ -463,9 +464,9 @@ public class MainGui extends UiPart<Stage> {
                     waitAlert.show();
                     execute();
                 } catch (IOException e) {
-                    showExceptionBox("An IO Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                    showErrorBox("An IO Exception has occurred. Please try again.\n" + e.getMessage());
                 } catch (CustomException e) {
-                    showExceptionBox("An error has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                    showErrorBox("An error has occurred. Please try again.\n" + e.getMessage());
                 }
                 Stage stage = (Stage) waitAlert.getDialogPane().getScene().getWindow();
                 stage.close();
@@ -662,17 +663,6 @@ public class MainGui extends UiPart<Stage> {
      */
     private void showErrorBox(String alertText) {
         String title = "Error";
-        Alert errorAlert = raiseAlertBox(Alert.AlertType.ERROR, title, null, alertText);
-
-        errorAlert.showAndWait();
-    }
-
-    /**
-     * Helper function to raise alert box with a supplied alert text for Exceptions.
-     * @param alertText Alert text string to be displayed to the user.
-     */
-    private void showExceptionBox(String alertText) {
-        String title = "Exception Error";
         Alert errorAlert = raiseAlertBox(Alert.AlertType.ERROR, title, null, alertText);
 
         errorAlert.showAndWait();

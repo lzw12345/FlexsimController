@@ -1,5 +1,7 @@
 package com.nusinfineon.core;
 
+import static com.nusinfineon.util.Directories.INPUT_EXCEL_SHEETS;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -104,6 +106,11 @@ public class InputCore {
         this.excelFiles = new ArrayList<>();
     } // End of Constructor
 
+    /**
+     * Main execute function of InputCore to process input files
+     * @throws IOException
+     * @throws CustomException
+     */
     public void execute() throws IOException, CustomException {
 
         createCopyOfInputFile(); // Uses the copy of the input file as a reference
@@ -152,7 +159,25 @@ public class InputCore {
      */
     private void checkValidInputFile() throws IOException, CustomException {
         Workbook workbook = WorkbookFactory.create(this.tempCopyOriginalInputExcelFile);
-        // TODO
+        ArrayList<String> missingSheets = new ArrayList<>();
+
+        // Check for missing sheets
+        for (String sheet : INPUT_EXCEL_SHEETS) {
+            if (workbook.getSheet(sheet) == null) {
+                missingSheets.add(sheet);
+            }
+        }
+
+        // Show missing sheets as exception message
+        if (!missingSheets.isEmpty()) {
+            StringBuilder message = new StringBuilder("The following sheets are missing from the input Excel file:\n");
+                for (String sheet : missingSheets) {
+                    message.append(sheet).append("\n");
+                }
+            workbook.close();
+            throw new CustomException(message.toString());
+        }
+
         workbook.close();
     }
 

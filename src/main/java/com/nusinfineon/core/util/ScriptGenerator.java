@@ -32,7 +32,7 @@ public class ScriptGenerator {
         FileWriter fileWriter = new FileWriter(scriptFilepath);
         fileWriter.write(runSpeed + "\n"
                 + stopTime + "\n"
-                //+ "MAIN2LoadData (\"" + inputLocation + "\",\"" + inputFile + "\");\n"
+                + "MAIN2LoadData (\"" + inputLocation + "\",\"" + inputFile + "\");\n"
                 + "excellaunch();\n"
                 + editNodeCode("RunStop", "MODEL://Tools//OnRunStop", "concat(" + ON_RUN_STOP_CODE
                 + ",\"MAIN15WriteReports(true, \\\""

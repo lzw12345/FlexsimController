@@ -3,6 +3,7 @@ package com.nusinfineon.core;
 import static com.nusinfineon.util.Directories.INPUT_FOLDER_NAME;
 import static com.nusinfineon.util.Directories.OUTPUT_FOLDER_NAME;
 import static com.nusinfineon.util.Directories.RAW_OUTPUT_FOLDER_NAME;
+import static com.nusinfineon.util.Directories.TABLEAU_FILE_NAMES;
 import static com.nusinfineon.util.Directories.TABLEAU_WORKBOOKS_SOURCE_DIR;
 
 import java.io.File;
@@ -13,7 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -58,10 +58,6 @@ public class Core {
     private static final String INIT_TROLLEY_LOCATION_SELECT_CRITERIA = "2";
     private static final String INIT_BIB_LOAD_ON_LOT_CRITERIA = "2";
 
-    private static final ArrayList<String> TABLEAU_FILE_NAMES = new ArrayList<>(Arrays.asList(
-            "Daily Throughput.twb", "IBIS Utilization Rates.twb", "Stay Time.twb",
-            "Throughput.twb", "Time in System.twb", "Worth.twb"));
-
     /**
      * Main execute function to generate input files. run model and generate output file
      */
@@ -77,6 +73,19 @@ public class Core {
         // Initialise OutputCore for handling output analysis
         OutputCore outputCore = new OutputCore();
 
+        handleInput(inputCore);
+
+        handleRuns(runCore);
+
+        handleOutput(outputCore);
+
+        Runtime.getRuntime().exec("cmd /c taskkill /f /im excel.exe");
+    }
+
+    /**
+     * Used to handle processing of input
+     */
+    private void handleInput(InputCore inputCore) throws IOException, CustomException {
         try {
             inputCore.execute();
         } catch (IOException e) {
@@ -89,12 +98,13 @@ public class Core {
 
         // Extract the array of files and sizes from InputCore
         excelInputFiles = inputCore.getExcelFiles();
+    }
 
+    /**
+     * Used to handle simulation runs
+     */
+    private void handleRuns(RunCore runCore) throws IOException, CustomException {
         excelOutputFiles = runCore.executeRuns(excelInputFiles);
-
-        handleOutput(outputCore);
-
-        Runtime.getRuntime().exec("cmd /c taskkill /f /im excel.exe");
     }
 
     /**
