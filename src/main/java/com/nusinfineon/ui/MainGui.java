@@ -1,5 +1,7 @@
 package com.nusinfineon.ui;
 
+import static com.nusinfineon.util.Directories.ICON_APPLICATION;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,7 +42,6 @@ public class MainGui extends UiPart<Stage> {
     private static final int MAX_ALLOWABLE_STEP_SIZE = MAX_ALLOWABLE_BATCH_SIZE - MIN_ALLOWABLE_BATCH_SIZE;
     private static final int MIN_ALLOWABLE_STEP_SIZE = 1;
     private static final String FXML = "MainGui.fxml";
-    private static final String ICON_APPLICATION = "/images/icon_large.png";
 
     private Stage primaryStage;
     private Core core;
@@ -271,8 +272,7 @@ public class MainGui extends UiPart<Stage> {
         } else {
             showInvalidBox("File must be a FlexSim model with extension .fsm");
         }
-        /* let the source know whether the string was successfully
-         * transferred and used */
+        /* let the source know whether the string was successfully transferred and used */
         event.setDropCompleted(success);
         event.consume();
     }
@@ -299,8 +299,7 @@ public class MainGui extends UiPart<Stage> {
         } else {
             showInvalidBox("File must be an Excel file with extension .xlsx");
         }
-        /* let the source know whether the string was successfully
-         * transferred and used */
+        /* let the source know whether the string was successfully transferred and used */
         event.setDropCompleted(success);
         event.consume();
     }
@@ -327,8 +326,7 @@ public class MainGui extends UiPart<Stage> {
         } else {
             showInvalidBox("File must be an Excel file with extension .xlsx");
         }
-        /* let the source know whether the string was successfully
-         * transferred and used */
+        /* let the source know whether the string was successfully transferred and used */
         event.setDropCompleted(success);
         event.consume();
     }
@@ -355,8 +353,7 @@ public class MainGui extends UiPart<Stage> {
         } else {
             showInvalidBox("File must be a executable file with extension .exe");
         }
-        /* let the source know whether the string was successfully
-         * transferred and used */
+        /* let the source know whether the string was successfully transferred and used */
         event.setDropCompleted(success);
         event.consume();
     }
@@ -434,7 +431,7 @@ public class MainGui extends UiPart<Stage> {
         } else if (!isValidExeLocation()) {
             showInvalidBox("FlexSim (.exe) must be the executable file: flexsim.exe");
         } else if (!isValidExtension(modelFileLocation.getText(), "fsm")) {
-            showInvalidBox("Model (.fsm) must be a Flexsim model with extension .fsm!");
+            showInvalidBox("Model (.fsm) must be a FlexSim model with extension .fsm!");
         } else if (!isValidExtension(inputFileLocation.getText(), "xlsx")) {
             showInvalidBox("Input (.xlsx) must be an Excel file with extension .xlsx!");
         } else if (!isValidExtension(outputFileLocation.getText(), "xlsx")) {
@@ -443,6 +440,8 @@ public class MainGui extends UiPart<Stage> {
             showInvalidBox("Run Parameters cannot be blank!");
         } else if (isNotDouble(runSpeed.getText()) || isNotDouble(stopTime.getText())) {
             showInvalidBox("Run Parameters must be numeric (integer/double)!");
+        } else if (!isLotSequenceSelected()) {
+            showInvalidBox("At least 1 Lot Sequencing Rule must be selected!");
         } else if (!isValidMinBatchSize(batchSizeMin.getValueFactory().getValue())) {
             showInvalidBox("Lowest batch size to run must be at least 1 and at most 24!");
         } else if (!isValidMaxBatchSize(batchSizeMax.getValueFactory().getValue())) {
@@ -460,13 +459,17 @@ public class MainGui extends UiPart<Stage> {
         } else {
             if (confirmRun(batchSizeMin.getValueFactory().getValue(), batchSizeMax.getValueFactory().getValue(),
                     batchSizeStep.getValueFactory().getValue(), getLotSequencingRules())) {
+                Alert waitAlert = getWaitAlert();
                 try {
+                    waitAlert.show();
                     execute();
                 } catch (IOException e) {
-                    showExceptionBox("An IO Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                    showErrorBox("An IO Exception has occurred. Please try again.\n" + e.getMessage());
                 } catch (CustomException e) {
-                    showExceptionBox("A Custom Exception has occurred.\n" + e.getMessage() + "\nPlease try again.");
+                    showErrorBox("An error has occurred. Please try again.\n" + e.getMessage());
                 }
+                Stage stage = (Stage) waitAlert.getDialogPane().getScene().getWindow();
+                stage.close();
             }
         }
     }
@@ -491,20 +494,22 @@ public class MainGui extends UiPart<Stage> {
      * Executes Core with confirmation, waiting and completion alerts
      */
     private void execute() throws IOException, CustomException {
-        String title = "Simulation running...";
+        saveInputDataToCore();
+        jsonParser.storeData(core);
+        core.execute();
+        showCompletedBox();
+    }
+
+    /**
+     * Executes Core with confirmation, waiting and completion alerts
+     */
+    private Alert getWaitAlert() {
+        String title = "Simulation running... (Please wait...)";
         String header = "Please wait for the simulation to complete...";
         String text = "Please wait for the simulation to complete...";
         Alert waitAlert = raiseAlertBox(Alert.AlertType.NONE, title, header, text, 480, 60);
 
-        waitAlert.show();
-
-        saveInputDataToCore();
-        jsonParser.storeData(core);
-        core.execute();
-
-        Stage stage = (Stage) waitAlert.getDialogPane().getScene().getWindow();
-        stage.close();
-        showCompletedBox();
+        return waitAlert;
     }
 
     /** Get the selected Lot Sequencing Rules from user input
@@ -631,6 +636,7 @@ public class MainGui extends UiPart<Stage> {
         String text = "There will be " + numberOfRuns + " simulation run(s).\n"
                 + Messages.CONFIRM_RUN_MESSAGE;
         Alert confirmationAlert = raiseAlertBox(Alert.AlertType.CONFIRMATION, title, header, text);
+
         confirmationAlert.showAndWait();
         if (confirmationAlert.getResult() == ButtonType.OK) {
             return true;
@@ -647,6 +653,7 @@ public class MainGui extends UiPart<Stage> {
         String title = "Invalid Input";
         String header = "Invalid Input";
         Alert errorAlert = raiseAlertBox(Alert.AlertType.ERROR, title, header, alertText);
+
         errorAlert.showAndWait();
     }
 
@@ -656,17 +663,6 @@ public class MainGui extends UiPart<Stage> {
      */
     private void showErrorBox(String alertText) {
         String title = "Error";
-        Alert errorAlert = raiseAlertBox(Alert.AlertType.ERROR, title, null, alertText);
-
-        errorAlert.showAndWait();
-    }
-
-    /**
-     * Helper function to raise alert box with a supplied alert text for Exceptions.
-     * @param alertText Alert text string to be displayed to the user.
-     */
-    private void showExceptionBox(String alertText) {
-        String title = "Exception Error";
         Alert errorAlert = raiseAlertBox(Alert.AlertType.ERROR, title, null, alertText);
 
         errorAlert.showAndWait();
@@ -752,6 +748,21 @@ public class MainGui extends UiPart<Stage> {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Returns true if any of the required simulation run parameters are blank.
+     * @return Boolean.
+     */
+    private boolean isLotSequenceSelected() {
+        HashMap<LotSequencingRule, Boolean> lotSequencingRules = getLotSequencingRules();
+
+        for (Map.Entry<LotSequencingRule, Boolean> rule : lotSequencingRules.entrySet()) {
+            if (rule.getValue() == true) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

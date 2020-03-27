@@ -1,5 +1,7 @@
 package com.nusinfineon;
 
+import static com.nusinfineon.util.Directories.ICON_APPLICATION;
+
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -13,6 +15,7 @@ import com.nusinfineon.util.Messages;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -31,7 +34,11 @@ public class Main extends Application {
                     + "\nOtherwise, delete the file and try opening the program again.");
             alert.setResizable(true);
             alert.getDialogPane().setPrefSize(480, 240);
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image(this.getClass().getResource(ICON_APPLICATION).toString()));
+
             alert.showAndWait();
+
             Platform.exit();
             System.exit(1);
         }

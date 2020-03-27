@@ -1,10 +1,12 @@
-package com.nusinfineon.core;
+package com.nusinfineon.core.util;
 
-// A Java program for a Server
-import java.net.*;
-import java.io.*;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import com.nusinfineon.core.RunCore;
 
 public class Server {
 
@@ -13,12 +15,11 @@ public class Server {
     //initialize socket and input stream
     private Socket socket = null;
     private ServerSocket server = null;
-    private DataInputStream in = null;
     private int port;
+
     // constructor with port
     public Server(int port) {
         this.port = port;
-
     }
 
     public void checkForConnection() {
@@ -27,14 +28,15 @@ public class Server {
             server = new ServerSocket(port);
             LOGGER.info("Server started");
 
-            LOGGER.info("Waiting for Flexsim to finish and connect ...");
+            LOGGER.info("Waiting for FlexSim to finish and connect ...");
 
             socket = server.accept();
-            LOGGER.info("Flexsim Connected , starting next run");
+            LOGGER.info("FlexSim connected! Starting next run");
 
             // close connection
             socket.close();
             server.close();
+
             TimeUnit.SECONDS.sleep(5);
         } catch(IOException | InterruptedException i) {
             System.out.println(i);

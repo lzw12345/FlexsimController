@@ -1,11 +1,11 @@
-package com.nusinfineon.util;
+package com.nusinfineon.core.output;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 
-import com.nusinfineon.core.OutputAnalysisCore;
+import com.nusinfineon.core.OutputCore;
 import com.nusinfineon.exceptions.CustomException;
 
 /**
@@ -13,10 +13,9 @@ import com.nusinfineon.exceptions.CustomException;
  */
 public class OutputAnalysisDriver {
 
-
     public static void main(String[] args) throws IOException, CustomException {
         System.out.println("Starting output analysis...");
-        OutputAnalysisCore outputCore = new OutputAnalysisCore();
+        OutputCore outputCore = new OutputCore();
 
         // =============== Tests on the whole folder ===================================================================
         File folderDirectory = new File("sample-output-files/output-files-clean");
@@ -27,7 +26,7 @@ public class OutputAnalysisDriver {
         outputCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
         // Generate the tableau excel file from the folder of excel files (with output data appended)
-        outputCore.generateExcelTableauFile(folderDirectory, destinationDirectory);
+        outputCore.generateTableauExcelFile(folderDirectory, destinationDirectory);
 
         // Copy Tableau files from resources to output folder
         File tableauSourceDirectory = new File("build/resources/main/output/tableau_workbooks");
@@ -36,6 +35,5 @@ public class OutputAnalysisDriver {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 }

@@ -1,17 +1,16 @@
 package com.nusinfineon.core;
 
-import static com.nusinfineon.util.FlexScriptDefaultCodes.GET_PROCESS_TIME_CODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.MAIN_15_CODE;
-import static com.nusinfineon.util.FlexScriptDefaultCodes.ON_RUN_STOP_CODE;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+
+import com.nusinfineon.core.util.ScriptGenerator;
+import com.nusinfineon.core.util.Server;
 
 /**
  * Class to generate a server to connect with FlexSim for running the simulation runs
@@ -27,16 +26,13 @@ public class RunCore {
     private String outputLocation;
     private String outputFile;
     private boolean isModelShown;
-    private String scriptFilepath = "./script.txt";
     private File scriptFile;
     private int currentRunNum;
     private String excelOutputFileName;
     private ArrayList<File> excelInputFiles;
     private ArrayList<File> excelOutputFiles;
-    private ArrayList<Integer> listOfMinBatchSizes;
     private ScriptGenerator scriptGenerator;
     private Server server;
-
 
     public RunCore(String flexsimLocation, String modelLocation, String outputLocation,
                    String runSpeed, String stopTime, boolean isModelShown) {
@@ -53,10 +49,11 @@ public class RunCore {
 
     /**
      * Main execute function to start runs
+     * @return excelOutputFiles
      */
     public ArrayList<File> executeRuns(ArrayList<File> excelInputFiles) {
-        excelOutputFiles = new ArrayList<File>();
         this.excelInputFiles = excelInputFiles;
+        this.excelOutputFiles = new ArrayList<>();
 
         // Iterate through list of runs and run the model with server to establish connection with FlexSim
         while (currentRunNum <= excelInputFiles.size()-1) {
@@ -65,11 +62,13 @@ public class RunCore {
             excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
             currentRunNum++;
         }
+
         int i = 1;
         for (File iter : excelOutputFiles) {
             LOGGER.info("output file "+  i + ": " + iter.toString());
             i++;
         }
+
         return excelOutputFiles;
     }
 
@@ -92,7 +91,6 @@ public class RunCore {
             e.printStackTrace();
         }
     }
-
 
     /**
      * Creates the commandline to execute model
