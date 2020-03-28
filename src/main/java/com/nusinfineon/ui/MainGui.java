@@ -674,7 +674,7 @@ public class MainGui extends UiPart<Stage> {
     private void showCompletedBox() {
         String title = "Simulation Complete";
         String header = "Simulation has completed!";
-        String text = "You may run another simulation or close the program.";
+        String text = Messages.COMPLETED_MESSAGE;
         Alert completeAlert = raiseAlertBox(Alert.AlertType.INFORMATION, title, header, text);
 
         completeAlert.showAndWait();

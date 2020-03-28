@@ -70,7 +70,7 @@ public class InputCore {
     private File originalInputExcelFile;
     private File tempCopyOriginalInputExcelFile;
     private ArrayList<Integer> listOfMinBatchSizes;
-    private ArrayList<File> excelFiles;
+    private ArrayList<File> excelInputFiles;
     private HashMap<LotSequencingRule, Boolean> lotSequencingRules;
     private String resourceSelectCriteria;
     private String lotSelectionCriteria;
@@ -103,7 +103,7 @@ public class InputCore {
         this.trolleyLocationSelectCriteria = trolleyLocationSelectCriteria;
         this.bibLoadOnLotCriteria = bibLoadOnLotCriteria;
 
-        this.excelFiles = new ArrayList<>();
+        this.excelInputFiles = new ArrayList<>();
     } // End of Constructor
 
     /**
@@ -111,7 +111,7 @@ public class InputCore {
      * @throws IOException
      * @throws CustomException
      */
-    public void execute() throws IOException, CustomException {
+    public ArrayList<File> execute() throws IOException, CustomException {
 
         createCopyOfInputFile(); // Uses the copy of the input file as a reference
         checkValidInputFile();
@@ -146,10 +146,12 @@ public class InputCore {
                     workbook.close();
 
                     // Adds the file into the array
-                    this.excelFiles.add(singleBatchExcelFileDestination);
+                    excelInputFiles.add(singleBatchExcelFileDestination);
                 } // End of for-loop for batch sizes
             }
         } // End of for-loop for sequencing rules
+
+        return excelInputFiles;
     } // End of execute method
 
     /**
@@ -487,13 +489,5 @@ public class InputCore {
         default:
             return "";
         }
-    }
-
-    /**
-     * Returns an arrayList of excel files
-     * @return Array List of excel files
-     */
-    public ArrayList<File> getExcelFiles() {
-        return excelFiles;
     }
 }

@@ -32,11 +32,24 @@ public class OutputCore {
     }
 
     /**
+     * Main execute function of OutputCore to process output files and tableau-excel-file
+     * @throws IOException
+     * @throws CustomException
+     */
+    public void execute(File folderDirectory, File destinationDirectory) throws IOException, CustomException {
+        // Generate output statistics for all excel files in a folder
+        appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
+
+        // Generate the tableau excel file from the folder of excel files (with output data appended)
+        generateTableauExcelFile(folderDirectory, destinationDirectory);
+    }
+
+    /**
      * Wrapper function to handle all files in a specified folder.
      * @param folderDirectory Directory of a folder with excel files to be processed.
      * @throws CustomException if argument is not a directory.
      */
-    public void appendSummaryStatisticsOfFolderOFExcelFiles(File folderDirectory) throws CustomException, IOException {
+    private void appendSummaryStatisticsOfFolderOFExcelFiles(File folderDirectory) throws IOException, CustomException {
         if (!folderDirectory.isDirectory()) {
             throw new CustomException(folderDirectory.toString() + " is not a directory");
         }
@@ -54,7 +67,7 @@ public class OutputCore {
      * Generates a single excel file to be used with Tableau. Summarizes the output file data for each excel file.
      * Saves the file into "src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx"
      */
-    public void generateTableauExcelFile(File folderOfExcelFiles, File destinationDirectory)
+    private void generateTableauExcelFile(File folderOfExcelFiles, File destinationDirectory)
             throws IOException, CustomException {
         LOGGER.info("Starting generateTableauExcelFile method");
 
@@ -432,7 +445,7 @@ public class OutputCore {
      * @param outputExcelFile Output excel file of a single simulation run.
      * @throws IOException
      */
-    public static void appendSummaryStatisticsOfSingleOutputExcelFile(File outputExcelFile) throws IOException {
+    private void appendSummaryStatisticsOfSingleOutputExcelFile(File outputExcelFile) throws IOException {
         LOGGER.info("Starting output summary generation");
 
         // Creates a temp excel file for referencing
