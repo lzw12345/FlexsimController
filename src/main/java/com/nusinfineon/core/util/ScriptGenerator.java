@@ -62,13 +62,13 @@ public class ScriptGenerator {
      * @return script
      */
     public String editNodeCode(String name, String nodePath, String code) {
-        String nodename = name + "Node";
+        String nodeName = name + "Node";
         String codeName = name + "Code";
-        String script = "treenode " + nodename + " = node(\"" + nodePath + "\");\n"
+        String script = "treenode " + nodeName + " = node(\"" + nodePath + "\");\n"
                 + "string " + codeName + " = " + code + ";\n"
-                + "setnodestr(" + nodename + "," + codeName + ");\n"
-                + "enablecode(" + nodename + ");\n"
-                + "buildnodeflexscript(" + nodename + ");\n";
+                + "setnodestr(" + nodeName + "," + codeName + ");\n"
+                + "enablecode(" + nodeName + ");\n"
+                + "buildnodeflexscript(" + nodeName + ");\n";
         return script;
     }
 }

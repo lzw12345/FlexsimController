@@ -20,6 +20,9 @@ public class Messages {
             + "\nPreviously generated files in the Input and Output folders will be overwritten."
             + "\nPlease save and close all opened files on Excel before you click OK.";
 
+    public static final String COMPLETED_MESSAGE = "You may run another simulation or close the program.\n"
+            + "\nYou can find the Output folder in the directory which you have defined for Output Excel.";
+
     public static final String SAVE_FILE_WRONG_FORMAT_MESSAGE = SAVE_FILE_NAME
             + " is of the wrong format!\nPlease place a previously saved file into the folder of \"" + APP_EXE_FILE_NAME + "\".";
 

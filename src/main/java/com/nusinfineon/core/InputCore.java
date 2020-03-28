@@ -70,7 +70,7 @@ public class InputCore {
     private File originalInputExcelFile;
     private File tempCopyOriginalInputExcelFile;
     private ArrayList<Integer> listOfMinBatchSizes;
-    private ArrayList<File> excelFiles;
+    private ArrayList<File> excelInputFiles;
     private HashMap<LotSequencingRule, Boolean> lotSequencingRules;
     private String resourceSelectCriteria;
     private String lotSelectionCriteria;
@@ -103,7 +103,7 @@ public class InputCore {
         this.trolleyLocationSelectCriteria = trolleyLocationSelectCriteria;
         this.bibLoadOnLotCriteria = bibLoadOnLotCriteria;
 
-        this.excelFiles = new ArrayList<>();
+        this.excelInputFiles = new ArrayList<>();
     } // End of Constructor
 
     /**
@@ -111,7 +111,7 @@ public class InputCore {
      * @throws IOException
      * @throws CustomException
      */
-    public void execute() throws IOException, CustomException {
+    public ArrayList<File> execute() throws IOException, CustomException {
 
         createCopyOfInputFile(); // Uses the copy of the input file as a reference
         checkValidInputFile();
@@ -122,34 +122,36 @@ public class InputCore {
             // If rule is selected
             if (rule.getValue()) {
                 // Iterate through batch sizes
-                for (int batchNumber : listOfMinBatchSizes) {
-                    LOGGER.info("Writing temp Input excel file for batch size " + batchNumber
+                for (int minBatchSize : listOfMinBatchSizes) {
+                    LOGGER.info("Writing temp Input excel file for batch size " + minBatchSize
                             + ", " + rule.getKey().toString());
 
                     // Create the workbook from a copy of the original excel file
                     Workbook workbook = WorkbookFactory.create(this.tempCopyOriginalInputExcelFile);
 
                     // Edit batch size
-                    editMinBatchSize(workbook, batchNumber);
+                    editMinBatchSize(workbook, minBatchSize);
 
                     // Lot sequencing on Actual Lot Info
                     processLotSequencing(workbook, rule.getKey());
 
                     // Edit settings
-                    editSettings(workbook, batchNumber);
+                    editSettings(workbook);
 
                     // Saves the workbook and close the stream
-                    String fileName = rule.getKey().toString() + "_" + batchNumber + "_min_size_";
+                    String fileName = rule.getKey().toString() + "_" + minBatchSize + "_min_size_";
                     File singleBatchExcelFileDestination = Files.createTempFile(fileName, ".xlsx").toFile();
                     FileOutputStream outputStream = new FileOutputStream(singleBatchExcelFileDestination.toString());
                     workbook.write(outputStream);
                     workbook.close();
 
                     // Adds the file into the array
-                    this.excelFiles.add(singleBatchExcelFileDestination);
+                    excelInputFiles.add(singleBatchExcelFileDestination);
                 } // End of for-loop for batch sizes
             }
         } // End of for-loop for sequencing rules
+
+        return excelInputFiles;
     } // End of execute method
 
     /**
@@ -426,9 +428,8 @@ public class InputCore {
     /**
      * Edit settings in Input excel file
      * @param workbook Workbook to edit
-     * @param batchNumber Batch size
      */
-    private void editSettings(Workbook workbook, int batchNumber) {
+    private void editSettings(Workbook workbook) {
         // Access Settings sheet
         Sheet settingsSheet = workbook.getSheet(SETTINGS_SHEET_NAME);
 
@@ -487,13 +488,5 @@ public class InputCore {
         default:
             return "";
         }
-    }
-
-    /**
-     * Returns an arrayList of excel files
-     * @return Array List of excel files
-     */
-    public ArrayList<File> getExcelFiles() {
-        return excelFiles;
     }
 }

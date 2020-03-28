@@ -22,11 +22,8 @@ public class OutputAnalysisDriver {
         File destinationDirectory = new File("sample-output-files");
 
         System.out.println("Accessing folder: " + folderDirectory.toString());
-        // Generate output statistics for all excel files in a folder
-        outputCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
-        // Generate the tableau excel file from the folder of excel files (with output data appended)
-        outputCore.generateTableauExcelFile(folderDirectory, destinationDirectory);
+        outputCore.execute(folderDirectory, destinationDirectory);
 
         // Copy Tableau files from resources to output folder
         File tableauSourceDirectory = new File("build/resources/main/output/tableau_workbooks");

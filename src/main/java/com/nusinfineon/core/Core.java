@@ -85,9 +85,9 @@ public class Core {
     /**
      * Used to handle processing of input
      */
-    private void handleInput(InputCore inputCore) throws IOException, CustomException {
+    private void handleInput(InputCore inputCore) throws CustomException {
         try {
-            inputCore.execute();
+            excelInputFiles = inputCore.execute();
         } catch (IOException e) {
             LOGGER.severe("Unable to create files");
             throw new CustomException("Error in creating temp files");
@@ -95,15 +95,12 @@ public class Core {
             LOGGER.severe(e.getMessage());
             throw e;
         }
-
-        // Extract the array of files and sizes from InputCore
-        excelInputFiles = inputCore.getExcelFiles();
     }
 
     /**
      * Used to handle simulation runs
      */
-    private void handleRuns(RunCore runCore) throws IOException, CustomException {
+    private void handleRuns(RunCore runCore) {
         excelOutputFiles = runCore.executeRuns(excelInputFiles);
     }
 
@@ -170,13 +167,8 @@ public class Core {
         File destinationDirectory = new File(String.valueOf(outputDir));
 
         if (folderDirectory.list().length > 0) {
-            // Generate output statistics for all excel files in a folder
-            // OutputCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
-            outputCore.appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
-
-            // Generate the tableau excel file from the folder of excel files (with output data appended)
-            // OutputCore.generateTableauExcelFile(folderDirectory, destinationDirectory);
-            outputCore.generateTableauExcelFile(folderDirectory, destinationDirectory);
+            // Execute outputCore to generate output summaries and tableau-excel-file
+            outputCore.execute(folderDirectory, destinationDirectory);
 
             // Copy Tableau files from resources to Output folder
             for (String fileName : TABLEAU_FILE_NAMES) {
@@ -192,6 +184,10 @@ public class Core {
         } else {
             throw new CustomException("Raw Output Excel Files folder is empty!");
         }
+
+        // Clear lists of files
+        excelInputFiles.clear();
+        excelOutputFiles.clear();
     }
 
     /**

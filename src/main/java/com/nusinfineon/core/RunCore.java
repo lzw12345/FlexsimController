@@ -39,12 +39,16 @@ public class RunCore {
 
         this.flexsimLocation = flexsimLocation;
         this.modelLocation = modelLocation;
-        outputFile = getBaseName(outputLocation) + "." + getExtension(outputLocation);
+        this.outputFile = getBaseName(outputLocation) + "." + getExtension(outputLocation);
         this.outputLocation = getFullPath(outputLocation).replace("\\", "\\\\\\\\\\");
         this.isModelShown = isModelShown;
-        scriptGenerator = new ScriptGenerator(runSpeed, stopTime);
-        server = new Server(1880);
-        currentRunNum = 0;
+
+        this.excelInputFiles = new ArrayList<>();
+        this.excelOutputFiles = new ArrayList<>();
+
+        this.scriptGenerator = new ScriptGenerator(runSpeed, stopTime);
+        this.server = new Server(1880);
+        this.currentRunNum = 0;
     }
 
     /**
@@ -53,10 +57,9 @@ public class RunCore {
      */
     public ArrayList<File> executeRuns(ArrayList<File> excelInputFiles) {
         this.excelInputFiles = excelInputFiles;
-        this.excelOutputFiles = new ArrayList<>();
 
         // Iterate through list of runs and run the model with server to establish connection with FlexSim
-        while (currentRunNum <= excelInputFiles.size()-1) {
+        while (currentRunNum < this.excelInputFiles.size()) {
             runModel();
             server.checkForConnection();
             excelOutputFiles.add(new File(getFullPath(outputLocation) + excelOutputFileName + ".xlsx"));
@@ -84,8 +87,8 @@ public class RunCore {
         deleteExistingFile(getFullPath(outputLocation) + excelOutputFileName + ".xlsx");
 
         try {
-           scriptFile = scriptGenerator.generateScript(inputLocation, inputFile, outputLocation,
-                   outputFile, excelOutputFileName);
+           scriptFile = scriptGenerator.generateScript(inputLocation, inputFile, outputLocation, outputFile,
+                   excelOutputFileName);
             Runtime.getRuntime().exec(commandLineGenerator(isModelShown));
         } catch (IOException e) {
             e.printStackTrace();
