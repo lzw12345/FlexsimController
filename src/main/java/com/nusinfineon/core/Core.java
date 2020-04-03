@@ -6,6 +6,7 @@ import static com.nusinfineon.util.Directories.RAW_OUTPUT_FOLDER_NAME;
 import static com.nusinfineon.util.Directories.TABLEAU_WORKBOOK_NAME;
 import static com.nusinfineon.util.Directories.TABLEAU_WORKBOOK_SOURCE_DIR;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -186,6 +187,15 @@ public class Core {
             }
         } else {
             throw new CustomException("Raw Output Excel Files folder is empty!");
+        }
+
+        // Open Tableau workbook
+        try {
+            Desktop.getDesktop().open(new File(destinationDirectory + "/" + TABLEAU_WORKBOOK_NAME));
+        } catch (IOException e) {
+            LOGGER.info("Tableau application not installed or failed to launch! Tableau workbook open aborted.");
+        } catch (IllegalArgumentException e) {
+            LOGGER.info("Tableau workbook not found! Tableau workbook open aborted.");
         }
     }
 

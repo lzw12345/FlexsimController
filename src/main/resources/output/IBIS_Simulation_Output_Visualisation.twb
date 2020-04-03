@@ -98,7 +98,7 @@
       <column-instance column='[Throughput]' derivation='Min' name='[min:Throughput:qk]' pivot='key' type='quantitative' />
       <column-instance column='[Throughput]' derivation='None' name='[none:Throughput:qk]' pivot='key' type='quantitative' />
       <column-instance column='[Throughput]' derivation='Sum' name='[sum:Throughput:qk]' pivot='key' type='quantitative' />
-      <layout dim-ordering='alphabetic' dim-percentage='0.5' measure-ordering='alphabetic' measure-percentage='0.5' show-structure='true' />
+      <layout dim-ordering='alphabetic' dim-percentage='0.500717' measure-ordering='alphabetic' measure-percentage='0.499283' show-structure='true' />
       <style>
         <style-rule element='mark'>
           <encoding attr='color' field='[:Measure Names]' type='palette'>
@@ -123,100 +123,6 @@
           </encoding>
         </style-rule>
       </style>
-      <semantic-values>
-        <semantic-value key='[Country].[Name]' value='&quot;Singapore&quot;' />
-      </semantic-values>
-    </datasource>
-    <datasource caption='STAY_TIME (tableau-excel-file)' inline='true' name='federated.14zcign1baqk781f0ifxx11tvy25' version='18.1'>
-      <connection class='federated'>
-        <named-connections>
-          <named-connection caption='tableau-excel-file' name='excel-direct.131qvpg1u1bscm1eysxcy1j8p40k'>
-            <connection class='excel-direct' cleaning='no' compat='no' dataRefreshTime='' filename='C:/Users/YONGXIANG_PC/Desktop/Tableau/tableau-excel-file.xlsx' interpretationMode='0' password='' server='' validate='no' />
-          </named-connection>
-        </named-connections>
-        <relation connection='excel-direct.131qvpg1u1bscm1eysxcy1j8p40k' name='STAY_TIME' table='[STAY_TIME$]' type='table'>
-          <columns gridOrigin='A1:C1:no:A1:C1:0' header='yes' outcome='6'>
-            <column datatype='string' name='Run Type' ordinal='0' />
-            <column datatype='real' name='Stay Time' ordinal='1' />
-            <column datatype='string' name='Product ID' ordinal='2' />
-          </columns>
-        </relation>
-        <metadata-records>
-          <metadata-record class='column'>
-            <remote-name>Run Type</remote-name>
-            <remote-type>130</remote-type>
-            <local-name>[Run Type]</local-name>
-            <parent-name>[STAY_TIME]</parent-name>
-            <remote-alias>Run Type</remote-alias>
-            <ordinal>0</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <collation flag='1' name='LEN_RSG_S2' />
-            <attributes>
-              <attribute datatype='string' name='DebugRemoteType'>&quot;WSTR&quot;</attribute>
-            </attributes>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>Stay Time</remote-name>
-            <remote-type>5</remote-type>
-            <local-name>[Stay Time]</local-name>
-            <parent-name>[STAY_TIME]</parent-name>
-            <remote-alias>Stay Time</remote-alias>
-            <ordinal>1</ordinal>
-            <local-type>real</local-type>
-            <aggregation>Sum</aggregation>
-            <precision>15</precision>
-            <contains-null>true</contains-null>
-            <attributes>
-              <attribute datatype='string' name='DebugRemoteType'>&quot;R8&quot;</attribute>
-            </attributes>
-          </metadata-record>
-          <metadata-record class='column'>
-            <remote-name>Product ID</remote-name>
-            <remote-type>130</remote-type>
-            <local-name>[Product ID]</local-name>
-            <parent-name>[STAY_TIME]</parent-name>
-            <remote-alias>Product ID</remote-alias>
-            <ordinal>2</ordinal>
-            <local-type>string</local-type>
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <collation flag='1' name='LEN_RSG_S2' />
-            <attributes>
-              <attribute datatype='string' name='DebugRemoteType'>&quot;WSTR&quot;</attribute>
-            </attributes>
-          </metadata-record>
-          <metadata-record class='capability'>
-            <remote-name />
-            <remote-type>0</remote-type>
-            <parent-name>[STAY_TIME]</parent-name>
-            <remote-alias />
-            <aggregation>Count</aggregation>
-            <contains-null>true</contains-null>
-            <attributes>
-              <attribute datatype='integer' name='context'>1</attribute>
-              <attribute datatype='string' name='gridOrigin'>&quot;A1:C1:no:A1:C1:0&quot;</attribute>
-              <attribute datatype='boolean' name='header'>true</attribute>
-              <attribute datatype='integer' name='outcome'>6</attribute>
-            </attributes>
-          </metadata-record>
-        </metadata-records>
-      </connection>
-      <column datatype='integer' name='[Number of Records]' role='measure' type='quantitative' user:auto-column='numrec'>
-        <calculation class='tableau' formula='1' />
-      </column>
-      <column datatype='string' name='[Run Type]' role='dimension' type='nominal' />
-      <column datatype='real' name='[Stay Time]' role='measure' type='quantitative' />
-      <column-instance column='[Run Type]' derivation='None' name='[none:Run Type:nk]' pivot='key' type='nominal' />
-      <column-instance column='[Stay Time]' derivation='None' name='[none:Stay Time:qk]' pivot='key' type='quantitative' />
-      <group hidden='true' name='[Exclusions (Run Type,Stay Time)]' name-style='unqualified' user:auto-column='exclude'>
-        <groupfilter function='crossjoin'>
-          <groupfilter function='level-members' level='[none:Run Type:nk]' />
-          <groupfilter function='level-members' level='[none:Stay Time:qk]' />
-        </groupfilter>
-      </group>
-      <layout dim-ordering='alphabetic' dim-percentage='0.5' measure-ordering='alphabetic' measure-percentage='0.5' show-structure='true' />
       <semantic-values>
         <semantic-value key='[Country].[Name]' value='&quot;Singapore&quot;' />
       </semantic-values>
@@ -300,7 +206,7 @@
       <column datatype='integer' name='[Number of Records]' role='measure' type='quantitative' user:auto-column='numrec'>
         <calculation class='tableau' formula='1' />
       </column>
-      <layout dim-ordering='alphabetic' dim-percentage='0.5' measure-ordering='alphabetic' measure-percentage='0.5' show-structure='true' />
+      <layout dim-ordering='alphabetic' dim-percentage='0.500717' measure-ordering='alphabetic' measure-percentage='0.499283' show-structure='true' />
       <semantic-values>
         <semantic-value key='[Country].[Name]' value='&quot;Singapore&quot;' />
       </semantic-values>
@@ -453,7 +359,7 @@
       <column-instance column='[Setup Rate]' derivation='Sum' name='[sum:Setup Rate:qk]' pivot='key' type='quantitative' />
       <column-instance column='[Waiting for Operator Rate]' derivation='Sum' name='[sum:Waiting for Operator Rate:qk]' pivot='key' type='quantitative' />
       <column-instance column='[Waiting for Transporter Rate]' derivation='Sum' name='[sum:Waiting for Transporter Rate:qk]' pivot='key' type='quantitative' />
-      <layout dim-ordering='alphabetic' dim-percentage='0.396825' measure-ordering='alphabetic' measure-percentage='0.603175' show-structure='true' />
+      <layout dim-ordering='alphabetic' dim-percentage='0.407461' measure-ordering='alphabetic' measure-percentage='0.592539' show-structure='true' />
       <style>
         <style-rule element='mark'>
           <encoding attr='color' field='[:Measure Names]' type='palette'>
@@ -603,7 +509,7 @@
       <column datatype='integer' name='[Number of Records]' role='measure' type='quantitative' user:auto-column='numrec'>
         <calculation class='tableau' formula='1' />
       </column>
-      <layout dim-ordering='alphabetic' dim-percentage='0.479365' measure-ordering='alphabetic' measure-percentage='0.520635' show-structure='true' />
+      <layout dim-ordering='alphabetic' dim-percentage='0.480631' measure-ordering='alphabetic' measure-percentage='0.519369' show-structure='true' />
       <semantic-values>
         <semantic-value key='[Country].[Name]' value='&quot;Singapore&quot;' />
       </semantic-values>
@@ -743,6 +649,100 @@
           </encoding>
         </style-rule>
       </style>
+      <semantic-values>
+        <semantic-value key='[Country].[Name]' value='&quot;Singapore&quot;' />
+      </semantic-values>
+    </datasource>
+    <datasource caption='STAY_TIME (tableau-excel-file)' inline='true' name='federated.14zcign1baqk781f0ifxx11tvy25' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='tableau-excel-file' name='excel-direct.131qvpg1u1bscm1eysxcy1j8p40k'>
+            <connection class='excel-direct' cleaning='no' compat='no' dataRefreshTime='' filename='C:/Users/YONGXIANG_PC/Desktop/Tableau/tableau-excel-file.xlsx' interpretationMode='0' password='' server='' validate='no' />
+          </named-connection>
+        </named-connections>
+        <relation connection='excel-direct.131qvpg1u1bscm1eysxcy1j8p40k' name='STAY_TIME' table='[STAY_TIME$]' type='table'>
+          <columns gridOrigin='A1:C1:no:A1:C1:0' header='yes' outcome='6'>
+            <column datatype='string' name='Run Type' ordinal='0' />
+            <column datatype='real' name='Stay Time' ordinal='1' />
+            <column datatype='string' name='Product ID' ordinal='2' />
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class='column'>
+            <remote-name>Run Type</remote-name>
+            <remote-type>130</remote-type>
+            <local-name>[Run Type]</local-name>
+            <parent-name>[STAY_TIME]</parent-name>
+            <remote-alias>Run Type</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='1' name='LEN_RSG_S2' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;WSTR&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>Stay Time</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[Stay Time]</local-name>
+            <parent-name>[STAY_TIME]</parent-name>
+            <remote-alias>Stay Time</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <precision>15</precision>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;R8&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>Product ID</remote-name>
+            <remote-type>130</remote-type>
+            <local-name>[Product ID]</local-name>
+            <parent-name>[STAY_TIME]</parent-name>
+            <remote-alias>Product ID</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <collation flag='1' name='LEN_RSG_S2' />
+            <attributes>
+              <attribute datatype='string' name='DebugRemoteType'>&quot;WSTR&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[STAY_TIME]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='integer' name='context'>1</attribute>
+              <attribute datatype='string' name='gridOrigin'>&quot;A1:C1:no:A1:C1:0&quot;</attribute>
+              <attribute datatype='boolean' name='header'>true</attribute>
+              <attribute datatype='integer' name='outcome'>6</attribute>
+            </attributes>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <column datatype='integer' name='[Number of Records]' role='measure' type='quantitative' user:auto-column='numrec'>
+        <calculation class='tableau' formula='1' />
+      </column>
+      <column datatype='string' name='[Run Type]' role='dimension' type='nominal' />
+      <column datatype='real' name='[Stay Time]' role='measure' type='quantitative' />
+      <column-instance column='[Run Type]' derivation='None' name='[none:Run Type:nk]' pivot='key' type='nominal' />
+      <column-instance column='[Stay Time]' derivation='None' name='[none:Stay Time:qk]' pivot='key' type='quantitative' />
+      <group hidden='true' name='[Exclusions (Run Type,Stay Time)]' name-style='unqualified' user:auto-column='exclude'>
+        <groupfilter function='crossjoin'>
+          <groupfilter function='level-members' level='[none:Run Type:nk]' />
+          <groupfilter function='level-members' level='[none:Stay Time:qk]' />
+        </groupfilter>
+      </group>
+      <layout dim-ordering='alphabetic' dim-percentage='0.500717' measure-ordering='alphabetic' measure-percentage='0.499283' show-structure='true' />
       <semantic-values>
         <semantic-value key='[Country].[Name]' value='&quot;Singapore&quot;' />
       </semantic-values>
@@ -987,11 +987,11 @@
         </title>
         <caption>
           <formatted-text>
-            <run>To use this chart, click F5 to refresh, then drag &apos;</run>
-            <run italic='true'>Measure Values</run>
-            <run>&apos; to &apos;Rows&apos;, and drag &apos;</run>
-            <run italic='true'>Measure Names</run>
-            <run>&apos; to &apos;Colour&apos; under Marks.</run>
+            <run bold='true' fontsize='14'>To use this chart, click F5 to refresh, then drag &apos;</run>
+            <run bold='true' fontsize='14' italic='true'>Measure Values</run>
+            <run bold='true' fontsize='14'>&apos; to &apos;Rows&apos;, and &apos;</run>
+            <run bold='true' fontsize='14' italic='true'>Measure Names</run>
+            <run bold='true' fontsize='14'>&apos; to &apos;Colour&apos; under Marks.</run>
           </formatted-text>
         </caption>
       </layout-options>
@@ -1903,7 +1903,7 @@
           <zoom type='fit-width' />
         </viewpoint>
       </viewpoints>
-      <active id='7' />
+      <active id='-1' />
       <simple-id uuid='{CD48E882-FF98-48FF-8C41-16108EA44A80}' />
     </window>
     <window class='dashboard' name='Output Worth'>
