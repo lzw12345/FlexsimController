@@ -3,8 +3,8 @@ package com.nusinfineon.core;
 import static com.nusinfineon.util.Directories.INPUT_FOLDER_NAME;
 import static com.nusinfineon.util.Directories.OUTPUT_FOLDER_NAME;
 import static com.nusinfineon.util.Directories.RAW_OUTPUT_FOLDER_NAME;
-import static com.nusinfineon.util.Directories.TABLEAU_FILE_NAMES;
-import static com.nusinfineon.util.Directories.TABLEAU_WORKBOOKS_SOURCE_DIR;
+import static com.nusinfineon.util.Directories.TABLEAU_WORKBOOK_NAME;
+import static com.nusinfineon.util.Directories.TABLEAU_WORKBOOK_SOURCE_DIR;
 
 import java.io.File;
 import java.io.IOException;
@@ -175,20 +175,14 @@ public class Core {
             // Execute outputCore to generate output summaries and tableau-excel-file
             outputCore.execute(folderDirectory, destinationDirectory);
 
-            // Copy Tableau files from resources to Output folder
-            for (String fileName : TABLEAU_FILE_NAMES) {
-                try {
-                    File newFile = new File(destinationDirectory + "/" + fileName);
-                    Path newFilePath = Paths.get(newFile.getPath());
-                    // Copy Tableau file only if not exists
-                    if (!Files.exists(newFilePath)){
-                        URL file = Main.class.getResource(TABLEAU_WORKBOOKS_SOURCE_DIR + "/" + fileName);
-                        FileUtils.copyURLToFile(file, newFile);
-                    }
-                    LOGGER.info(fileName + " moved into Output folder");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            // Copy Tableau workbook from resources to Output folder
+            try {
+                File newFile = new File(destinationDirectory + "/" + TABLEAU_WORKBOOK_NAME);
+                URL file = Main.class.getResource(TABLEAU_WORKBOOK_SOURCE_DIR + "/" + TABLEAU_WORKBOOK_NAME);
+                FileUtils.copyURLToFile(file, newFile);
+                LOGGER.info(TABLEAU_WORKBOOK_NAME + " moved into Output folder");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         } else {
             throw new CustomException("Raw Output Excel Files folder is empty!");
