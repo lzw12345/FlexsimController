@@ -36,7 +36,7 @@ import com.nusinfineon.core.input.LotEntry.SPTLotEntry;
  */
 public class InputCore {
 
-    private static final String MASTER_XLSX_FILE_NAME = "temp_master_input";
+    private static final String MASTER_XLSX_FILE_NAME = "temp_master_input_";
     private static final String PRODUCT_INFO_SHEET_NAME = "Product Info and Eqpt Matrix";
     private static final String MIN_BIB_COLUMN_NAME = "BIB Slot Utilization Min";
 
@@ -113,9 +113,7 @@ public class InputCore {
      */
     public ArrayList<File> execute() throws IOException, CustomException {
 
-        createCopyOfInputFile(); // Uses the copy of the input file as a reference
         checkValidInputFile();
-        LOGGER.info("Successfully created a copy of main Input excel file");
 
         // Iterate through rules
         for (Map.Entry<LotSequencingRule, Boolean> rule : lotSequencingRules.entrySet()) {
@@ -123,8 +121,11 @@ public class InputCore {
             if (rule.getValue()) {
                 // Iterate through batch sizes
                 for (int minBatchSize : listOfMinBatchSizes) {
-                    LOGGER.info("Writing temp Input excel file for batch size " + minBatchSize
+                    LOGGER.info("Writing temp Input excel file for min batch size " + minBatchSize
                             + ", " + rule.getKey().toString());
+
+                    createCopyOfInputFile(); // Uses the copy of the input file as a reference
+                    LOGGER.info("Successfully created a copy of main Input excel file. Now processing...");
 
                     // Create the workbook from a copy of the original excel file
                     Workbook workbook = WorkbookFactory.create(this.tempCopyOriginalInputExcelFile);
@@ -144,6 +145,7 @@ public class InputCore {
                     FileOutputStream outputStream = new FileOutputStream(singleBatchExcelFileDestination.toString());
                     workbook.write(outputStream);
                     workbook.close();
+                    LOGGER.info("Successfully processed " + singleBatchExcelFileDestination.toString());
 
                     // Adds the file into the array
                     excelInputFiles.add(singleBatchExcelFileDestination);
@@ -160,7 +162,7 @@ public class InputCore {
      * @throws CustomException
      */
     private void checkValidInputFile() throws IOException, CustomException {
-        Workbook workbook = WorkbookFactory.create(this.tempCopyOriginalInputExcelFile);
+        Workbook workbook = WorkbookFactory.create(this.originalInputExcelFile);
         ArrayList<String> missingSheets = new ArrayList<>();
 
         // Check for missing sheets
@@ -254,22 +256,22 @@ public class InputCore {
         ArrayList<LotEntry> lotList = new ArrayList<>();
 
         switch (rule) {
-            case SPT:
-                // Access Process Time sheet
-                Sheet processTimeSheet = workbook.getSheet(PROCESS_TIME_SHEET_NAME);
-                // Get list sorted by shortest processing time
-                lotList = shortestProcessingTime(lotInfoSheet, processTimeSheet);
-                break;
-            case MJ:
-                // Get list sorted by most jobs
-                lotList = mostJobs(lotInfoSheet);
-                break;
-            case RAND:
-                // Get list sorted randomly
-                lotList = randomSequence(lotInfoSheet);
-                break;
-            default:
-                break;
+        case SPT:
+            // Access Process Time sheet
+            Sheet processTimeSheet = workbook.getSheet(PROCESS_TIME_SHEET_NAME);
+            // Get list sorted by shortest processing time
+            lotList = shortestProcessingTime(lotInfoSheet, processTimeSheet);
+            break;
+        case MJ:
+            // Get list sorted by most jobs
+            lotList = mostJobs(lotInfoSheet);
+            break;
+        case RAND:
+            // Get list sorted randomly
+            lotList = randomSequence(lotInfoSheet);
+            break;
+        default:
+            break;
         }
 
         if (!rule.equals(LotSequencingRule.FCFS)) {
