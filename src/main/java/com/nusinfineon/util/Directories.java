@@ -19,6 +19,9 @@ public class Directories {
     public static final String TABLEAU_WORKBOOK_NAME = "IBIS_Simulation_Output_Visualisation.twb";
     public static final String PRODUCT_KEY_COST_FILE_DIR = "/output/product_key_cost.xlsx";
 
+    // Define Tableau Server URL
+    public static final String TABLEAU_SERVER_URL = "http://www.google.com";
+
     public static final ArrayList<String> INPUT_EXCEL_SHEETS = new ArrayList<>(Arrays.asList(
             "Product Info and Eqpt Matrix", "Product Yield", "Process Time", "Changeover Time", "Eqpt Info",
             "Oven Info", "BIB ASRS Info", "Stocker Info", "BIB Info", "Location Info", "Elevator Info", "Trolley Info",

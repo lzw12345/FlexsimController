@@ -509,14 +509,26 @@
                            <Insets bottom="5.0" />
                         </VBox.margin>
                      </Separator>
-                     <CheckBox fx:id="showModel" mnemonicParsing="false" text="Show model on FlexSim?">
-                        <VBox.margin>
-                           <Insets left="20.0" right="20.0" />
-                        </VBox.margin>
-                        <padding>
-                           <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                        </padding>
-                     </CheckBox>
+                     <HBox>
+                        <children>
+                           <CheckBox fx:id="showModel" mnemonicParsing="false" text="Show model on FlexSim?">
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
+                              <HBox.margin>
+                                 <Insets left="20.0" />
+                              </HBox.margin>
+                           </CheckBox>
+                           <CheckBox fx:id="openTableauServer" mnemonicParsing="false" text="Visualise on Tableau Server?">
+                              <padding>
+                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                              </padding>
+                              <HBox.margin>
+                                 <Insets left="20.0" />
+                              </HBox.margin>
+                           </CheckBox>
+                        </children>
+                     </HBox>
                      <Button mnemonicParsing="false" onAction="#handleModelExecution" text="Run Simulation">
                         <VBox.margin>
                            <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
