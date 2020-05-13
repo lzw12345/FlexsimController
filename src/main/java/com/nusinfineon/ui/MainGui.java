@@ -107,6 +107,8 @@ public class MainGui extends UiPart<Stage> {
     private RadioButton bibLoadOnLotCriteria2;
     @FXML
     private CheckBox showModel;
+    @FXML
+    private CheckBox openTableauServer;
 
     private ToggleGroup resourceSelectCriteria;
     private ToggleGroup lotSelectionCriteria;
@@ -132,6 +134,7 @@ public class MainGui extends UiPart<Stage> {
         runSpeed.setText(core.getRunSpeed());
         stopTime.setText(core.getStopTime());
         showModel.setSelected(core.getIsModelShown());
+        openTableauServer.setSelected(core.getOpenTableauServer());
 
         lotSequencingRuleFCFS.setSelected(getIsFCFSSelected(core.getLotSequencingRules()));
         lotSequencingRuleSPT.setSelected(getIsSPTSelected(core.getLotSequencingRules()));
@@ -375,7 +378,7 @@ public class MainGui extends UiPart<Stage> {
      */
     @FXML
     private void handleDefault() {
-        core.inputData(null, null, null, null, null, null, false, null, null, null, null, null, null, null, null);
+        core.inputData(null, null, null, null, null, null, false, false, null, null, null, null, null, null, null, null);
         configureUi();
     }
 
@@ -444,6 +447,7 @@ public class MainGui extends UiPart<Stage> {
     private void saveInputDataToCore() {
         core.inputData(flexsimExeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
                 outputFileLocation.getText(), runSpeed.getText(), stopTime.getText(), showModel.isSelected(),
+                openTableauServer.isSelected(),
                 getLotSequencingRules(),
                 Integer.toString(batchSizeMin.getValueFactory().getValue()),
                 Integer.toString(batchSizeMax.getValueFactory().getValue()),

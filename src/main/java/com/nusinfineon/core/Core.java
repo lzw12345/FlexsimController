@@ -3,12 +3,14 @@ package com.nusinfineon.core;
 import static com.nusinfineon.util.Directories.INPUT_FOLDER_NAME;
 import static com.nusinfineon.util.Directories.OUTPUT_FOLDER_NAME;
 import static com.nusinfineon.util.Directories.RAW_OUTPUT_FOLDER_NAME;
+import static com.nusinfineon.util.Directories.TABLEAU_SERVER_URL;
 import static com.nusinfineon.util.Directories.TABLEAU_WORKBOOK_NAME;
 import static com.nusinfineon.util.Directories.TABLEAU_WORKBOOK_SOURCE_DIR;
 
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,6 +43,7 @@ public class Core {
     private String trolleyLocationSelectCriteria;
     private String bibLoadOnLotCriteria;
     private boolean isModelShown;
+    private boolean openTableauServer;
     private ArrayList<File> excelInputFiles;
     private ArrayList<File> excelOutputFiles;
 
@@ -189,13 +192,23 @@ public class Core {
             throw new CustomException("Raw Output Excel Files folder is empty!");
         }
 
-        // Open Tableau workbook
-        try {
-            Desktop.getDesktop().open(new File(destinationDirectory + "/" + TABLEAU_WORKBOOK_NAME));
-        } catch (IOException e) {
-            LOGGER.info("Tableau application not installed or failed to launch! Tableau workbook open aborted.");
-        } catch (IllegalArgumentException e) {
-            LOGGER.info("Tableau workbook not found! Tableau workbook open aborted.");
+        // Open Tableau data visualisation
+        if (openTableauServer) {
+            // Open Tableau Server
+            try {
+                Desktop.getDesktop().browse(URI.create(TABLEAU_SERVER_URL));
+            } catch (IOException e) {
+                LOGGER.info("Browser failed to launch! Tableau Server open aborted.");
+            }
+        } else {
+            // Open Tableau workbook
+            try {
+                Desktop.getDesktop().open(new File(destinationDirectory + "/" + TABLEAU_WORKBOOK_NAME));
+            } catch (IOException e) {
+                LOGGER.info("Tableau application not installed or failed to launch! Tableau workbook open aborted.");
+            } catch (IllegalArgumentException e) {
+                LOGGER.info("Tableau workbook not found! Tableau workbook open aborted.");
+            }
         }
     }
 
@@ -203,7 +216,7 @@ public class Core {
      * Used to store data into core before execute and save (the json parser serializes it)
      */
     public void inputData(String flexsimLocation, String modelLocation, String inputLocation, String outputLocation,
-                          String runSpeed, String stopTime, boolean isModelShown,
+                          String runSpeed, String stopTime, boolean isModelShown, boolean openTableauServer,
                           HashMap<LotSequencingRule, Boolean> lotSequencingRules,
                           String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString,
                           String resourceSelectCriteria, String lotSelectionCriteria,
@@ -215,6 +228,7 @@ public class Core {
         this.runSpeed = runSpeed;
         this.stopTime = stopTime;
         this.isModelShown = isModelShown;
+        this.openTableauServer = openTableauServer;
 
         this.lotSequencingRules = lotSequencingRules;
 
@@ -262,6 +276,10 @@ public class Core {
 
     public boolean getIsModelShown() {
         return isModelShown;
+    }
+
+    public boolean getOpenTableauServer() {
+        return openTableauServer;
     }
 
     public HashMap<LotSequencingRule, Boolean> getLotSequencingRules() {
