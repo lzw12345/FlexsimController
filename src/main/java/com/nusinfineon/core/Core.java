@@ -7,7 +7,7 @@ import static com.nusinfineon.util.Directories.TABLEAU_SERVER_URL;
 import static com.nusinfineon.util.Directories.TABLEAU_WORKBOOK_NAME;
 import static com.nusinfineon.util.Directories.TABLEAU_WORKBOOK_SOURCE_DIR;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;

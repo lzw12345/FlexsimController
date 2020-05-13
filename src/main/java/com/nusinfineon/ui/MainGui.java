@@ -378,7 +378,7 @@ public class MainGui extends UiPart<Stage> {
      */
     @FXML
     private void handleDefault() {
-        core.inputData(null, null, null, null, null, null, false, false,null, null, null, null, null, null, null, null);
+        core.inputData(null, null, null, null, null, null, false, false, null, null, null, null, null, null, null, null);
         configureUi();
     }
 
