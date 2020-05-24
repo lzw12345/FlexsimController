@@ -3,6 +3,9 @@ package com.nusinfineon.util;
 import static com.nusinfineon.util.Directories.APP_EXE_FILE_NAME;
 import static com.nusinfineon.util.Directories.SAVE_FILE_NAME;
 
+/**
+ * Defines messages to be displayed.
+ */
 public class Messages {
     public static final String ABOUT_MESSAGE = "This application is an optimised interface for the IBIS simulation model on FlexSim.\n"
             + "\nYou can try a range of minimum batch sizes to simulate based on the supplied input information.\n"

@@ -14,11 +14,16 @@ import org.apache.poi.ss.usermodel.Sheet;
 import com.nusinfineon.exceptions.CustomException;
 
 /**
- * This class provides the core logic and code that goes into processing the output excel file and generating relevant
- * summary statistics.
+ * Provides the core logic for processing a single output Excel file and generating relevant summary statistics.
  */
 public class OutputAnalysisCalculation {
 
+    /**
+     *
+     * @param throughputSheet
+     * @return
+     * @throws CustomException
+     */
     public static TreeMap<String, Double> calculateProductThroughput(Sheet throughputSheet) throws CustomException {
         try {
             // Exits if the sheet is null
@@ -99,6 +104,12 @@ public class OutputAnalysisCalculation {
         }
     }
 
+    /**
+     *
+     * @param throughputSheet
+     * @return
+     * @throws CustomException
+     */
     public static TreeMap<String, Double> calculateProductCycleTimeFromDailyThroughput(Sheet throughputSheet)
         throws CustomException {
         try {
@@ -171,6 +182,12 @@ public class OutputAnalysisCalculation {
         }
     }
 
+    /**
+     *
+     * @param throughputSheet
+     * @return
+     * @throws CustomException
+     */
     public static TreeMap<Double, Double> calculateDailyThroughput(Sheet throughputSheet)
         throws CustomException {
         try {
@@ -231,6 +248,12 @@ public class OutputAnalysisCalculation {
         }
     }
 
+    /**
+     *
+     * @param cycleTimeSheet
+     * @return
+     * @throws CustomException
+     */
     public static TreeMap<String, Double> calculateProductCycleTimeFromThroughputProduct(Sheet cycleTimeSheet)
         throws CustomException {
 

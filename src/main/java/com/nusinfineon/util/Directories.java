@@ -3,6 +3,9 @@ package com.nusinfineon.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Defines URLs, directories, folder/file names etc. to be used globally.
+ */
 public class Directories {
     public static final String ICON_APPLICATION = "/images/icon_large.png";
 
@@ -22,6 +25,7 @@ public class Directories {
     // Define Tableau Server URL
     public static final String TABLEAU_SERVER_URL = "http://www.google.com";
 
+    // To check completeness of input Excel file before processing and feeding to FlexSim
     public static final ArrayList<String> INPUT_EXCEL_SHEETS = new ArrayList<>(Arrays.asList(
             "Product Info and Eqpt Matrix", "Product Yield", "Process Time", "Changeover Time", "Eqpt Info",
             "Oven Info", "BIB ASRS Info", "Stocker Info", "BIB Info", "Location Info", "Elevator Info", "Trolley Info",

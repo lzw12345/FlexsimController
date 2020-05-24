@@ -26,6 +26,9 @@ import com.nusinfineon.Main;
 import com.nusinfineon.exceptions.CustomException;
 import com.nusinfineon.util.LotSequencingRule;
 
+/**
+ * Represents the back-end model of the user-defined input and the main logic of executing the entire simulation.
+ */
 public class Core {
 
     private String flexsimLocation;
@@ -63,7 +66,9 @@ public class Core {
     private static final String INIT_BIB_LOAD_ON_LOT_CRITERIA = "2";
 
     /**
-     * Main execute function to generate input files. run model and generate output file
+     * Main execute function to generate input files, run model and generate output files.
+     * @throws IOException
+     * @throws CustomException
      */
     public void execute() throws IOException, CustomException {
         // Initialise InputCore for creation of excel files for runs iteration
@@ -92,9 +97,13 @@ public class Core {
     }
 
     /**
-     * Used to handle processing of input
+     * Handles processing of input.
+     * @param inputCore
+     * @throws IOException
+     * @throws CustomException
      */
     private void handleInput(InputCore inputCore) throws IOException, CustomException {
+        // Execute processing and generation of input files
         try {
             excelInputFiles = inputCore.execute();
         } catch (IOException e) {
@@ -129,14 +138,19 @@ public class Core {
     }
 
     /**
-     * Used to handle simulation runs
+     * Handles execution of all simulation runs.
+     * @param runCore
      */
     private void handleRuns(RunCore runCore) {
+        // Execute all runs
         excelOutputFiles = runCore.executeRuns(excelInputFiles);
     }
 
     /**
-     * Used to handle processing and analysis of output
+     * Handles processing and analysis of output.
+     * @param outputCore
+     * @throws IOException
+     * @throws CustomException
      */
     private void handleOutput(OutputCore outputCore) throws IOException, CustomException {
         // Handle output files
@@ -172,11 +186,13 @@ public class Core {
         }
 
         // Output Analysis
+        // Directory of raw output Excel files
         File folderDirectory = new File(String.valueOf(rawOutputDir));
+        // Directory for generated tableau-excel-file and Tableau workbook
         File destinationDirectory = new File(String.valueOf(outputDir));
 
         if (folderDirectory.list().length > 0) {
-            // Execute outputCore to generate output summaries and tableau-excel-file
+            // Execute processing and generation of output summaries and tableau-excel-file
             outputCore.execute(folderDirectory, destinationDirectory);
 
             // Copy Tableau workbook from resources to Output folder
@@ -213,7 +229,23 @@ public class Core {
     }
 
     /**
-     * Used to store data into core before execute and save (the json parser serializes it)
+     * Stores input data before execution and saving.
+     * @param flexsimLocation
+     * @param modelLocation
+     * @param inputLocation
+     * @param outputLocation
+     * @param runSpeed
+     * @param stopTime
+     * @param isModelShown
+     * @param openTableauServer
+     * @param lotSequencingRules
+     * @param batchSizeMinString
+     * @param batchSizeMaxString
+     * @param batchSizeStepString
+     * @param resourceSelectCriteria
+     * @param lotSelectionCriteria
+     * @param trolleyLocationSelectCriteria
+     * @param bibLoadOnLotCriteria
      */
     public void inputData(String flexsimLocation, String modelLocation, String inputLocation, String outputLocation,
                           String runSpeed, String stopTime, boolean isModelShown, boolean openTableauServer,
@@ -242,6 +274,7 @@ public class Core {
         this.bibLoadOnLotCriteria = bibLoadOnLotCriteria;
     }
 
+    // Getter Methods: Returns input parameter if exists in saved data, else returns default INIT values
     public String getFlexsimLocation() {
         return flexsimLocation;
     }

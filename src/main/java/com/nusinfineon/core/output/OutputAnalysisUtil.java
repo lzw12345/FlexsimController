@@ -24,8 +24,17 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+/**
+ * Provides utility functions for OutputCore and OutputAnalysisCalculation.
+ */
 public class OutputAnalysisUtil {
 
+    /**
+     *
+     * @param sheetName
+     * @param treeMapOfDayToOutput
+     * @param excelWorkbook
+     */
     public static void saveDailyOutputSheet(String sheetName, TreeMap<Double, Double> treeMapOfDayToOutput,
                                             Workbook excelWorkbook) {
         final int DAY_COLUMN = 0;
@@ -63,6 +72,12 @@ public class OutputAnalysisUtil {
         }
     }
 
+    /**
+     *
+     * @param sheetName
+     * @param treeMapOfProductToAverageCycleTimesFromDailyThroughput
+     * @param excelWorkbook
+     */
     public static void saveProductCycleTimeFromDailyThroughputToNewSheet(String sheetName,
                                                                          TreeMap<String, Double> treeMapOfProductToAverageCycleTimesFromDailyThroughput,
                                                                          Workbook excelWorkbook) {
@@ -101,8 +116,12 @@ public class OutputAnalysisUtil {
         }
     }
 
-
-
+    /**
+     *
+     * @param sheetName
+     * @param treeMapOfAverageThroughput
+     * @param excelWorkbook
+     */
     public static void saveProductThroughputToNewSheet(String sheetName, TreeMap<String, Double> treeMapOfAverageThroughput,
                                                        Workbook excelWorkbook) {
         final int PRODUCT_ID_COLUMN = 0;
@@ -140,6 +159,13 @@ public class OutputAnalysisUtil {
         }
     }
 
+    /**
+     *
+     * @param sheetName
+     * @param runtype
+     * @param mapOfSummaryStatistics
+     * @param excelWorkbook
+     */
     public static void saveRunTypeAndUtilizationRatesTONewSheet(String sheetName, String runtype,
                                                                 TreeMap<String, Double> mapOfSummaryStatistics,
                                                                 Workbook excelWorkbook) {
@@ -174,6 +200,12 @@ public class OutputAnalysisUtil {
         }
     }
 
+    /**
+     *
+     * @param sheetName
+     * @param treeMapOfAverageCycleTimes
+     * @param excelWorkbook
+     */
     public static void saveProductCycleTimeToNewSheet(String sheetName, TreeMap<String, Double> treeMapOfAverageCycleTimes,
                                                       Workbook excelWorkbook) {
         final int PRODUCT_ID_COLUMN = 0;
@@ -216,6 +248,11 @@ public class OutputAnalysisUtil {
         }
     }
 
+    /**
+     *
+     * @return
+     * @throws IOException
+     */
     public static File getProductKeyCostExcelFileFromRelativeDirectory() throws IOException {
         URL productCostFile = OutputAnalysisUtil.class.getResource(PRODUCT_KEY_COST_FILE_DIR);
         File tempOutputFile = Files.createTempFile("product_key_cost_temp", ".xlsx").toFile();
@@ -399,8 +436,8 @@ public class OutputAnalysisUtil {
     /**
      * Converts a File's toString() into just the file itself. Removes directory and file extension.
      *
-     * @param filePath from File.toString(). Sample: 'C:\Users\Ahmad\Documents\NUS\IE 3100M\Data Files\summary_appended\output_24.xlsx'
-     * @return Just the file name ie 'output_24'
+     * @param filePath from File.toString(). Sample: 'C:\Users\USER\Documents\summary_appended\output_24.xlsx'
+     * @return Just the file name i.e. 'output_24'
      */
     public static String fileStringToFileName(String filePath) {
         String[] strings = filePath.split("\\\\");
@@ -432,6 +469,12 @@ public class OutputAnalysisUtil {
         return median;
     }
 
+    /**
+     *
+     * @param headerRow
+     * @param headers
+     * @return
+     */
     public static HashMap<String, Integer> getMappingOfHeadersToIndex(Row headerRow, ArrayList<String> headers) {
         HashMap<String, Integer> mapOfColumns = new HashMap<>();
 
@@ -448,6 +491,13 @@ public class OutputAnalysisUtil {
         return mapOfColumns;
     }
 
+    /**
+     *
+     * @param destinationUtilizationSheet
+     * @param sourceRow
+     * @param mapOfUtilColumnHeaders
+     * @param destinationRowIndex
+     */
     public static void writeUtilizationRate(Sheet destinationUtilizationSheet, Row sourceRow, HashMap<String, Integer> mapOfUtilColumnHeaders, int destinationRowIndex) {
         // Create new row
         Row newRow = destinationUtilizationSheet.createRow(destinationRowIndex);
@@ -472,6 +522,12 @@ public class OutputAnalysisUtil {
         cell.setCellValue(sourceRow.getCell(mapOfUtilColumnHeaders.get("UTILIZATION_RATE_WAITING FOR TRANSPORTER")).getNumericCellValue());
     }
 
+    /**
+     *
+     * @param sheetName
+     * @param productToOutputAndWorth
+     * @param destinationWorkbook
+     */
     public static void saveProductOutputAndWorth(String sheetName, TreeMap<String, ArrayList<Double>> productToOutputAndWorth,
                                                  Workbook destinationWorkbook) {
         final int PRODUCT_COLUMN = 0;

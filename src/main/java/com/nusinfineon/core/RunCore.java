@@ -13,7 +13,7 @@ import com.nusinfineon.core.util.ScriptGenerator;
 import com.nusinfineon.core.util.Server;
 
 /**
- * Class to generate a server to connect with FlexSim for running the simulation runs
+ * Represents the component that interfaces with FlexSim to run all the simulation runs.
  */
 public class RunCore {
 
@@ -34,6 +34,10 @@ public class RunCore {
     private ScriptGenerator scriptGenerator;
     private Server server;
 
+    /**
+     * Constructor for RunCore object based on the user-defined input.
+     * Generates a server to connect with FlexSim.
+     */
     public RunCore(String flexsimLocation, String modelLocation, String outputLocation,
                    String runSpeed, String stopTime, boolean isModelShown) {
 
@@ -52,7 +56,7 @@ public class RunCore {
     }
 
     /**
-     * Main execute function to start runs
+     * Main execute function to start runs.
      * @return excelOutputFiles
      */
     public ArrayList<File> executeRuns(ArrayList<File> excelInputFiles) {
@@ -76,7 +80,7 @@ public class RunCore {
     }
 
     /**
-     * Main code the runs the program
+     * Main code the runs the FlexSim program.
      */
     public void runModel() {
         LOGGER.info("Input file path: " + excelInputFiles.get(currentRunNum).toString());
@@ -96,8 +100,7 @@ public class RunCore {
     }
 
     /**
-     * Creates the commandline to execute model
-     * @throws IOException
+     * Creates the command to execute model.
      * @return command
      */
     public String commandLineGenerator(boolean isModelShown) {
@@ -108,7 +111,7 @@ public class RunCore {
     }
 
     /**
-     * Deletes existing output files to prevent excel overwrite popup
+     * Deletes existing output files to prevent Excel overwrite popup.
      * @param pathname
      */
     public void deleteExistingFile(String pathname) {

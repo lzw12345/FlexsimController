@@ -18,6 +18,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+/**
+ * Represents the main component that initialises the application.
+ */
 public class Main extends Application {
     private Core core;
     private JsonParser jsonParser;
