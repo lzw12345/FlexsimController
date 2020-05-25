@@ -22,14 +22,14 @@ public class Server {
 
     /**
      * Constructor for Server object.
-     * @param port
+     * @param port localhost port
      */
     public Server(int port) {
         this.port = port;
     }
 
     /**
-     * Checks for connection from FlexSim.
+     * Checks for connection from FlexSim once it has finished a run.
      */
     public void checkForConnection() {
         try {

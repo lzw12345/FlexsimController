@@ -80,7 +80,7 @@ public class RunCore {
     }
 
     /**
-     * Main code the runs the FlexSim program.
+     * Main code that starts the FlexSim program.
      */
     public void runModel() {
         LOGGER.info("Input file path: " + excelInputFiles.get(currentRunNum).toString());
@@ -112,7 +112,7 @@ public class RunCore {
 
     /**
      * Deletes existing output files to prevent Excel overwrite popup.
-     * @param pathname
+     * @param pathname full path to the excel file to be deleted
      */
     public void deleteExistingFile(String pathname) {
         try {
