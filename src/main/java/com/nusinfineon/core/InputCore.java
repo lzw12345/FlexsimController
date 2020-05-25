@@ -32,8 +32,9 @@ import com.nusinfineon.exceptions.CustomException;
 import com.nusinfineon.util.LotSequencingRule;
 
 /**
- * Class represents the core functionality involved in interfacing with a Microsoft Excel document for the
- * purposes of setting the lot sequencing rule, varying the batch size and inputting settings.
+ * Represents the component to enumerate all combinations of
+ * lot sequencing rule(s), minimum batch size(s) and additional settings
+ * from user-defined input, and create a new Excel file for each scenario.
  */
 public class InputCore {
 
@@ -79,7 +80,16 @@ public class InputCore {
     private String bibLoadOnLotCriteria;
 
     /**
-     * Creates an object from the user defined Strings.
+     * Constructor for InputCore object based on the user-defined input.
+     * @param excelFilePath
+     * @param lotSequencingRules
+     * @param batchSizeMinString
+     * @param batchSizeMaxString
+     * @param batchSizeStepString
+     * @param resourceSelectCriteria
+     * @param lotSelectionCriteria
+     * @param trolleyLocationSelectCriteria
+     * @param bibLoadOnLotCriteria
      */
     public InputCore(String excelFilePath, HashMap<LotSequencingRule, Boolean> lotSequencingRules,
                      String batchSizeMinString, String batchSizeMaxString, String batchSizeStepString,
@@ -108,7 +118,8 @@ public class InputCore {
     } // End of Constructor
 
     /**
-     * Main execute function of InputCore to process input files
+     * Main execute function of InputCore to process input files.
+     * @return All input Excel files
      * @throws IOException
      * @throws CustomException
      */
@@ -155,7 +166,7 @@ public class InputCore {
                     excelInputFiles.add(singleBatchExcelFileDestination);
                 } // End of for-loop for batch sizes
             }
-        } // End of for-loop for sequencing rules
+        } // End of for-loop for lot sequencing rules
 
         return excelInputFiles;
     } // End of execute method
@@ -191,7 +202,7 @@ public class InputCore {
 
     /**
      * Creates a copy of the master file and stores it in a temporary working directory.
-     * Sample directory is: 'C:\Users\hatzi\AppData\Local\Temp\temp_master_input5569509737681448400.xlsx'.
+     * Sample directory is: 'C:\Users\USER\AppData\Local\Temp\temp_master_input5569509737681448400.xlsx'.
      * @throws IOException
      */
     private void createCopyOfInputFile() throws IOException {
@@ -217,7 +228,7 @@ public class InputCore {
     }
 
     /**
-     * Edits min batch size in Input excel file based on given batch size
+     * Edits min batch size in Input excel file based on given batch size.
      * @param workbook Workbook to edit
      * @param batchNumber Batch size
      * @throws CustomException
@@ -250,8 +261,10 @@ public class InputCore {
     }
 
     /**
-     * Processes the lot sequencing on Actual Lot Info sheet
+     * Processes the lot sequencing on Actual Lot Info sheet.
      * @param workbook Workbook to edit
+     * @param rule Lot sequencing rule to process
+     * @param seed Random seed for current execution
      */
     private void processLotSequencing(Workbook workbook, LotSequencingRule rule, long seed) {
         // Access Actual Lot Info sheet
@@ -285,12 +298,13 @@ public class InputCore {
     }
 
     /**
-     * Gets all lots and sorts by Shortest Processing Time per period
+     * Gets all lots and sorts by Shortest Processing Time per period.
      * @param lotInfoSheet Actual Lot Info sheet
      * @param processTimeSheet Process Time sheet
      * @return Sorted list of lots
      */
     private ArrayList<LotEntry> shortestProcessingTime(Sheet lotInfoSheet, Sheet processTimeSheet) {
+        // Main lot list
         ArrayList<LotEntry> lotList = new ArrayList<>();
 
         // Copy corresponding burn-in processing time from Process Time sheet to a new column in Actual Lot Info
@@ -307,28 +321,40 @@ public class InputCore {
         }
 
         double currentPeriod = 0.0;
+        // Create subLotList for each period
         ArrayList<LotEntry> subLotList = new ArrayList<>();
+        // Iterate through all rows in Actual Lot Info sheet
         for (Row lotInfoRow : lotInfoSheet) {
+            // If next row does not exist, then break
             if (lotInfoRow.getCell(LOT_INFO_LOT_COLUMN) == null ||
                     lotInfoRow.getCell(LOT_INFO_LOT_COLUMN).getCellType() == CellType.BLANK) {
                 break;
             }
+            // Skip if first (header) row
             if (lotInfoRow.getRowNum() != 0) {
+                // If period changes
                 if (currentPeriod != lotInfoRow.getCell(LOT_INFO_PERIOD_COLUMN).getNumericCellValue()) {
+                    // Sort all lots (ascending order) in previous period
                     Collections.sort(subLotList);
+                    // Add sorted lots to lotList
                     lotList.addAll(subLotList);
+                    // Create new subLotList for current period
                     subLotList = new ArrayList<>();
                 }
+                // Create new SPT lot entry
                 LotEntry entry = new SPTLotEntry(lotInfoRow.getCell(LOT_INFO_LOT_COLUMN).getStringCellValue().trim(),
                         lotInfoRow.getCell(LOT_INFO_PRODUCT_KEY_COLUMN).getStringCellValue().trim(),
                         lotInfoRow.getCell(LOT_INFO_LOTSIZE_COLUMN).getNumericCellValue(),
                         lotInfoRow.getCell(LOT_INFO_PRODUCTION_LOCATION_COLUMN).getStringCellValue().trim(),
                         lotInfoRow.getCell(LOT_INFO_PERIOD_COLUMN).getNumericCellValue(),
                         lotInfoRow.getCell(LOT_INFO_NEW_COLUMN).getNumericCellValue());
+                // Add to subLotList for current period
                 subLotList.add(entry);
+                // Update current period
                 currentPeriod = lotInfoRow.getCell(LOT_INFO_PERIOD_COLUMN).getNumericCellValue();
             }
         }
+        // Sort and add final subLotList
         Collections.sort(subLotList);
         lotList.addAll(subLotList);
 
@@ -336,34 +362,47 @@ public class InputCore {
     }
 
     /**
-     * Gets all lots and sorts randomly per period
+     * Gets all lots and sorts by Most Jobs per period.
      * @param lotInfoSheet Actual Lot Info sheet
      * @return Sorted list of lots
      */
     private ArrayList<LotEntry> mostJobs(Sheet lotInfoSheet) {
+        // Main lot list
         ArrayList<LotEntry> lotList = new ArrayList<>();
         double currentPeriod = 0.0;
+        // Create subLotList for each period
         ArrayList<LotEntry> subLotList = new ArrayList<>();
+        // Iterate through all rows in Actual Lot Info sheet
         for (Row lotInfoRow : lotInfoSheet) {
+            // If next row does not exist, then break
             if (lotInfoRow.getCell(LOT_INFO_LOT_COLUMN) == null ||
                     lotInfoRow.getCell(LOT_INFO_LOT_COLUMN).getCellType() == CellType.BLANK) {
                 break;
             }
+            // Skip if first (header) row
             if (lotInfoRow.getRowNum() != 0) {
+                // If period changes
                 if (currentPeriod != lotInfoRow.getCell(LOT_INFO_PERIOD_COLUMN).getNumericCellValue()) {
+                    // Sort all lots (descending order) in previous period
                     Collections.sort(subLotList, Collections.reverseOrder());
+                    // Add sorted lots to lotList
                     lotList.addAll(subLotList);
+                    // Create new subLotList for current period
                     subLotList = new ArrayList<>();
                 }
+                // Create new MJ lot entry
                 LotEntry entry = new MJLotEntry(lotInfoRow.getCell(LOT_INFO_LOT_COLUMN).getStringCellValue().trim(),
                         lotInfoRow.getCell(LOT_INFO_PRODUCT_KEY_COLUMN).getStringCellValue().trim(),
                         lotInfoRow.getCell(LOT_INFO_LOTSIZE_COLUMN).getNumericCellValue(),
                         lotInfoRow.getCell(LOT_INFO_PRODUCTION_LOCATION_COLUMN).getStringCellValue().trim(),
                         lotInfoRow.getCell(LOT_INFO_PERIOD_COLUMN).getNumericCellValue());
+                // Add to subLotList for current period
                 subLotList.add(entry);
+                // Update current period
                 currentPeriod = lotInfoRow.getCell(LOT_INFO_PERIOD_COLUMN).getNumericCellValue();
             }
         }
+        // Sort and add final subLotList
         Collections.sort(subLotList, Collections.reverseOrder());
         lotList.addAll(subLotList);
 
@@ -371,34 +410,48 @@ public class InputCore {
     }
 
     /**
-     * Gets all lots and sorts randomly per period
+     * Gets all lots and sorts randomly per period.
      * @param lotInfoSheet Actual Lot Info sheet
+     * @param seed Random seed for current execution
      * @return Sorted list of lots
      */
     private ArrayList<LotEntry> randomSequence(Sheet lotInfoSheet, long seed) {
+        // Main lot list
         ArrayList<LotEntry> lotList = new ArrayList<>();
         double currentPeriod = 0.0;
+        // Create subLotList for each period
         ArrayList<LotEntry> subLotList = new ArrayList<>();
+        // Iterate through all rows in Actual Lot Info sheet
         for (Row lotInfoRow : lotInfoSheet) {
+            // If next row does not exist, then break
             if (lotInfoRow.getCell(LOT_INFO_LOT_COLUMN) == null ||
                     lotInfoRow.getCell(LOT_INFO_LOT_COLUMN).getCellType() == CellType.BLANK) {
                 break;
             }
+            // Skip if first (header) row
             if (lotInfoRow.getRowNum() != 0) {
+                // If period changes
                 if (currentPeriod != lotInfoRow.getCell(LOT_INFO_PERIOD_COLUMN).getNumericCellValue()) {
+                    // Shuffles all lots (with given random seed) in previous period
                     Collections.shuffle(subLotList, new Random(seed));
+                    // Add shuffled lots to lotList
                     lotList.addAll(subLotList);
+                    // Create new subLotList for current period
                     subLotList = new ArrayList<>();
                 }
+                // Create new generic lot entry
                 LotEntry entry = new GenericLotEntry(lotInfoRow.getCell(LOT_INFO_LOT_COLUMN).getStringCellValue().trim(),
                         lotInfoRow.getCell(LOT_INFO_PRODUCT_KEY_COLUMN).getStringCellValue().trim(),
                         lotInfoRow.getCell(LOT_INFO_LOTSIZE_COLUMN).getNumericCellValue(),
                         lotInfoRow.getCell(LOT_INFO_PRODUCTION_LOCATION_COLUMN).getStringCellValue().trim(),
                         lotInfoRow.getCell(LOT_INFO_PERIOD_COLUMN).getNumericCellValue());
+                // Add to subLotList for current period
                 subLotList.add(entry);
+                // Update current period
                 currentPeriod = lotInfoRow.getCell(LOT_INFO_PERIOD_COLUMN).getNumericCellValue();
             }
         }
+        // Shuffle and add final subLotList
         Collections.shuffle(subLotList, new Random(seed));
         lotList.addAll(subLotList);
 
@@ -406,7 +459,7 @@ public class InputCore {
     }
 
     /**
-     * Clears Actual Lot Info sheet and repopulates with newly sorted list
+     * Clears Actual Lot Info sheet and repopulates with newly sorted list.
      * @param lotList Sorted lot list
      * @param lotInfoSheet Actual Lot Info sheet
      */
@@ -416,7 +469,7 @@ public class InputCore {
             lotInfoSheet.removeRow(lotInfoSheet.getRow(i));
         }
 
-        // Populate sorted list
+        // Populate with sorted lot list
         int newRow = 1;
         for (LotEntry lotEntry : lotList) {
             Row lotInfoRow = lotInfoSheet.createRow(newRow);
@@ -432,14 +485,14 @@ public class InputCore {
     }
 
     /**
-     * Edit settings in Input excel file
+     * Edit settings in Input excel file.
      * @param workbook Workbook to edit
      */
     private void editSettings(Workbook workbook) {
         // Access Settings sheet
         Sheet settingsSheet = workbook.getSheet(SETTINGS_SHEET_NAME);
 
-        // Edit required setting
+        // Edit required settings from user-defined input
         for (Row row : settingsSheet) {
             Cell cell = row.getCell(SETTINGS_PARAMETER_COLUMN);
             String parameter = cell.getStringCellValue().trim();
@@ -468,7 +521,7 @@ public class InputCore {
     }
 
     /**
-     * Check if entry in Process Time sheet is of process type "Burn In"
+     * Check if entry in Process Time sheet is of process type "Burn In".
      * @param processTimeRow Given entry
      * @return True or False
      */
@@ -479,7 +532,7 @@ public class InputCore {
     }
 
     /**
-     * Get required input string for Resource Select Criteria from provided index string
+     * Get required input string for Resource Select Criteria from provided index string.
      * @param resourceSelectCriteria Index string
      * @return Input string
      */

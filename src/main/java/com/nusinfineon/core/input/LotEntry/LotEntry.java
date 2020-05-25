@@ -1,5 +1,8 @@
 package com.nusinfineon.core.input.LotEntry;
 
+/**
+ * Represents a lot entry in Actual Lot Info sheet for sorting according to different lot sequencing rules.
+ */
 public abstract class LotEntry implements Comparable<LotEntry> {
     private String lot;
     private String product;
@@ -7,6 +10,14 @@ public abstract class LotEntry implements Comparable<LotEntry> {
     private String productionLocation;
     private Double period;
 
+    /**
+     * Constructor for lot entry.
+     * @param lot
+     * @param product
+     * @param lotSize
+     * @param productionLocation
+     * @param period
+     */
     public LotEntry(String lot, String product, Double lotSize, String productionLocation, Double period) {
         this.lot = lot;
         this.product = product;
@@ -37,6 +48,9 @@ public abstract class LotEntry implements Comparable<LotEntry> {
 
     public abstract Double getComparable();
 
+    /**
+     * Allows child classes to compare by different comparable attributes.
+     */
     @Override
     public int compareTo(LotEntry o) {
         return this.getComparable().compareTo(o.getComparable());

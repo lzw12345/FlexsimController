@@ -11,7 +11,8 @@ import com.nusinfineon.core.OutputCore;
 import com.nusinfineon.exceptions.CustomException;
 
 /**
- * This class is a driver to execute the OutputAnalysis code only.
+ * Standalone class to execute Output Analysis only.
+ * Run this class to generate a tableau-excel-file from a folder of output Excel files.
  */
 public class OutputAnalysisDriver {
 

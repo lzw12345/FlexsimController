@@ -9,6 +9,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Represents the component to create FlexScript for each simulation run.
+ */
 public class ScriptGenerator {
 
     private String scriptFilepath = "./" + SCRIPT_FILE_NAME;
@@ -22,7 +25,7 @@ public class ScriptGenerator {
     }
 
     /**
-     * Creates the Flexscript for the model
+     * Creates the FlexScript for the model.
      * @throws IOException
      */
     public File generateScript(String inputLocation, String inputFile, String outputLocation,
@@ -56,7 +59,7 @@ public class ScriptGenerator {
     }
 
     /**
-     * Function to generate a default template for replace code in a Flexsim node
+     * Function to generate a default template for replace code in a FlexSim node.
      * @param name
      * @param nodePath
      * @param code

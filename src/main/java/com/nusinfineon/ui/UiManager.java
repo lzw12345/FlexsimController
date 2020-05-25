@@ -12,7 +12,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
- * The manager that operates the whole nus.infineon.ui running logic.
+ * The manager that operates the whole UI.
  */
 public class UiManager implements Ui {
 

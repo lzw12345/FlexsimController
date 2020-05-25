@@ -23,31 +23,38 @@ import com.nusinfineon.exceptions.CustomException;
 import com.nusinfineon.core.output.OutputAnalysisCalculation;
 import com.nusinfineon.core.output.OutputAnalysisUtil;
 
+/**
+ * Represents the component to process all output Excel files and generate an Excel file for Tableau data visualisation.
+ */
 public class OutputCore {
 
     private static final Logger LOGGER = Logger.getLogger(OutputCore.class.getName());
 
+    /**
+     * Constructor for OutputCore object.
+     */
     public OutputCore() {
         // Empty constructor
     }
 
     /**
-     * Main execute function of OutputCore to process output files and tableau-excel-file
+     * Main execute function of OutputCore to process output files and tableau-excel-file.
      * @throws IOException
      * @throws CustomException
      */
     public void execute(File folderDirectory, File destinationDirectory) throws IOException, CustomException {
-        // Generate output statistics for all excel files in a folder
+        // Generate output statistics for all Excel files in a folder
         appendSummaryStatisticsOfFolderOFExcelFiles(folderDirectory);
 
-        // Generate the tableau excel file from the folder of excel files (with output data appended)
+        // Generate the tableau-excel-file from the folder of Excel files (with output data appended)
         generateTableauExcelFile(folderDirectory, destinationDirectory);
     }
 
     /**
      * Wrapper function to handle all files in a specified folder.
-     * @param folderDirectory Directory of a folder with excel files to be processed.
-     * @throws CustomException if argument is not a directory.
+     * @param folderDirectory Directory of a folder with excel files to be processed
+     * @throws IOException
+     * @throws CustomException if argument is not a directory
      */
     private void appendSummaryStatisticsOfFolderOFExcelFiles(File folderDirectory) throws IOException, CustomException {
         if (!folderDirectory.isDirectory()) {
@@ -64,8 +71,12 @@ public class OutputCore {
     }
 
     /**
-     * Generates a single excel file to be used with Tableau. Summarizes the output file data for each excel file.
-     * Saves the file into "src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx"
+     * Generates a single Excel file to be used with Tableau. Summarises the output file data for each Excel file.
+     * Saves the file into "src/main/resources/sample-output-files/tableau-excel-file/tableau-excel-file.xlsx".
+     * @param folderOfExcelFiles Directory of a folder with excel files to be processed
+     * @param destinationDirectory Directory to save tableau-excel-file
+     * @throws IOException
+     * @throws CustomException
      */
     private void generateTableauExcelFile(File folderOfExcelFiles, File destinationDirectory)
             throws IOException, CustomException {
@@ -436,13 +447,13 @@ public class OutputCore {
     }
 
     /**
-     * Generates the summary statistic for a single excel file.
+     * Generates the summary statistic for a single output Excel file.
      * Sample usage:
      * "
      * File outputExcelFile01 = new File("src/main/resources/sample-output-files/output-files-with-summary-data/output_min_size_20.xlsx");
      * appendSummaryStatisticsOfSingleOutputExcelFile(outputExcelFile01);
      * "
-     * @param outputExcelFile Output excel file of a single simulation run.
+     * @param outputExcelFile Output excel file of a single simulation run
      * @throws IOException
      */
     private void appendSummaryStatisticsOfSingleOutputExcelFile(File outputExcelFile) throws IOException {

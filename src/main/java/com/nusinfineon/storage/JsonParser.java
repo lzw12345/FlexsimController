@@ -16,13 +16,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nusinfineon.core.Core;
 
+/**
+ * Represents the component that can read and write the user input data on a text (.txt) file in JSON format.
+ */
 public class JsonParser {
 
     private String filepath = "./" + SAVE_FILE_NAME;
 
     /**
-     * Constructor that checks if the file exists and creates a new json formatted file if it.
-     * @throws IOException in the case of a missing file
+     * Constructor that checks if the file exists and creates a new JSON formatted file if it.
+     * @throws IOException in the case of missing file
      */
     public JsonParser() throws IOException {
         File file = new File(filepath);
@@ -34,8 +37,8 @@ public class JsonParser {
     }
 
     /**
-     * Method to store data in the Json format.
-     * @throws IOException in the case of a missing file
+     * Method to store data in the JSON format.
+     * @throws IOException in the case of missing file
      */
     public void storeData(Core core) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -47,8 +50,8 @@ public class JsonParser {
     }
 
     /**
-     * Method to load data from the Json formatted file.
-     * @return returns the core class with all the saved data loaded
+     * Method to load data from the JSON formatted file.
+     * @return Core class with all the saved data loaded
      * @throws IOException in the case of missing file
      */
     public Core loadData() throws IOException {

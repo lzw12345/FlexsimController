@@ -34,7 +34,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 /**
- * Represent the whole window of the user interface, it should contain all units in the user interface.
+ * Represents the front-end model and logic of the whole user interface window.
  */
 public class MainGui extends UiPart<Stage> {
     private static final int MAX_ALLOWABLE_BATCH_SIZE = 24;
@@ -115,6 +115,12 @@ public class MainGui extends UiPart<Stage> {
     private ToggleGroup trolleyLocationSelectCriteria;
     private ToggleGroup bibLoadOnLotCriteria;
 
+    /**
+     * Constructor for MainGui object.
+     * @param primaryStage
+     * @param core
+     * @param jsonParser
+     */
     public MainGui(Stage primaryStage, Core core, JsonParser jsonParser) {
         super(FXML, primaryStage);
 
@@ -126,6 +132,9 @@ public class MainGui extends UiPart<Stage> {
         configureUi();
     }
 
+    /**
+     * Configures the UI from data in Core.
+     */
     private void configureUi() {
         flexsimExeLocation.setText(core.getFlexsimLocation());
         modelFileLocation.setText(core.getModelLocation());
@@ -173,23 +182,45 @@ public class MainGui extends UiPart<Stage> {
         bibLoadOnLotCriteria.selectToggle(getBibLoadOnLotCriteria());
     }
 
+    /**
+     * Checks if FCFS is selected.
+     * @param lotSequencingRules List of lot sequencing rules
+     * @return true or false
+     */
     private Boolean getIsFCFSSelected(HashMap<LotSequencingRule, Boolean> lotSequencingRules) {
         return lotSequencingRules.get(LotSequencingRule.FCFS);
     }
 
+    /**
+     * Checks if SPT is selected.
+     * @param lotSequencingRules List of lot sequencing rules
+     * @return true or false
+     */
     private Boolean getIsSPTSelected(HashMap<LotSequencingRule, Boolean> lotSequencingRules) {
         return lotSequencingRules.get(LotSequencingRule.SPT);
     }
 
+    /**
+     * Checks if MJ is selected.
+     * @param lotSequencingRules List of lot sequencing rules
+     * @return true or false
+     */
     private Boolean getIsMJSelected(HashMap<LotSequencingRule, Boolean> lotSequencingRules) {
         return lotSequencingRules.get(LotSequencingRule.MJ);
     }
 
+    /**
+     * Checks if RAND is selected.
+     * @param lotSequencingRules List of lot sequencing rules
+     * @return true or false
+     */
     private Boolean getIsRANDSelected(HashMap<LotSequencingRule, Boolean> lotSequencingRules) {
         return lotSequencingRules.get(LotSequencingRule.RAND);
     }
 
-    /** Gets the saved radio button for Resource Select Criteria
+    /**
+     * Gets the saved radio button for Resource Select Criteria.
+     * @return Saved selection
      */
     private RadioButton getResourceSelectCriteria() {
         String selection = core.getResourceSelectCriteria();
@@ -205,7 +236,9 @@ public class MainGui extends UiPart<Stage> {
         }
     }
 
-    /** Gets the saved radio button for Lot Selection Criteria
+    /**
+     * Gets the saved radio button for Lot Selection Criteria.
+     * @return Saved selection
      */
     private RadioButton getLotSelectionCriteria() {
         String selection = core.getLotSelectionCriteria();
@@ -219,7 +252,9 @@ public class MainGui extends UiPart<Stage> {
         }
     }
 
-    /** Gets the saved radio button for Trolley Location Select Criteria
+    /**
+     * Gets the saved radio button for Trolley Location Select Criteria.
+     * @return Saved selection
      */
     private RadioButton getTrolleyLocationSelectCriteria() {
         String selection = core.getTrolleyLocationSelectCriteria();
@@ -233,7 +268,9 @@ public class MainGui extends UiPart<Stage> {
         }
     }
 
-    /** Gets the saved radio button for BIB Load on Lot Criteria
+    /**
+     * Gets the saved radio button for BIB Load on Lot Criteria.
+     * @return Saved selection
      */
     private RadioButton getBibLoadOnLotCriteria() {
         String selection = core.getBibLoadOnLotCriteria();
@@ -246,7 +283,7 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * for drag and drop functionality
+     * For drag and drop functionality of base FlexSim model.
      * @param event
      */
     @FXML
@@ -260,7 +297,7 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * for drag and drop functionality
+     * For drag and drop functionality of base FlexSim model.
      * @param event
      */
     @FXML
@@ -280,6 +317,10 @@ public class MainGui extends UiPart<Stage> {
         event.consume();
     }
 
+    /**
+     * For drag and drop functionality of input Excel file.
+     * @param event
+     */
     @FXML
     public void inputDragOver(DragEvent event) {
         if (event.getGestureSource() != inputFileDragTarget
@@ -290,6 +331,10 @@ public class MainGui extends UiPart<Stage> {
         event.consume();
     }
 
+    /**
+     * For drag and drop functionality of input Excel file.
+     * @param event
+     */
     @FXML
     public void inputDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
@@ -307,6 +352,10 @@ public class MainGui extends UiPart<Stage> {
         event.consume();
     }
 
+    /**
+     * For drag and drop functionality of output Excel file.
+     * @param event
+     */
     @FXML
     public void outputDragOver(DragEvent event) {
         if (event.getGestureSource() != outputFileDragTarget
@@ -317,6 +366,10 @@ public class MainGui extends UiPart<Stage> {
         event.consume();
     }
 
+    /**
+     * For drag and drop functionality of output Excel file.
+     * @param event
+     */
     @FXML
     public void outputDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
@@ -334,6 +387,10 @@ public class MainGui extends UiPart<Stage> {
         event.consume();
     }
 
+    /**
+     * For drag and drop functionality of flexsim.exe.
+     * @param event
+     */
     @FXML
     public void exeDragOver(DragEvent event) {
         if (event.getGestureSource() != exeDragTarget
@@ -344,6 +401,10 @@ public class MainGui extends UiPart<Stage> {
         event.consume();
     }
 
+    /**
+     * For drag and drop functionality of flexsim.exe.
+     * @param event
+     */
     @FXML
     public void exeDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
@@ -383,7 +444,8 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Saves the current input
+     * Saves the current input fields.
+     * @throws IOException
      */
     @FXML
     private void handleSave() throws IOException {
@@ -394,7 +456,8 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Loads the saved input
+     * Loads the saved input fields.
+     * @throws IOException
      */
     @FXML
     private void handleLoad() throws IOException {
@@ -413,6 +476,7 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Closes the application.
+     * @throws IOException
      */
     @FXML
     private void handleExit() throws IOException {
@@ -421,8 +485,11 @@ public class MainGui extends UiPart<Stage> {
         primaryStage.hide();
     }
 
+    /**
+     * Handles the main execution of the simulation.
+     */
     @FXML
-    public void handleModelExecution() throws IOException {
+    public void handleModelExecution() {
         if (inputValidated()) {
             if (confirmRun(batchSizeMin.getValueFactory().getValue(), batchSizeMax.getValueFactory().getValue(),
                     batchSizeStep.getValueFactory().getValue(), getLotSequencingRules())) {
@@ -442,7 +509,7 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Saves input data to core
+     * Saves input data to Core.
      */
     private void saveInputDataToCore() {
         core.inputData(flexsimExeLocation.getText(), modelFileLocation.getText(), inputFileLocation.getText(),
@@ -459,7 +526,9 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Input validation
+     * Checks if all input fields are valid.
+     * Invalid fields will append the respective error message and return False.
+     * @return true or false
      */
     private boolean inputValidated() {
         String errorMessage = "";
@@ -548,7 +617,9 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Executes Core with confirmation, waiting and completion alerts
+     * Executes Core with confirmation, waiting and completion alerts.
+     * @throws IOException
+     * @throws CustomException
      */
     private void execute() throws IOException, CustomException {
         saveInputDataToCore();
@@ -558,7 +629,8 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Executes Core with confirmation, waiting and completion alerts
+     * Helper function to raise alert box with a supplied alert text for Wait.
+     * @return Wait alert box
      */
     private Alert getWaitAlert() {
         String title = "Simulation running... (Please wait...)";
@@ -569,7 +641,9 @@ public class MainGui extends UiPart<Stage> {
         return waitAlert;
     }
 
-    /** Get the selected Lot Sequencing Rules from user input
+    /**
+     * Get the selected Lot Sequencing Rules from user input.
+     * @return Selected Lot Sequencing Rules
      */
     private HashMap<LotSequencingRule, Boolean> getLotSequencingRules() {
         HashMap<LotSequencingRule, Boolean> lotSequencingRules = new HashMap<>();
@@ -582,8 +656,10 @@ public class MainGui extends UiPart<Stage> {
         return lotSequencingRules;
     }
 
-    /** Get the selected radio button for Resource Select Criteria from user input
+    /**
+     * Get the selected radio button for Resource Select Criteria from user input and convert to number character.
      * @param resourceSelectCriteria Toggle group for Resource Select Criteria
+     * @return Selected Resource Select Criteria
      */
     private String getSelectedResourceSelectCriteria(ToggleGroup resourceSelectCriteria) {
         Toggle selection = resourceSelectCriteria.getSelectedToggle();
@@ -598,8 +674,9 @@ public class MainGui extends UiPart<Stage> {
         }
     }
 
-    /** Get the selected radio button for Lot Selection Criteria from user input
+    /** Get the selected radio button for Lot Selection Criteria from user input and convert to number character.
      * @param lotSelectionCriteria Toggle group for Lot Selection Criteria
+     * @return Selected Lot Selection Criteria
      */
     private String getSelectedLotSelectionCriteria(ToggleGroup lotSelectionCriteria) {
         Toggle selection = lotSelectionCriteria.getSelectedToggle();
@@ -612,8 +689,9 @@ public class MainGui extends UiPart<Stage> {
         }
     }
 
-    /** Get the selected radio button for Trolley Location Select Criteria from user input
+    /** Get the selected radio button for Trolley Location Select Criteria from user input and convert to number character.
      * @param trolleyLocationSelectCriteria Toggle group for Trolley Location Select Criteria
+     * @return Selected Trolley Location Select Criteria
      */
     private String getSelectedTrolleyLocationSelectCriteria(ToggleGroup trolleyLocationSelectCriteria) {
         Toggle selection = trolleyLocationSelectCriteria.getSelectedToggle();
@@ -626,8 +704,9 @@ public class MainGui extends UiPart<Stage> {
         }
     }
 
-    /** Get the selected radio button for BIB Load On Lot Criteria from user input
+    /** Get the selected radio button for BIB Load On Lot Criteria from user input and convert to number character.
      * @param bibLoadOnLotCriteria Toggle group for BIB Load On Lot Criteria
+     * @return Selected BIB Load On Lot Criteria
      */
     private String getSelectedBibLoadOnLotCriteria(ToggleGroup bibLoadOnLotCriteria) {
         Toggle selection = bibLoadOnLotCriteria.getSelectedToggle();
@@ -639,7 +718,7 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Raise dialog box for save confirmation.
+     * Helper function to raise dialog box for save confirmation.
      * @return true when user clicks OK to confirm
      */
     private boolean confirmSave() {
@@ -657,7 +736,7 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Raise dialog box for load confirmation.
+     * Helper function to raise dialog box for load confirmation.
      * @return true when user clicks OK to confirm
      */
     private boolean confirmLoad() {
@@ -738,8 +817,8 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Returns true if Flexsim exe location is blank
-     * @return Boolean.
+     * Returns true if FlexSim exe location is blank.
+     * @return true or false
      */
     private boolean flexsimExeLocationIsBlank() {
         if (flexsimExeLocation.getText() == null || flexsimExeLocation.getText().isBlank()) {
@@ -750,8 +829,8 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Returns true if Model file location is blank
-     * @return Boolean.
+     * Returns true if Model file location is blank.
+     * @return true or false
      */
     private boolean modelFileLocationIsBlank() {
         if (modelFileLocation.getText() == null || modelFileLocation.getText().isBlank()) {
@@ -762,8 +841,8 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Returns true if Input file location is blank
-     * @return Boolean.
+     * Returns true if Input file location is blank.
+     * @return true or false
      */
     private boolean inputFileLocationIsBlank() {
         if (inputFileLocation.getText() == null || inputFileLocation.getText().isBlank()) {
@@ -774,8 +853,8 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Returns true if Output file location is blank
-     * @return Boolean.
+     * Returns true if Output file location is blank.
+     * @return true or false
      */
     private boolean outputFileLocationIsBlank() {
         if (outputFileLocation.getText() == null || outputFileLocation.getText().isBlank()) {
@@ -787,7 +866,7 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Returns true if the given file locations can be found.
-     * @return Boolean.
+     * @return true or false
      */
     private boolean isFoundFiles(String fileLocation) {
         File file = new File(fileLocation);
@@ -801,7 +880,7 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Returns true if flexsim.exe is valid.
-     * @return Boolean.
+     * @return true or false
      */
     private boolean isValidExeLocation() {
         String fileName = flexsimExeLocation.getText().substring(flexsimExeLocation.getText().lastIndexOf("\\") + 1);
@@ -815,7 +894,7 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Returns true if file extension is valid.
-     * @return Boolean.
+     * @return true or false
      */
     private boolean isValidExtension(String fileLocation, String extension) {
         String fileName = fileLocation.substring(fileLocation.lastIndexOf(".") + 1);
@@ -829,7 +908,7 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Returns true if any of the required simulation run parameters are blank.
-     * @return Boolean.
+     * @return true or false
      */
     private boolean isBlankRunParams() {
         if (runSpeed.getText() == null || runSpeed.getText().isBlank() ||
@@ -841,8 +920,8 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Returns true if any of the required simulation run parameters are blank.
-     * @return Boolean.
+     * Returns true if at least one lot sequencing rule is selected.
+     * @return true or false
      */
     private boolean isLotSequenceSelected() {
         HashMap<LotSequencingRule, Boolean> lotSequencingRules = getLotSequencingRules();
@@ -857,9 +936,9 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Checks if min is lesser than max.
-     * @param minBatchSize representing minimum batch size.
-     * @param maxBatchSize representing maximum batch size.
-     * @return Boolean.
+     * @param minBatchSize representing min batch size
+     * @param maxBatchSize representing max batch size
+     * @return true or false
      */
     private boolean isValidMinMax(int minBatchSize, int maxBatchSize) {
         if (minBatchSize <= maxBatchSize) {
@@ -871,10 +950,10 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Returns true if the batch step size is acceptable i.e. smaller than difference between min and max batch sizes.
-     * @param stepSize representing batch step size.
-     * @param minBatchSize representing minimum batch size.
-     * @param maxBatchSize representing maximum batch size.
-     * @return Boolean.
+     * @param stepSize representing batch step size
+     * @param minBatchSize representing min batch size
+     * @param maxBatchSize representing max batch size
+     * @return true or false
      */
     private boolean isValidStepSize(int stepSize, int minBatchSize, int maxBatchSize) {
         try {
@@ -893,8 +972,8 @@ public class MainGui extends UiPart<Stage> {
     /**
      * Returns true if a batchMinString falls within the range of
      * MIN_ALLOWABLE_BATCH_SIZE and MAX_ALLOWABLE_BATCH_SIZE.
-     * @param minBatchSize representing Batch Min Size.
-     * @return Boolean.
+     * @param minBatchSize representing mine batch size
+     * @return true or false
      */
     private boolean isValidMinBatchSize(int minBatchSize) {
         try {
@@ -910,8 +989,8 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Follows the same logic as "isValidMinBatchSize".
-     * @param maxBatchSize representing Batch Max Size.
-     * @return Boolean.
+     * @param maxBatchSize representing max batch size
+     * @return true or false
      */
     private boolean isValidMaxBatchSize(int maxBatchSize){
         return isValidMinBatchSize(maxBatchSize);
@@ -919,8 +998,8 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Returns true if the argument string can be converted to a Double primitive data type.
-     * @param str String argument.
-     * @return Boolean.
+     * @param str String argument
+     * @return true or false
      */
     private boolean isNotDouble(String str) {
         try {
@@ -935,7 +1014,7 @@ public class MainGui extends UiPart<Stage> {
      * Returns true if the argument string can be converted to a Double primitive data type.
      * @param runSpeed Run Speed string
      * @param stopTime Stop Time string
-     * @return Boolean.
+     * @return true or false
      */
     private boolean isValidRunParams(String runSpeed, String stopTime) {
         if (Double.parseDouble(runSpeed) <= Double.parseDouble(stopTime)) {
@@ -947,9 +1026,16 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Generic function to raise alert box.
+     * @param type
+     * @param title
+     * @param header
+     * @param text
+     * @param prefWidth
+     * @param prefHeight
      * @return Alert box
      */
-    private Alert raiseAlertBox(Alert.AlertType type, String title, String header, String text, int prefWidth, int prefHeight) {
+    private Alert raiseAlertBox(Alert.AlertType type, String title, String header, String text,
+                                int prefWidth, int prefHeight) {
         Alert alert = new Alert(type);
 
         // Text
@@ -968,6 +1054,10 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Generic function to raise alert box with default dimensions.
+     * @param type
+     * @param title
+     * @param header
+     * @param text
      * @return Alert box
      */
     private Alert raiseAlertBox(Alert.AlertType type, String title, String header, String text) {
