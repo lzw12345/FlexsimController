@@ -60,9 +60,9 @@ public class ScriptGenerator {
 
     /**
      * Function to generate a default template for replace code in a FlexSim node.
-     * @param name
-     * @param nodePath
-     * @param code
+     * @param name name to be assigned to the node
+     * @param nodePath folder where the node will be stored , normall starts with MODEL://Tools
+     * @param code code that will replace whats in the node
      * @return script
      */
     public String editNodeCode(String name, String nodePath, String code) {
