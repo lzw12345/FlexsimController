@@ -817,7 +817,7 @@ public class MainGui extends UiPart<Stage> {
     }
 
     /**
-     * Returns true if FlexSim exe location is blank.
+     * Returns true if FlexSim .exe location is blank.
      * @return true or false
      */
     private boolean flexsimExeLocationIsBlank() {
@@ -936,8 +936,8 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Checks if min is lesser than max.
-     * @param minBatchSize representing min batch size
-     * @param maxBatchSize representing max batch size
+     * @param minBatchSize Min batch size
+     * @param maxBatchSize Max batch size
      * @return true or false
      */
     private boolean isValidMinMax(int minBatchSize, int maxBatchSize) {
@@ -950,9 +950,9 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Returns true if the batch step size is acceptable i.e. smaller than difference between min and max batch sizes.
-     * @param stepSize representing batch step size
-     * @param minBatchSize representing min batch size
-     * @param maxBatchSize representing max batch size
+     * @param stepSize Step size
+     * @param minBatchSize Min batch size
+     * @param maxBatchSize Max batch size
      * @return true or false
      */
     private boolean isValidStepSize(int stepSize, int minBatchSize, int maxBatchSize) {
@@ -972,7 +972,7 @@ public class MainGui extends UiPart<Stage> {
     /**
      * Returns true if a batchMinString falls within the range of
      * MIN_ALLOWABLE_BATCH_SIZE and MAX_ALLOWABLE_BATCH_SIZE.
-     * @param minBatchSize representing mine batch size
+     * @param minBatchSize Min batch size
      * @return true or false
      */
     private boolean isValidMinBatchSize(int minBatchSize) {
@@ -989,7 +989,7 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Follows the same logic as "isValidMinBatchSize".
-     * @param maxBatchSize representing max batch size
+     * @param maxBatchSize Max batch size
      * @return true or false
      */
     private boolean isValidMaxBatchSize(int maxBatchSize){
@@ -1026,12 +1026,12 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Generic function to raise alert box.
-     * @param type
-     * @param title
-     * @param header
-     * @param text
-     * @param prefWidth
-     * @param prefHeight
+     * @param type Type of alert box
+     * @param title Title message of alert box window
+     * @param header Header message
+     * @param text Main text message
+     * @param prefWidth Preferred width of alert box window
+     * @param prefHeight Preferred height of alert box window
      * @return Alert box
      */
     private Alert raiseAlertBox(Alert.AlertType type, String title, String header, String text,
@@ -1054,10 +1054,10 @@ public class MainGui extends UiPart<Stage> {
 
     /**
      * Generic function to raise alert box with default dimensions.
-     * @param type
-     * @param title
-     * @param header
-     * @param text
+     * @param type Type of alert box
+     * @param title Title message of alert box window
+     * @param header Header message
+     * @param text Main text message
      * @return Alert box
      */
     private Alert raiseAlertBox(Alert.AlertType type, String title, String header, String text) {

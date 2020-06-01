@@ -54,7 +54,7 @@ public class OutputCore {
      * Wrapper function to handle all files in a specified folder.
      * @param folderDirectory Directory of a folder with excel files to be processed
      * @throws IOException
-     * @throws CustomException if argument is not a directory
+     * @throws CustomException Thrown if argument is not a directory
      */
     private void appendSummaryStatisticsOfFolderOFExcelFiles(File folderDirectory) throws IOException, CustomException {
         if (!folderDirectory.isDirectory()) {
@@ -542,7 +542,7 @@ public class OutputCore {
             String runType = OutputAnalysisUtil.fileStringToFileName(originalInputFile.toString());
 
             // Saves the simulation run type and utilization rate to a new sheet
-            OutputAnalysisUtil.saveRunTypeAndUtilizationRatesTONewSheet("RUN_TYPE_AND_IBIS_UTILIZATION", runType, mapOfUtilizationRates, workbook);
+            OutputAnalysisUtil.saveRunTypeAndUtilizationRatesToNewSheet("RUN_TYPE_AND_IBIS_UTILIZATION", runType, mapOfUtilizationRates, workbook);
 
             // Saves the product cycle time to a new sheet
             OutputAnalysisUtil.saveProductCycleTimeToNewSheet("PRODUCT_STAY_TIME", treeMapOfProductToAverageCycleTimesFromThroughputProduct, workbook);
@@ -551,13 +551,13 @@ public class OutputCore {
             OutputAnalysisUtil.saveProductThroughputToNewSheet("PRODUCT_THROUGHPUT", treeMapOfProductToAverageThroughput, workbook);
 
             // Saves the daily output to a new sheet
-            OutputAnalysisUtil.saveDailyOutputSheet("DAILY_OUTPUT", treeMapOfDayToOutput, workbook);
+            OutputAnalysisUtil.saveDailyOutputToNewSheet("DAILY_OUTPUT", treeMapOfDayToOutput, workbook);
 
             // Save the product cycle time (from daily product throughput) to a new sheet
             OutputAnalysisUtil.saveProductCycleTimeFromDailyThroughputToNewSheet("PRODUCT_TIME_IN_SYSTEM", treeMapOfProductToAverageCycleTimesFromDailyThroughput, workbook );
 
             // Save the product output and worth to a new sheet
-            OutputAnalysisUtil.saveProductOutputAndWorth("PRODUCT_OUTPUT_WORTH", treeMapOfProductToOutputAndCost, workbook);
+            OutputAnalysisUtil.saveProductOutputAndWorthToNewSheet("PRODUCT_OUTPUT_WORTH", treeMapOfProductToOutputAndCost, workbook);
 
             // Saves the current edited workbook by overwriting the original file
             FileOutputStream outputStream = new FileOutputStream(originalInputFile.toString());

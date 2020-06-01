@@ -9,12 +9,12 @@ public class SPTLotEntry extends LotEntry {
 
     /**
      * Constructor for lot entry with processTime as comparable.
-     * @param lot
-     * @param product
-     * @param lotSize
-     * @param productionLocation
-     * @param period
-     * @param processTime
+     * @param lot Lot column
+     * @param product Product column
+     * @param lotSize Lotsize column
+     * @param productionLocation Production Location column
+     * @param period Period (Week#) column
+     * @param processTime processTime column
      */
     public SPTLotEntry(String lot, String product, Double lotSize, String productionLocation, Double period,
                        Double processTime) {

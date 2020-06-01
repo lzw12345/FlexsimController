@@ -98,7 +98,7 @@ public class Core {
 
     /**
      * Handles processing of input.
-     * @param inputCore
+     * @param inputCore InputCore object
      * @throws IOException
      * @throws CustomException
      */
@@ -139,7 +139,7 @@ public class Core {
 
     /**
      * Handles execution of all simulation runs.
-     * @param runCore
+     * @param runCore RunCore object
      */
     private void handleRuns(RunCore runCore) {
         // Execute all runs
@@ -148,7 +148,7 @@ public class Core {
 
     /**
      * Handles processing and analysis of output.
-     * @param outputCore
+     * @param outputCore OutputCore object
      * @throws IOException
      * @throws CustomException
      */

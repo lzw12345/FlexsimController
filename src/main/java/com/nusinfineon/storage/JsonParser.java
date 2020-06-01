@@ -25,7 +25,7 @@ public class JsonParser {
 
     /**
      * Constructor that checks if the file exists and creates a new JSON formatted file if it.
-     * @throws IOException in the case of missing file
+     * @throws IOException Thrown in the case of missing file
      */
     public JsonParser() throws IOException {
         File file = new File(filepath);
@@ -38,7 +38,7 @@ public class JsonParser {
 
     /**
      * Method to store data in the JSON format.
-     * @throws IOException in the case of missing file
+     * @throws IOException Thrown in the case of missing file
      */
     public void storeData(Core core) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -52,7 +52,7 @@ public class JsonParser {
     /**
      * Method to load data from the JSON formatted file.
      * @return Core class with all the saved data loaded
-     * @throws IOException in the case of missing file
+     * @throws IOException Thrown in the case of missing file
      */
     public Core loadData() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
