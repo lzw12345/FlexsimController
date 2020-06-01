@@ -7,17 +7,25 @@ import java.util.Arrays;
  * Defines URLs, directories, folder/file names etc. to be used globally.
  */
 public class Directories {
+    // Define image file directory for UI window icon
     public static final String ICON_APPLICATION = "/images/icon_large.png";
 
+    // Define names for saved .txt files
     public static final String SAVE_FILE_NAME = "saveFile.txt";
     public static final String SCRIPT_FILE_NAME = "script.txt";
+
+    // Define application executable name for use in Messages
     public static final String APP_EXE_FILE_NAME = "IBIS_Simulation.exe";
 
+    // Define names for generated folders
     public static final String INPUT_FOLDER_NAME = "Input";
     public static final String OUTPUT_FOLDER_NAME = "Output";
     public static final String RAW_OUTPUT_FOLDER_NAME = "Raw Output Excel Files";
 
+    // Define name for generated Excel file for Tableau
     public static final String TABLEAU_EXCEL_FILE_NAME = "tableau-excel-file.xlsx";
+
+    // Define resources for Tableau data visualisation
     public static final String TABLEAU_WORKBOOK_SOURCE_DIR = "/output";
     public static final String TABLEAU_WORKBOOK_NAME = "IBIS_Simulation_Output_Visualisation.twb";
     public static final String PRODUCT_KEY_COST_FILE_DIR = "/output/product_key_cost.xlsx";

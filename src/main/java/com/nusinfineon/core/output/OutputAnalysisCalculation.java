@@ -19,7 +19,7 @@ import com.nusinfineon.exceptions.CustomException;
 public class OutputAnalysisCalculation {
 
     /**
-     *
+     * Calculates product throughput.
      * @param throughputSheet
      * @return
      * @throws CustomException
@@ -105,9 +105,9 @@ public class OutputAnalysisCalculation {
     }
 
     /**
-     *
+     * Calculates product cycle time from daily throughput.
      * @param throughputSheet
-     * @return
+     * @return mapOfProductToAverageTimeInSystem
      * @throws CustomException
      */
     public static TreeMap<String, Double> calculateProductCycleTimeFromDailyThroughput(Sheet throughputSheet)
@@ -183,9 +183,9 @@ public class OutputAnalysisCalculation {
     }
 
     /**
-     *
+     * Calculates daily throughput.
      * @param throughputSheet
-     * @return
+     * @return dailyOutputs
      * @throws CustomException
      */
     public static TreeMap<Double, Double> calculateDailyThroughput(Sheet throughputSheet)
@@ -249,9 +249,9 @@ public class OutputAnalysisCalculation {
     }
 
     /**
-     *
+     * Calculates product cycle time from throughput product.
      * @param cycleTimeSheet
-     * @return
+     * @return averageCycleTimeForEachProduct
      * @throws CustomException
      */
     public static TreeMap<String, Double> calculateProductCycleTimeFromThroughputProduct(Sheet cycleTimeSheet)
@@ -351,9 +351,9 @@ public class OutputAnalysisCalculation {
      * Sums up the overall product quantity outputted and multiplies it with the product's corresponding
      * cost in the product-cost table, a locally stored excel file.
      *
-     * @param dailyThroughputSheet Daily Throughput sheet.
-     * @param productCostSheet Product cost sheet.
-     * @return
+     * @param dailyThroughputSheet Daily Throughput sheet
+     * @param productCostSheet Product cost sheet
+     * @return mapOfProductToOutputAndWorth
      */
     public static TreeMap<String, ArrayList<Double>> calculateTotalProductWorth(Sheet dailyThroughputSheet, Sheet productCostSheet)
             throws CustomException {
@@ -459,8 +459,8 @@ public class OutputAnalysisCalculation {
      *  Logic: Extract Column Headers first. Then, filter by IBIS rows and sum up the cells corresponding to each
      *  header. Lastly, average out the numbers and only extract "averaged values" > 0.
      *
-     * @param utilizationSheet Excel sheet that has the IBIS Utilization rates.
-     * @return A hash map of utilization categories to their respective rates.
+     * @param utilizationSheet Excel sheet that has the IBIS Utilization rates
+     * @return Hash map of utilization categories to their respective rates
      * @throws IOException
      */
     public static TreeMap<String, Double> calculateAverageIbisOvenUtilRate(Sheet utilizationSheet) throws CustomException {
@@ -526,8 +526,8 @@ public class OutputAnalysisCalculation {
 
     /**
      * Calculates the average cost (value) of a String-Double hash map.
-     * @param mapOfProductToCost Hash map of product to cost.
-     * @return Double.
+     * @param mapOfProductToCost Hash map of product to cost
+     * @return Double
      */
     public static Double getAverageCostOfProductHashMap(HashMap<String, Double> mapOfProductToCost) {
         Double sum = 0.0;

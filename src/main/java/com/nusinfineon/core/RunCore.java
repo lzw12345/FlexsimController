@@ -112,7 +112,7 @@ public class RunCore {
 
     /**
      * Deletes existing output files to prevent Excel overwrite popup.
-     * @param pathname full path to the excel file to be deleted
+     * @param pathname Full path to the Excel file to be deleted
      */
     public void deleteExistingFile(String pathname) {
         try {

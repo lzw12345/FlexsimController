@@ -40,6 +40,9 @@ public class UiManager implements Ui {
         }
     }
 
+    /**
+     * Gets image from resources for UI window icon.
+     */
     private Image getImage(String imagePath) {
         return new Image(Main.class.getResourceAsStream(imagePath));
     }

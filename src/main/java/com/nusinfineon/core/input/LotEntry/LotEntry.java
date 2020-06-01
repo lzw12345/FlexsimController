@@ -12,11 +12,11 @@ public abstract class LotEntry implements Comparable<LotEntry> {
 
     /**
      * Constructor for lot entry.
-     * @param lot
-     * @param product
-     * @param lotSize
-     * @param productionLocation
-     * @param period
+     * @param lot Lot column
+     * @param product Product column
+     * @param lotSize Lotsize column
+     * @param productionLocation Production Location column
+     * @param period Period (Week#) column
      */
     public LotEntry(String lot, String product, Double lotSize, String productionLocation, Double period) {
         this.lot = lot;
